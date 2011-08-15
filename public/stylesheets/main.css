@@ -1,0 +1,143 @@
+body {
+   font-family:"Helvetica";
+    background-color: #ddd;
+    color: #000;
+}
+
+a {
+    text-decoration: none;
+    color: steelblue;
+}
+
+div {
+    float: left;
+    clear:both;
+}
+
+div.messages {
+    border: 1px solid red;
+    width:500px;
+    height:500px;
+    float:left;
+}
+
+div#graph {
+    width:650px;
+    height:500px;
+    float:left;
+    margin-left: 20px;
+}
+
+div#chart {
+    width: 800px;
+    /* height: 500px; /* doesn't matter */ */
+    /* border: 1px solid red; */
+}
+
+#leader {
+    color: #00aa00;
+}
+
+#votes {
+    color: #00aa00;
+}
+
+/* #chart rect { */
+/*     stroke: black; */
+/*     fill: steelblue; */
+/* } */
+
+.large {
+    font-weight:bold;
+    font-size:8em;
+}
+
+label {
+    width: 100px;
+    border; 1px solid red;
+}
+
+svg {
+    /* border: 1px solid #ccc; */
+}
+
+text {
+    font-family: Helvetica;
+    fill: black;
+    stroke: black;
+    stroke-width:0px;
+}
+
+text.candidates {
+    fill: black;
+    /* stroke: black; */
+    font-size:30px;
+    /* stroke-width:2px; */
+}
+
+text.votes {
+    fill: black;
+    stroke: black;
+    font-size:30px;
+    /* stroke-width:1px; */
+}
+
+.chart {
+    fill: steelblue;
+    stroke: white;
+    margin: 20px;
+}
+
+line {
+    stroke: #bbb;
+}
+
+path {
+    stroke: steelblue;
+    stroke-width: 1.5px;
+    fill:none;
+}
+
+.tick {
+    color: red;
+}
+
+path.uk_o2 {
+    stroke: #419EDA;
+}
+
+path.uk_orange {
+    stroke: #ff7f00;
+}
+
+path.uk_vodafone {
+    stroke: #ff0000;
+}
+
+path.uk_tmobile {
+    stroke: #E10174;
+}
+
+path.uk_three {
+    stroke: #CADB2A;
+}
+
+circle.uk_o2, rect.uk_o2 {
+    fill: #419EDA;
+}
+
+circle.uk_orange, rect.uk_orange {
+    fill: #ff7f00;
+}
+
+circle.uk_vodafone, rect.uk_vodafone {
+    fill: #ff0000;
+}
+
+circle.uk_tmobile, rect.uk_tmobile {
+    fill: #E10174;
+}
+
+circle.uk_three, rect.uk_three {
+    fill: #CADB2A;
+}
