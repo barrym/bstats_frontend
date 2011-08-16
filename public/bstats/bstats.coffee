@@ -42,14 +42,6 @@ socket.on('bstat_counters', (new_data) ->
             counter_data[data.counter] = d3.range(60).map((x) -> {counter:data.counter,time:x,value:1})
 
             # Redraw, is this bad? Move to redraw() ?
-            vis.selectAll("path")
-                .data(d3.values(counter_data))
-                .enter()
-                .append("svg:path")
-                .attr("d", path)
-                .attr("class", (d) -> d3.first(d).counter)
-                .style("stroke", (d) -> getColor(d3.first(d).counter))
-
             vis.selectAll("rect.legend")
                 .data(d3.keys(counter_data))
                 .enter()
@@ -202,6 +194,15 @@ vis.selectAll("path")
 
 redraw = () ->
 
+    paths = vis.selectAll("path")
+        .data(d3.values(counter_data))
+
+    paths.enter()
+        .append("svg:path")
+        .attr("d", path)
+        .attr("class", (d) -> d3.first(d).counter)
+        .style("stroke", (d) -> getColor(d3.first(d).counter))
+
     yrule = vis.selectAll("g.y")
         .data(y.ticks(yTickCount))
 
@@ -328,9 +329,7 @@ redraw = () ->
             .remove()
 
     # UPDATE PATH
-    vis.selectAll("path")
-        .data(d3.values(counter_data))
-        .attr("transform", "translate(#{x(times[5]) - x(times[4])})")
+    paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
         .attr("d", path)
         .transition()
         .ease("linear")
@@ -357,3 +356,10 @@ redraw = () ->
         .ease("linear")
         .attr("x", (d) -> x(d.time))
         .attr("y", (d) -> y(d.value))
+
+    paths.exit()
+        .append("svg:path")
+        .transition()
+        .duration(durationTime)
+        .style("opacity", 0)
+        .remove()
