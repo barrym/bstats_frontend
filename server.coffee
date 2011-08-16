@@ -71,6 +71,14 @@ sendData = (now) ->
                 }
             )
 
+            message.push(
+                {
+                    counter  : "no_data",
+                    time     : now,
+                    value    : 0
+                }
+            )
+
             for socket in connected_sockets
                 socket.emit('bstat_counters', message)
         )

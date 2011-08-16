@@ -5,13 +5,9 @@ xrulePeriod = 10 # seconds
 
 counter_data = []
 # Slight hack to initialise the array
-['total_ebal_calls'].map((counter) ->
+['no_data'].map((counter) ->
     counter_data[counter] = d3.range(60).map((x) -> {counter:counter,time:x,value:1})
 )
-
-# counterName = {
-#     'foo':'Foo'
-#     }
 
 colors = []
 getColor = (name) ->
