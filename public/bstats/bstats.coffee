@@ -3,7 +3,7 @@ high_point = null
 xrule_data = []
 xrulePeriod = 10 # seconds
 
-counter_data = {} # {} or []?
+counter_data = [] # {} or []?
 # Slight hack to initialise the array
 ['no_data'].map((counter) ->
     counter_data[counter] = d3.range(60).map((x) -> {counter:counter,time:x,value:1})
@@ -123,7 +123,6 @@ redraw = () ->
         .style("opacity", 0)
         .remove()
 
-
     xrule = vis.selectAll("g.x")
         .data(xrule_data, (d) -> d.time)
 
@@ -175,7 +174,6 @@ redraw = () ->
             .ease("linear")
             .delay(durationTime * 0.8)
             .style("opacity", 0)
-            .remove()
 
     exiting_xrule.select("text")
             .transition()
@@ -183,8 +181,8 @@ redraw = () ->
             .ease("linear")
             .delay(durationTime)
             .style("opacity", 0)
-            .remove()
 
+    exiting_xrule.remove()
 
     yrule = vis.selectAll("g.y")
         .data(y.ticks(yTickCount))
@@ -236,7 +234,6 @@ redraw = () ->
             .attr("y1", 0)
             .attr("y2", 0)
             .style("opacity", 0)
-            .remove()
 
     exiting_yrule.select("text")
             .transition()
@@ -244,14 +241,16 @@ redraw = () ->
             .ease("back")
             .attr("y", 0)
             .style("opacity", 0)
-            .remove()
 
-    legend_rects = vis.selectAll("rect.legend")
+    exiting_yrule.remove()
+
+    legends = vis.selectAll("g.legend")
         .data(d3.keys(counter_data), (d,i) -> i)
 
-    legend_rects.enter()
-        .append("svg:rect")
+    entering_legends = legends.enter().append("svg:g")
         .attr("class", "legend")
+
+    entering_legends.append("svg:rect")
         .attr("x", w + 10)
         .attr("y", (d, i) -> (i * 20))
         .attr("height", 10)
@@ -259,36 +258,33 @@ redraw = () ->
         .style("stroke", (d) -> getColor(d))
         .style("fill", (d) -> getColor(d))
 
-    legend_rects
-        .style("stroke", (d) -> getColor(d))
-        .style("fill", (d) -> getColor(d))
-
-    legend_rects.exit()
-        .transition()
-        .duration(durationTime)
-        .style("opacity", 0)
-        .remove()
-
-    legend_texts = vis.selectAll("text.legend")
-        .data(d3.keys(counter_data), (d, i) -> i)
-
-    legend_texts.enter()
-        .append("svg:text")
+    entering_legends.append("svg:text")
         .attr("x", w + 10)
         .attr("y", (d, i) -> (i * 20))
-        .attr("class", "legend")
         .attr("dx", 20)
         .attr("dy", 8)
         .text(String)
 
-    legend_texts
+    legends.select("rect")
+        .style("stroke", (d) -> getColor(d))
+        .style("fill", (d) -> getColor(d))
+
+    legends.select("text")
         .text(String)
 
-    legend_texts.exit()
+    exiting_legends = legends.exit()
+
+    exiting_legends.select("rect")
         .transition()
         .duration(durationTime)
         .style("opacity", 0)
-        .remove()
+
+    exiting_legends.select("text")
+        .transition()
+        .duration(durationTime)
+        .style("opacity", 0)
+
+    exiting_legends.remove()
 
     high = vis.selectAll("g.high_point")
         .data([high_point])
