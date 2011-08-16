@@ -100,9 +100,13 @@ socket.on('bstat_counters', (new_data) ->
 calculate_scales = () ->
     all_data_objects = d3.merge(d3.values(counter_data))
     max = d3.max(all_data_objects, (d) -> d.value)
+    if max == 0
+        ymax = 10
+    else
+        ymax = max
     high_point = d3.first(all_data_objects.filter((e, i, a) -> e.value == max))
     x = d3.scale.linear().domain([d3.min(times), d3.max(times)]).range([0 + 2 * p, w - p])
-    y = d3.scale.linear().domain([0, max]).range([h - p, 0 + p])
+    y = d3.scale.linear().domain([0, ymax]).range([h - p, 0 + p])
 
 dateFormatter = d3.time.format("%H:%M:%S")
 formatDate = (timestamp) ->
