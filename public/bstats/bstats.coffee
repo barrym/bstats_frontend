@@ -20,8 +20,8 @@ getColor = (name) ->
     colors[name]
 
 
-w = 500
-h = 300
+w = 800
+h = 600
 p = 30
 durationTime = 500
 x = null
@@ -55,9 +55,9 @@ socket.on('bstat_counters', (new_data) ->
                 .enter()
                 .append("svg:rect")
                 .attr("x", w + 10)
-                .attr("y", (d, i) -> (i * 30))
-                .attr("height", 15)
-                .attr("width", 15)
+                .attr("y", (d, i) -> (i * 20))
+                .attr("height", 10)
+                .attr("width", 10)
                 .style("stroke", (d) -> getColor(d))
                 .style("fill", (d) -> getColor(d))
 
@@ -66,10 +66,10 @@ socket.on('bstat_counters', (new_data) ->
                 .enter()
                 .append("svg:text")
                 .attr("x", w + 10)
-                .attr("y", (d, i) -> (i * 30))
+                .attr("y", (d, i) -> (i * 20))
                 .attr("class", "legend")
                 .attr("dx", 20)
-                .attr("dy", 14)
+                .attr("dy", 8)
                 .text(String)
 
 
