@@ -73,10 +73,12 @@ socket.on('bstat_counters', (new_data) ->
 calculate_scales = () ->
     all_data_objects = d3.merge(d3.values(counter_data))
     max = d3.max(all_data_objects, (d) -> d.value)
+
     if max == 0
         ymax = 10
     else
         ymax = max
+
     high_point = d3.first(all_data_objects.filter((e, i, a) -> e.value == max))
     x = d3.scale.linear().domain([d3.min(times), d3.max(times)]).range([0 + 2 * p, w - p])
     y = d3.scale.linear().domain([0, ymax]).range([h - p, 0 + p])
@@ -98,74 +100,7 @@ path = d3.svg.line()
     .y((d) -> y(d.value))
     .interpolate("linear")
 
-# yrule = vis.selectAll("g.y")
-#     .data(y.ticks(yTickCount))
-#     .enter()
-#     .append("svg:g")
-#     .attr("class", "y")
-#
-# yrule.append("svg:line")
-#     .style("shape-rendering", "crispEdges")
-#     .attr("x1", p)
-#     .attr("y1", y)
-#     .attr("x2", w)
-#     .attr("y2", y)
-#
-# yrule.append("svg:text")
-#     .text(y.tickFormat(yTickCount))
-#     .attr("text-anchor", "end")
-#     .attr("x", p)
-#     .attr("y", y)
-#     .attr("dx", -5)
-#
-# xrule = vis.selectAll("g.x")
-#     .data(xrule_data, (d) -> d.time)
-#     .enter()
-#     .append("svg:g")
-#     .attr("class", "x")
-#
-# xrule.append("svg:line")
-#     .style("shape-rendering", "crispEdges")
-#     .attr("x1", (d) -> x(d.time))
-#     .attr("y1", h)
-#     .attr("x2", (d) -> x(d.time))
-#     .attr("y2", h-10)
-#
-# xrule.append("svg:text")
-#     .attr("x", (d) -> x(d.time))
-#     .attr("y", h)
-#     .text(String)
-#
-# high = vis.selectAll("g.high_point")
-#     .data([high_point])
-#     .enter()
-#     .append("svg:g")
-#     .attr("class","high_point")
-#
-# high.append("svg:circle")
-#     .attr("cx", (d) -> x(d.time))
-#     .attr("cy", (d) -> y(d.value))
-#     .attr("class", (d) -> d.counter)
-#     .attr("r", 4)
-#
-# high.append("svg:text")
-#     .attr("x", (d) -> x(d.time))
-#     .attr("y", (d) -> y(d.value))
-#     .attr("text-anchor", "middle")
-#     .attr("dy", -10)
-#     .text((d) -> d.value)
-#
-# vis.selectAll("path")
-#     .data(d3.values(counter_data))
-#     .enter()
-#     .append("svg:path")
-#     .attr("d", path)
-#     .attr("class", (d) -> d3.first(d).counter)
-#     .style("stroke", (d) -> getColor(d3.first(d).counter))
-
-
 redraw = () ->
-
     paths = vis.selectAll("path")
         .data(d3.values(counter_data), (d, i) -> i)
 
@@ -175,44 +110,27 @@ redraw = () ->
         .attr("class", (d) -> d3.first(d).counter)
         .style("stroke", (d) -> getColor(d3.first(d).counter))
 
-    yrule = vis.selectAll("g.y")
-        .data(y.ticks(yTickCount))
+    paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
+        .attr("d", path)
+        .transition()
+        .ease("linear")
+        .duration(durationTime)
+        .attr("transform", "translate(0)")
+
+    paths.exit()
+        .transition()
+        .duration(durationTime)
+        .style("opacity", 0)
+        .remove()
 
 
     xrule = vis.selectAll("g.x")
         .data(xrule_data, (d) -> d.time)
 
-
-    # NEW
-    newyrule = yrule.enter().append("svg:g")
-        .attr("class", "y")
-
-    newyrule.append("svg:line")
-        .attr("x1", p)
-        .attr("y1", 0)
-        .attr("x2", w)
-        .attr("y2", 0)
-        .transition()
-        .duration(durationTime)
-        .ease("bounce")
-        .attr("y1", y)
-        .attr("y2", y)
-
-    newyrule.append("svg:text")
-        .text(y.tickFormat(yTickCount))
-        .attr("text-anchor", "end")
-        .attr("dx", -5)
-        .attr("x", p)
-        .attr("y", 0)
-        .transition()
-        .duration(durationTime)
-        .ease("bounce")
-        .attr("y", y)
-
-    newxrule = xrule.enter().append("svg:g")
+    entering_xrule = xrule.enter().append("svg:g")
         .attr("class", "x")
 
-    newxrule.append("svg:line")
+    entering_xrule.append("svg:line")
         .style("shape-rendering", "crispEdges")
         .attr("x1", w + p)
         .attr("y1", h - p)
@@ -224,7 +142,7 @@ redraw = () ->
         .attr("x1", (d) -> x(d.time))
         .attr("x2", (d) -> x(d.time))
 
-    newxrule.append("svg:text")
+    entering_xrule.append("svg:text")
         .text((d) -> formatDate(d.time))
         .style("font-size", "14")
         .attr("text-anchor", "middle")
@@ -236,6 +154,97 @@ redraw = () ->
         .ease("bounce")
         .attr("x", (d) -> x(d.time))
 
+    xrule.select("line")
+        .transition()
+        .duration(durationTime)
+        .ease("linear")
+        .attr("x1", (d) -> x(d.time))
+        .attr("x2", (d) -> x(d.time))
+
+    xrule.select("text")
+        .transition()
+        .duration(durationTime)
+        .ease("linear")
+        .attr("x", (d) -> x(d.time))
+
+    exiting_xrule = xrule.exit()
+
+    exiting_xrule.select("line")
+            .transition()
+            .duration(durationTime)
+            .ease("linear")
+            .delay(durationTime * 0.8)
+            .style("opacity", 0)
+            .remove()
+
+    exiting_xrule.select("text")
+            .transition()
+            .duration(durationTime * 0.8)
+            .ease("linear")
+            .delay(durationTime)
+            .style("opacity", 0)
+            .remove()
+
+
+    yrule = vis.selectAll("g.y")
+        .data(y.ticks(yTickCount))
+
+    entering_yrule = yrule.enter().append("svg:g")
+        .attr("class", "y")
+
+    entering_yrule.append("svg:line")
+        .style("shape-rendering", "crispEdges")
+        .attr("x1", p)
+        .attr("y1", 0)
+        .attr("x2", w)
+        .attr("y2", 0)
+        .transition()
+        .duration(durationTime)
+        .ease("bounce")
+        .attr("y1", y)
+        .attr("y2", y)
+
+    entering_yrule.append("svg:text")
+        .text(y.tickFormat(yTickCount))
+        .attr("text-anchor", "end")
+        .attr("dx", -5)
+        .attr("x", p)
+        .attr("y", 0)
+        .transition()
+        .duration(durationTime)
+        .ease("bounce")
+        .attr("y", y)
+
+    yrule.select("text")
+        .transition()
+        .duration(durationTime)
+        .attr("y", y)
+        .text(y.tickFormat(yTickCount))
+
+    yrule.select("line")
+        .transition()
+        .duration(durationTime)
+        .attr("y1", y)
+        .attr("y2", y)
+
+    exiting_yrule = yrule.exit()
+
+    exiting_yrule.select("line")
+            .transition()
+            .duration(durationTime)
+            .ease("back")
+            .attr("y1", 0)
+            .attr("y2", 0)
+            .style("opacity", 0)
+            .remove()
+
+    exiting_yrule.select("text")
+            .transition()
+            .duration(durationTime)
+            .ease("back")
+            .attr("y", 0)
+            .style("opacity", 0)
+            .remove()
 
     legend_rects = vis.selectAll("rect.legend")
         .data(d3.keys(counter_data), (d,i) -> i)
@@ -260,7 +269,6 @@ redraw = () ->
         .style("opacity", 0)
         .remove()
 
-
     legend_texts = vis.selectAll("text.legend")
         .data(d3.keys(counter_data), (d, i) -> i)
 
@@ -282,82 +290,25 @@ redraw = () ->
         .style("opacity", 0)
         .remove()
 
-    # UPDATES
-    yrule.select("text")
-        .transition()
-        .duration(durationTime)
-        .attr("y", y)
-        .text(y.tickFormat(yTickCount))
-
-    yrule.select("line")
-        .transition()
-        .duration(durationTime)
-        .attr("y1", y)
-        .attr("y2", y)
-
-    xrule.select("line")
-        .transition()
-        .duration(durationTime)
-        .ease("linear")
-        .attr("x1", (d) -> x(d.time))
-        .attr("x2", (d) -> x(d.time))
-
-    xrule.select("text")
-        .transition()
-        .duration(durationTime)
-        .ease("linear")
-        .attr("x", (d) -> x(d.time))
-
-    # OLD
-    oldyrule = yrule.exit()
-
-    oldyrule.select("line")
-            .transition()
-            .duration(durationTime)
-            .ease("back")
-            .attr("y1", 0)
-            .attr("y2", 0)
-            .style("opacity", 0)
-            .remove()
-
-    oldyrule.select("text")
-            .transition()
-            .duration(durationTime)
-            .ease("back")
-            .attr("y", 0)
-            .style("opacity", 0)
-            .remove()
-
-    oldxrule = xrule.exit()
-
-    oldxrule.select("line")
-            .transition()
-            .duration(durationTime)
-            .ease("linear")
-            .delay(durationTime * 0.8)
-            .style("opacity", 0)
-            .remove()
-
-    oldxrule.select("text")
-            .transition()
-            .duration(durationTime * 0.8)
-            .ease("linear")
-            .delay(durationTime)
-            .style("opacity", 0)
-            .remove()
-
-    # UPDATE PATH
-    paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
-        .attr("d", path)
-        .transition()
-        .ease("linear")
-        .duration(durationTime)
-        .attr("transform", "translate(0)")
-
-    # UPDATE HIGH POINT
-
     high = vis.selectAll("g.high_point")
         .data([high_point])
+
+    entering_high = high.enter()
+        .append("svg:g")
+        .attr("class","high_point")
+
+    entering_high.append("svg:circle")
+        .attr("cx", (d) -> x(d.time))
+        .attr("cy", (d) -> y(d.value))
+        .attr("class", (d) -> d.counter)
+        .attr("r", 4)
+
+    entering_high.append("svg:text")
+        .attr("x", (d) -> x(d.time))
+        .attr("y", (d) -> y(d.value))
+        .attr("text-anchor", "middle")
+        .attr("dy", -10)
+        .text((d) -> d.value)
 
     high.select("circle")
         .attr("class", (d) -> d.counter)
@@ -375,8 +326,3 @@ redraw = () ->
         .attr("x", (d) -> x(d.time))
         .attr("y", (d) -> y(d.value))
 
-    paths.exit()
-        .transition()
-        .duration(durationTime)
-        .style("opacity", 0)
-        .remove()
