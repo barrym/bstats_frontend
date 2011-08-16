@@ -3,7 +3,7 @@ high_point = null
 xrule_data = []
 xrulePeriod = 10 # seconds
 
-counter_data = []
+counter_data = {} # {} or []?
 # Slight hack to initialise the array
 ['no_data'].map((counter) ->
     counter_data[counter] = d3.range(60).map((x) -> {counter:counter,time:x,value:1})
@@ -22,7 +22,7 @@ p = 30
 durationTime = 500
 x = null
 y = null
-yTickCount = 8
+yTickCount = 15
 
 times = d3.first(d3.values(counter_data)).map((d) -> d.time)
 
@@ -33,33 +33,11 @@ socket.on('connect', () ->
 )
 
 socket.on('bstat_counters', (new_data) ->
+    new_data_keys = []
     for data in new_data
         if !counter_data[data.counter]
+            # is this hacky?
             counter_data[data.counter] = d3.range(60).map((x) -> {counter:data.counter,time:x,value:1})
-
-            # Redraw, is this bad? Move to redraw() ?
-            vis.selectAll("rect.legend")
-                .data(d3.keys(counter_data))
-                .enter()
-                .append("svg:rect")
-                .attr("x", w + 10)
-                .attr("y", (d, i) -> (i * 20))
-                .attr("height", 10)
-                .attr("width", 10)
-                .style("stroke", (d) -> getColor(d))
-                .style("fill", (d) -> getColor(d))
-
-            vis.selectAll("text.legend")
-                .data(d3.keys(counter_data))
-                .enter()
-                .append("svg:text")
-                .attr("x", w + 10)
-                .attr("y", (d, i) -> (i * 20))
-                .attr("class", "legend")
-                .attr("dx", 20)
-                .attr("dy", 8)
-                .text(String)
-
 
         counter_data[data.counter].shift()
         counter_data[data.counter].push(
@@ -69,6 +47,13 @@ socket.on('bstat_counters', (new_data) ->
                 value:data.value
             }
         )
+        new_data_keys.push(data.counter)
+
+    keys = d3.keys(counter_data)
+    for key in keys
+        if new_data_keys.indexOf(key) == -1
+            console.log("Removing #{key}")
+            delete counter_data[key]
 
     latest_timestamp = d3.last(d3.first(d3.values(counter_data))).time
     times.push(latest_timestamp)
@@ -101,15 +86,6 @@ formatDate = (timestamp) ->
     date = new Date(timestamp * 1000)
     dateFormatter(date)
 
-$('#ytickcount_text_input').val(yTickCount)
-
-$('#ytickcount_text_input').change((e) ->
-    yTickCount = parseInt($('#ytickcount_text_input').val())
-)
-
-
-calculate_scales()
-
 vis = d3.select("#chart")
     .append("svg:svg")
     .attr("width", w + p * 6) # To make room for the labels
@@ -122,76 +98,76 @@ path = d3.svg.line()
     .y((d) -> y(d.value))
     .interpolate("linear")
 
-yrule = vis.selectAll("g.y")
-    .data(y.ticks(yTickCount))
-    .enter()
-    .append("svg:g")
-    .attr("class", "y")
-
-yrule.append("svg:line")
-    .style("shape-rendering", "crispEdges")
-    .attr("x1", p)
-    .attr("y1", y)
-    .attr("x2", w)
-    .attr("y2", y)
-
-yrule.append("svg:text")
-    .text(y.tickFormat(yTickCount))
-    .attr("text-anchor", "end")
-    .attr("x", p)
-    .attr("y", y)
-    .attr("dx", -5)
-
-xrule = vis.selectAll("g.x")
-    .data(xrule_data, (d) -> d.time)
-    .enter()
-    .append("svg:g")
-    .attr("class", "x")
-
-xrule.append("svg:line")
-    .style("shape-rendering", "crispEdges")
-    .attr("x1", (d) -> x(d.time))
-    .attr("y1", h)
-    .attr("x2", (d) -> x(d.time))
-    .attr("y2", h-10)
-
-xrule.append("svg:text")
-    .attr("x", (d) -> x(d.time))
-    .attr("y", h)
-    .text(String)
-
-high = vis.selectAll("g.high_point")
-    .data([high_point])
-    .enter()
-    .append("svg:g")
-    .attr("class","high_point")
-
-high.append("svg:circle")
-    .attr("cx", (d) -> x(d.time))
-    .attr("cy", (d) -> y(d.value))
-    .attr("class", (d) -> d.counter)
-    .attr("r", 4)
-
-high.append("svg:text")
-    .attr("x", (d) -> x(d.time))
-    .attr("y", (d) -> y(d.value))
-    .attr("text-anchor", "middle")
-    .attr("dy", -10)
-    .text((d) -> d.value)
-
-vis.selectAll("path")
-    .data(d3.values(counter_data))
-    .enter()
-    .append("svg:path")
-    .attr("d", path)
-    .attr("class", (d) -> d3.first(d).counter)
-    .style("stroke", (d) -> getColor(d3.first(d).counter))
+# yrule = vis.selectAll("g.y")
+#     .data(y.ticks(yTickCount))
+#     .enter()
+#     .append("svg:g")
+#     .attr("class", "y")
+#
+# yrule.append("svg:line")
+#     .style("shape-rendering", "crispEdges")
+#     .attr("x1", p)
+#     .attr("y1", y)
+#     .attr("x2", w)
+#     .attr("y2", y)
+#
+# yrule.append("svg:text")
+#     .text(y.tickFormat(yTickCount))
+#     .attr("text-anchor", "end")
+#     .attr("x", p)
+#     .attr("y", y)
+#     .attr("dx", -5)
+#
+# xrule = vis.selectAll("g.x")
+#     .data(xrule_data, (d) -> d.time)
+#     .enter()
+#     .append("svg:g")
+#     .attr("class", "x")
+#
+# xrule.append("svg:line")
+#     .style("shape-rendering", "crispEdges")
+#     .attr("x1", (d) -> x(d.time))
+#     .attr("y1", h)
+#     .attr("x2", (d) -> x(d.time))
+#     .attr("y2", h-10)
+#
+# xrule.append("svg:text")
+#     .attr("x", (d) -> x(d.time))
+#     .attr("y", h)
+#     .text(String)
+#
+# high = vis.selectAll("g.high_point")
+#     .data([high_point])
+#     .enter()
+#     .append("svg:g")
+#     .attr("class","high_point")
+#
+# high.append("svg:circle")
+#     .attr("cx", (d) -> x(d.time))
+#     .attr("cy", (d) -> y(d.value))
+#     .attr("class", (d) -> d.counter)
+#     .attr("r", 4)
+#
+# high.append("svg:text")
+#     .attr("x", (d) -> x(d.time))
+#     .attr("y", (d) -> y(d.value))
+#     .attr("text-anchor", "middle")
+#     .attr("dy", -10)
+#     .text((d) -> d.value)
+#
+# vis.selectAll("path")
+#     .data(d3.values(counter_data))
+#     .enter()
+#     .append("svg:path")
+#     .attr("d", path)
+#     .attr("class", (d) -> d3.first(d).counter)
+#     .style("stroke", (d) -> getColor(d3.first(d).counter))
 
 
 redraw = () ->
 
     paths = vis.selectAll("path")
-        .data(d3.values(counter_data))
+        .data(d3.values(counter_data), (d, i) -> i)
 
     paths.enter()
         .append("svg:path")
@@ -259,6 +235,52 @@ redraw = () ->
         .duration(durationTime)
         .ease("bounce")
         .attr("x", (d) -> x(d.time))
+
+
+    legend_rects = vis.selectAll("rect.legend")
+        .data(d3.keys(counter_data), (d,i) -> i)
+
+    legend_rects.enter()
+        .append("svg:rect")
+        .attr("class", "legend")
+        .attr("x", w + 10)
+        .attr("y", (d, i) -> (i * 20))
+        .attr("height", 10)
+        .attr("width", 10)
+        .style("stroke", (d) -> getColor(d))
+        .style("fill", (d) -> getColor(d))
+
+    legend_rects
+        .style("stroke", (d) -> getColor(d))
+        .style("fill", (d) -> getColor(d))
+
+    legend_rects.exit()
+        .transition()
+        .duration(durationTime)
+        .style("opacity", 0)
+        .remove()
+
+
+    legend_texts = vis.selectAll("text.legend")
+        .data(d3.keys(counter_data), (d, i) -> i)
+
+    legend_texts.enter()
+        .append("svg:text")
+        .attr("x", w + 10)
+        .attr("y", (d, i) -> (i * 20))
+        .attr("class", "legend")
+        .attr("dx", 20)
+        .attr("dy", 8)
+        .text(String)
+
+    legend_texts
+        .text(String)
+
+    legend_texts.exit()
+        .transition()
+        .duration(durationTime)
+        .style("opacity", 0)
+        .remove()
 
     # UPDATES
     yrule.select("text")
@@ -354,7 +376,6 @@ redraw = () ->
         .attr("y", (d) -> y(d.value))
 
     paths.exit()
-        .append("svg:path")
         .transition()
         .duration(durationTime)
         .style("opacity", 0)
