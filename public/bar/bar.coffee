@@ -16,16 +16,16 @@ y = null
 durationTime = 500
 textRotation = 0
 
-socket = io.connect('http://localhost:8888/totals')
+totals_socket = io.connect('http://localhost:8888/totals')
 
-socket.on('connect', () ->
-    console.log("connected")
+totals_socket.on('connect', () ->
+    console.log("totals socket connected")
 )
 
 # counter_data.push({counter:"create_service", value:"3"})
 # counter_data.push({counter:"create_organisation", value:"5"})
 
-socket.on('bstat_counter_totals', (new_data) ->
+totals_socket.on('bstat_counter_totals', (new_data) ->
     for data in new_data
         break if data.counter == "no_data"
         elements = counter_data.filter((e, i, a) -> e.counter == data.counter)
