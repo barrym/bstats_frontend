@@ -59,13 +59,13 @@ totals_sockets = io.of('/totals').on('connection', (socket) ->
 
 per_second_sockets = io.of('/per_second').on('connection', (socket) ->
     console.log("per second client connected")
-    init_data()
+    init_per_second_data(socket)
 )
 
 setInterval(
     () ->
         now = timestamp() - offset
-        sendData(now)
+        send_per_second_data(now, per_second_sockets)
         send_totals_data(totals_sockets)
 , 1000)
 
@@ -77,11 +77,8 @@ perform_on_all_counters = (fun) ->
     )
 
 # TODO: add a socket arg, otherwise all clients reinit when one refreshes
-sendData = (now) ->
-    redisClient.smembers("bstats:counters", (err, counters) ->
-        counters = counters ?= []
-
-        # per seconds
+send_per_second_data = (now, sockets) ->
+    perform_on_all_counters((counters) ->
         keys = counters.map((counter) -> "bstats:#{counter}:#{now}")
 
         redisClient.mget(keys, (err, res) ->
@@ -101,12 +98,11 @@ sendData = (now) ->
                 }
             )
 
-            per_second_sockets.emit('bstat_counters', message)
+            sockets.emit('bstat_counters', message)
         )
-
     )
 
-send_totals_data = (socket) ->
+send_totals_data = (sockets) ->
     perform_on_all_counters((counters) ->
         keys = counters.map((counter) -> "bstats:#{counter}:total")
 
@@ -125,19 +121,16 @@ send_totals_data = (socket) ->
                 }
             )
 
-            socket.emit('bstat_counter_totals', message)
+            sockets.emit('bstat_counter_totals', message)
         )
     )
 
-init_data = () ->
+init_per_second_data = (socket) ->
     now = timestamp() - offset
-    sendData t for t in [(now - 60)..now]
+    send_per_second_data(t, socket) for t in [(now - 60)..now]
 
 init_totals_data = (socket) ->
     send_totals_data(socket)
-    perform_on_all_counters((counters) ->
-        console.log("got these : #{counters}")
-    )
 
 timestamp = () ->
     Math.round(new Date().getTime() / 1000)
