@@ -42,6 +42,7 @@ httpServer.listen('8888')
 io           = io.listen(httpServer)
 redis        = require('redis')
 redisClient  = redis.createClient()
+offset = 2
 connected_sockets = []
 
 io.sockets.on('connection', (socket) ->
@@ -52,14 +53,17 @@ io.sockets.on('connection', (socket) ->
 
 setInterval(
     () ->
-        now = timestamp() - 5
+        now = timestamp() - offset
         sendData(now)
 , 1000)
 
 
+# TODO: add a socket arg, otherwise all clients reinit when one refreshes
 sendData = (now) ->
     redisClient.smembers("bstats:counters", (err, counters) ->
         counters = counters ?= []
+
+        # per seconds
         keys = counters.map((counter) -> "bstats:#{counter}:#{now}")
 
         redisClient.mget(keys, (err, res) ->
@@ -82,10 +86,32 @@ sendData = (now) ->
             for socket in connected_sockets
                 socket.emit('bstat_counters', message)
         )
+
+        # totals
+        keys = counters.map((counter) -> "bstats:#{counter}:total")
+
+        redisClient.mget(keys, (err, res) ->
+            message = counters.map((counter, i) ->
+                {
+                    counter  : counter,
+                    value    : parseInt(res[i]) || 0
+                }
+            )
+
+            message.push(
+                {
+                    counter  : "no_data",
+                    value    : 0
+                }
+            )
+
+            for socket in connected_sockets
+                socket.emit('bstat_counter_totals', message)
+        )
     )
 
 init_data = () ->
-    now = timestamp() - 5
+    now = timestamp() - offset
     sendData t for t in [(now - 60)..now]
 
 timestamp = () ->
