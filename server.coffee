@@ -1,48 +1,11 @@
-http = require('http')
-io   = require('socket.io')
-url  = require('url')
-path = require('path')
-mime = require('mime')
-fs   = require('fs')
-qs   = require('querystring')
+express = require('express')
+app     = express.createServer()
+app.use(express.static("#{__dirname }/public"))
+app.listen(8888)
 
-# SERVE PAGES
-httpServer = http.createServer((request, response) ->
-    pathname = url.parse(request.url).pathname;
-    filename = null
-    if pathname == "/"
-        filename = "public/index.html"
-    else
-        filename = path.join(process.cwd(), 'public', pathname)
-
-    path.exists(filename, (exists) ->
-        if(!exists)
-            response.writeHead(404, {'Content-Type':'text/plain'})
-            response.write("404 not found")
-            response.end()
-            return
-
-        response.writeHead(200, {'Content-Type':mime.lookup(filename)})
-        fs.createReadStream(filename, {
-            'flags':'r',
-            'encoding':'binary',
-            'mode':'0666',
-            'bufferSize':4 * 1024
-        }).addListener('data', (chunk) ->
-            response.write(chunk, 'binary')
-        ).addListener('close', () ->
-            response.end()
-        )
-    )
-)
-
-httpServer.listen('8888')
-
-# SOCKET.IO DATA PUSHES
-io           = io.listen(httpServer)
-redis        = require('redis')
-redisClient  = redis.createClient()
-offset = 2
+io                = require('socket.io').listen(app)
+redis             = require('redis').createClient()
+offset            = 2
 connected_sockets = []
 
 
@@ -71,7 +34,7 @@ setInterval(
 
 
 perform_on_all_counters = (fun) ->
-    redisClient.smembers("bstats:counters", (err, counters) ->
+    redis.smembers("bstats:counters", (err, counters) ->
         counters = counters ?= []
         fun(counters)
     )
@@ -80,7 +43,7 @@ send_per_second_data = (sockets, now) ->
     perform_on_all_counters((counters) ->
         keys = counters.map((counter) -> "bstats:#{counter}:#{now}")
 
-        redisClient.mget(keys, (err, res) ->
+        redis.mget(keys, (err, res) ->
             message = counters.map((counter, i) ->
                 {
                     counter  : counter,
@@ -105,7 +68,7 @@ send_totals_data = (sockets) ->
     perform_on_all_counters((counters) ->
         keys = counters.map((counter) -> "bstats:#{counter}:total")
 
-        redisClient.mget(keys, (err, res) ->
+        redis.mget(keys, (err, res) ->
             message = counters.map((counter, i) ->
                 {
                     counter  : counter,
