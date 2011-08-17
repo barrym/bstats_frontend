@@ -65,7 +65,7 @@ per_second_sockets = io.of('/per_second').on('connection', (socket) ->
 setInterval(
     () ->
         now = timestamp() - offset
-        send_per_second_data(now, per_second_sockets)
+        send_per_second_data(per_second_sockets, now)
         send_totals_data(totals_sockets)
 , 1000)
 
@@ -76,8 +76,7 @@ perform_on_all_counters = (fun) ->
         fun(counters)
     )
 
-# TODO: add a socket arg, otherwise all clients reinit when one refreshes
-send_per_second_data = (now, sockets) ->
+send_per_second_data = (sockets, now) ->
     perform_on_all_counters((counters) ->
         keys = counters.map((counter) -> "bstats:#{counter}:#{now}")
 
@@ -127,7 +126,7 @@ send_totals_data = (sockets) ->
 
 init_per_second_data = (socket) ->
     now = timestamp() - offset
-    send_per_second_data(t, socket) for t in [(now - 60)..now]
+    send_per_second_data(socket, t) for t in [(now - 60)..now]
 
 init_totals_data = (socket) ->
     send_totals_data(socket)
