@@ -26,7 +26,7 @@ yTickCount = 15
 
 times = d3.first(d3.values(counter_data)).map((d) -> d.time)
 
-socket = io.connect('http://localhost:8888')
+socket = io.connect('http://localhost:8888/per_second')
 
 socket.on('connect', () ->
     console.log("connected")

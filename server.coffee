@@ -45,9 +45,20 @@ redisClient  = redis.createClient()
 offset = 2
 connected_sockets = []
 
+
 io.sockets.on('connection', (socket) ->
-    console.log("client connected")
+    console.log("socket client connected")
     connected_sockets.push(socket)
+)
+
+totals_sockets = io.of('/totals').on('connection', (socket) ->
+    console.log("totals client connected")
+    init_data()
+)
+
+
+per_second_sockets = io.of('/per_second').on('connection', (socket) ->
+    console.log("per second client connected")
     init_data()
 )
 
@@ -83,8 +94,7 @@ sendData = (now) ->
                 }
             )
 
-            for socket in connected_sockets
-                socket.emit('bstat_counters', message)
+            per_second_sockets.emit('bstat_counters', message)
         )
 
         # totals
@@ -105,8 +115,7 @@ sendData = (now) ->
                 }
             )
 
-            for socket in connected_sockets
-                socket.emit('bstat_counter_totals', message)
+            totals_sockets.emit('bstat_counter_totals', message)
         )
     )
 
