@@ -11,7 +11,7 @@ a {
 
 div {
     float: left;
-    clear:both;
+    border:1px solid;
 }
 
 div#chart {

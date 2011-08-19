@@ -1,12 +1,13 @@
 count = 0
 high_point = null
 xrule_data = []
-xrulePeriod = 10 # seconds
+xrulePeriod = 60 # seconds
+data_points = 300
 
 counter_data = [] # {} or []?
 # Slight hack to initialise the array
 ['no_data'].map((counter) ->
-    counter_data[counter] = d3.range(60).map((x) -> {counter:counter,time:x,value:1})
+    counter_data[counter] = d3.range(data_points).map((x) -> {counter:counter,time:x,value:1})
 )
 
 colors = []
@@ -16,8 +17,8 @@ getColor = (name) ->
     colors[name]
 
 
-w = 800
-h = 600
+w = 610
+h = 380
 p = 30
 durationTime = 500
 x = null
@@ -26,7 +27,7 @@ yTickCount = 15
 
 times = d3.first(d3.values(counter_data)).map((d) -> d.time)
 
-socket = io.connect('http://localhost:8888/per_second')
+socket = io.connect("http://localhost:8888/per_second")
 
 socket.on('connect', () ->
     console.log("connected")
@@ -37,7 +38,7 @@ socket.on('bstat_counters', (new_data) ->
     for data in new_data
         if !counter_data[data.counter]
             # is this hacky?
-            counter_data[data.counter] = d3.range(60).map((x) -> {counter:data.counter,time:x,value:1})
+            counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter,time:x,value:1})
 
         counter_data[data.counter].shift()
         counter_data[data.counter].push(
@@ -62,7 +63,7 @@ socket.on('bstat_counters', (new_data) ->
     count++
     if count == xrulePeriod
         xrule_data.push({time:latest_timestamp})
-        if xrule_data.length == (60/xrulePeriod) + 1 # On first load it might not have 3 elements
+        if xrule_data.length == (data_points/xrulePeriod) + 1 # On first load it might not have 3 elements
             xrule_data.shift()
         count = 0
 
@@ -88,10 +89,10 @@ formatDate = (timestamp) ->
     date = new Date(timestamp * 1000)
     dateFormatter(date)
 
-vis = d3.select("#chart")
+vis = d3.select("#per_second")
     .append("svg:svg")
-    .attr("width", w + p * 6) # To make room for the labels
-    .attr("height", h + p * 2)
+    .attr("width", w + p) # To make room for the labels
+    .attr("height", h + p)
     .append("svg:g")
     .attr("transform", "translate(#{p}, #{p})")
 

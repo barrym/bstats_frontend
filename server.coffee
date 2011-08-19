@@ -22,7 +22,7 @@ totals_sockets = io.of('/totals').on('connection', (socket) ->
 
 per_second_sockets = io.of('/per_second').on('connection', (socket) ->
     console.log("per second client connected")
-    init_per_second_data(socket)
+    init_per_second_data(socket, 300)
 )
 
 setInterval(
@@ -41,7 +41,7 @@ perform_on_all_counters = (fun) ->
 
 send_per_second_data = (sockets, now) ->
     perform_on_all_counters((counters) ->
-        keys = counters.map((counter) -> "bstats:#{counter}:#{now}")
+        keys = counters.map((counter) -> "bstats:counter:#{counter}:#{now}")
 
         redis.mget(keys, (err, res) ->
             message = counters.map((counter, i) ->
@@ -66,7 +66,7 @@ send_per_second_data = (sockets, now) ->
 
 send_totals_data = (sockets) ->
     perform_on_all_counters((counters) ->
-        keys = counters.map((counter) -> "bstats:#{counter}:total")
+        keys = counters.map((counter) -> "bstats:counter:#{counter}:total")
 
         redis.mget(keys, (err, res) ->
             message = counters.map((counter, i) ->
@@ -87,9 +87,9 @@ send_totals_data = (sockets) ->
         )
     )
 
-init_per_second_data = (socket) ->
+init_per_second_data = (socket, data_points) ->
     now = timestamp() - offset
-    send_per_second_data(socket, t) for t in [(now - 60)..now]
+    send_per_second_data(socket, t) for t in [(now - data_points)..now]
 
 init_totals_data = (socket) ->
     send_totals_data(socket)

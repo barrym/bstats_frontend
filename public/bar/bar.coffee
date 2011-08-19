@@ -8,8 +8,8 @@ getColor = (name) ->
     colors[name]
 
 
-w = 1000
-h = 600
+w = 610
+h = 380
 p = 30
 x = null
 y = null
@@ -67,7 +67,7 @@ formatDate = (timestamp) ->
     date = new Date(timestamp * 1000)
     dateFormatter(date)
 
-vis = d3.select("#chart")
+vis = d3.select("#bar")
     .append("svg:svg")
     .attr("width", w + p)
     .attr("height", h + p)
