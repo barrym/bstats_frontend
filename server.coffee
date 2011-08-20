@@ -20,8 +20,13 @@ per_second_sockets = io.of('/per_second').on('connection', (socket) ->
 setInterval(
     () ->
         now = timestamp() - offset
-        send_counter_objects(per_second_sockets, [now])
+        # send_counter_objects(per_second_sockets, [now])
 , 1000)
+
+setInterval(
+    () ->
+        console.log(minute_timestamp())
+, 60000)
 
 # --------------- PER SECOND ------------------ #
 #
@@ -75,3 +80,13 @@ send_data = (sockets, channel, data) ->
 
 timestamp = () ->
     Math.round(new Date().getTime() / 1000)
+
+minute_timestamp = () ->
+    date = new Date()
+    "#{date.getFullYear()}#{zero_pad(date.getMonth() + 1)}#{zero_pad(date.getDate())}#{zero_pad(date.getHours())}#{zero_pad(date.getMinutes())}"
+
+zero_pad = (number) ->
+    if number.toString().length == 2
+        number
+    else
+        '0' + number
