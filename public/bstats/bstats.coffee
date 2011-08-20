@@ -6,7 +6,7 @@ data_points = 300
 
 counter_data = [] # {} or []?
 # Slight hack to initialise the array
-['no_data'].map((counter) ->
+['heartbeat'].map((counter) ->
     counter_data[counter] = d3.range(data_points).map((x) -> {counter:counter,time:x,value:1})
 )
 

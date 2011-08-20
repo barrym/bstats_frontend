@@ -20,7 +20,7 @@ per_second_sockets = io.of('/per_second').on('connection', (socket) ->
 setInterval(
     () ->
         now = timestamp() - offset
-        send_per_second_data(per_second_sockets, [now])
+        send_counter_data(per_second_sockets, [now])
 , 1000)
 
 # --------------- PER SECOND ------------------ #
@@ -28,23 +28,22 @@ setInterval(
 init_per_second_data = (sockets, data_points) ->
     now = timestamp() - offset
     timestamps = [(now - data_points)...now]
-    send_per_second_data(sockets, timestamps)
+    send_counter_data(sockets, timestamps)
 
-send_per_second_data = (sockets, timestamps) ->
-    async.map(timestamps, get_per_second_data_for_timestamp, (err, results) ->
+send_counter_data = (sockets, timestamps) ->
+    async.map(timestamps, get_counter_data_for_timestamp, (err, results) ->
         flattened_results = results.reduce((a, b) ->
             a.concat(b)
         )
         send_data(sockets, 'bstat_counters', flattened_results)
     )
-    console.log("done")
 
-get_per_second_data_for_timestamp = (timestamp, callback) ->
+get_counter_data_for_timestamp = (timestamp, callback) ->
     perform_on_all_counters((counters) ->
         keys = counters.map((counter) -> "bstats:counter:#{counter}:#{timestamp}")
 
         redis.mget(keys, (err, res) ->
-            message = counters.map((counter, i) ->
+            objects = counters.map((counter, i) ->
                 {
                     counter  : counter,
                     time     : timestamp,
@@ -52,23 +51,23 @@ get_per_second_data_for_timestamp = (timestamp, callback) ->
                 }
             )
 
-            message.push(
+            objects.push(
                 {
-                    counter  : "no_data",
+                    counter  : "heartbeat",
                     time     : timestamp,
                     value    : 0
                 }
             )
-            callback(null, message)
+            callback(err, objects)
         )
     )
 
 # ----------------------- INTERNAL ------------------------
 
-perform_on_all_counters = (fun) ->
+perform_on_all_counters = (callback) ->
     redis.smembers("bstats:counters", (err, counters) ->
         counters = counters ?= []
-        fun(counters)
+        callback(counters)
     )
 
 send_data = (sockets, channel, message) ->
