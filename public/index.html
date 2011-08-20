@@ -1,12 +1,16 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Graphs</title>
-    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
-  </head>
-  <body>
-    <div class="large">
-      <a href="/bstats/bstats.html">per second line graph</a><br/>
-      <a href="/bar/bar.html">bar chart</a><br/>
-    </div>
-  </body>
+    <body>
+        <div id="per_second">
+        </div>
+    </body>
+    <head>
+        <title>bstats</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js""></script>
+        <script type="text/javascript" src="/d3/d3.js"></script>
+        <script type="text/javascript" src="/d3/d3.time.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="/bstats/bstats.js"></script>
+        <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
+    </head>
 </html>

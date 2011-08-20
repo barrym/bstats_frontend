@@ -52,7 +52,7 @@ send_counter_objects = (sockets, timestamps, counters) ->
         flattened_results = results.reduce((a, b) ->
             a.concat(b)
         )
-        send_data(sockets, 'bstat_counters', flattened_results)
+        send_data(sockets, 'bstat_counters', flattened_results) unless flattened_results.length == 0
     )
 
 get_counter_objects = (params, callback) ->
