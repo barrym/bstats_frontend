@@ -35,6 +35,7 @@ socket.on('connect', () ->
 
 socket.on('bstat_counters', (new_data) ->
     new_data_keys = []
+    new_timestamps = {}
     for data in new_data
         if !counter_data[data.counter]
             # is this hacky?
@@ -49,6 +50,7 @@ socket.on('bstat_counters', (new_data) ->
             }
         )
         new_data_keys.push(data.counter)
+        new_timestamps[data.time] = data.time
 
     keys = d3.keys(counter_data)
     for key in keys
@@ -56,16 +58,16 @@ socket.on('bstat_counters', (new_data) ->
             console.log("Removing #{key}")
             delete counter_data[key]
 
-    latest_timestamp = d3.last(d3.first(d3.values(counter_data))).time
-    times.push(latest_timestamp)
-    times.shift()
-
-    count++
-    if count == xrulePeriod
-        xrule_data.push({time:latest_timestamp})
-        if xrule_data.length == (data_points/xrulePeriod) + 1 # On first load it might not have 3 elements
-            xrule_data.shift()
-        count = 0
+    d3.keys(new_timestamps).map((timestamp) ->
+        times.push(timestamp)
+        times.shift()
+        count++
+        if count == xrulePeriod
+            xrule_data.push({time:timestamp})
+            if xrule_data.length == (data_points/xrulePeriod) + 1 # On first load it might not have 3 elements
+                xrule_data.shift()
+            count = 0
+    )
 
     calculate_scales()
     redraw()
