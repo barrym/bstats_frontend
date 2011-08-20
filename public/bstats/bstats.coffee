@@ -3,29 +3,21 @@ high_point = null
 xrule_data = []
 xrulePeriod = 60 # seconds
 data_points = 300
-
 counter_data = [] # {} or []?
-# Slight hack to initialise the array
-['heartbeat'].map((counter) ->
-    counter_data[counter] = d3.range(data_points).map((x) -> {counter:counter,time:x,value:1})
-)
+w = 610
+h = 380
+p = 30
+x = null
+y = null
+durationTime = 500
+yTickCount = 15
+times = []
 
 colors = []
 getColor = (name) ->
     if !colors[name]
         colors[name] = Math.floor(Math.random()*16777215).toString(16)
     colors[name]
-
-
-w = 610
-h = 380
-p = 30
-durationTime = 500
-x = null
-y = null
-yTickCount = 15
-
-times = d3.first(d3.values(counter_data)).map((d) -> d.time)
 
 socket = io.connect("http://localhost:8888/per_second")
 
@@ -38,8 +30,9 @@ socket.on('bstat_counters', (new_data) ->
     new_timestamps = {}
     for data in new_data
         if !counter_data[data.counter]
+            # populate whole dummy data for new variables
             # is this hacky?
-            counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter,time:x,value:1})
+            counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter,time:x,value:0})
 
         counter_data[data.counter].shift()
         counter_data[data.counter].push(
@@ -60,7 +53,8 @@ socket.on('bstat_counters', (new_data) ->
 
     d3.keys(new_timestamps).map((timestamp) ->
         times.push(timestamp)
-        times.shift()
+
+        times.shift() if times.length > data_points
         count++
         if count == xrulePeriod
             xrule_data.push({time:timestamp})

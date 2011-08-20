@@ -55,27 +55,18 @@ send_counter_objects = (sockets, timestamps, counters) ->
         send_data(sockets, 'bstat_counters', flattened_results)
     )
 
-get_counter_objects = (timestamps_and_counters, callback) ->
-    timestamp = timestamps_and_counters.timestamp
-    counters = timestamps_and_counters.counters
-    keys = counters.map((counter) -> "bstats:counter:#{counter}:#{timestamp}")
+get_counter_objects = (params, callback) ->
+    keys = params.counters.map((counter) -> "bstats:counter:#{counter}:#{params.timestamp}")
 
     redis.mget(keys, (err, res) ->
-        objects = counters.map((counter, i) ->
+        objects = params.counters.map((counter, i) ->
             {
                 counter  : counter,
-                time     : timestamp,
+                time     : params.timestamp,
                 value    : parseInt(res[i]) || 0
             }
         )
 
-        objects.push(
-            {
-                counter  : "heartbeat",
-                time     : timestamp,
-                value    : 0
-            }
-        )
         callback(err, objects)
     )
 
