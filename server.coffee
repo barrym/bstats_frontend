@@ -1,11 +1,12 @@
+config  = require('config')
 async   = require('async')
 express = require('express')
 app     = express.createServer()
 app.use(express.static("#{__dirname }/public"))
-app.listen(8888)
+app.listen(config.listen_port)
 
 io                = require('socket.io').listen(app)
-redis             = require('redis').createClient()
+redis             = require('redis').createClient(config.redis_port, config.redis_server, {})
 offset            = 2
 
 connected_sockets = io.sockets.on('connection', (socket) ->
@@ -20,7 +21,7 @@ per_second_sockets = io.of('/per_second').on('connection', (socket) ->
 setInterval(
     () ->
         now = timestamp() - offset
-        # send_counter_objects(per_second_sockets, [now])
+        send_counter_objects(per_second_sockets, [now])
 , 1000)
 
 setInterval(

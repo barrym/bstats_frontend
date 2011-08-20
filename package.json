@@ -5,6 +5,7 @@
         "socket.io":"",
         "redis":"",
         "express":"",
-        "async":""
+        "async":"",
+        "config":""
     }
 }
