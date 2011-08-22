@@ -98,7 +98,7 @@ vis.append("svg:text")
     .attr("x", p)
     .attr("y", h - 10)
     .attr("class", "title")
-    .text("foo")
+    .text("Per second for the last 5 minutes")
 
 path = d3.svg.line()
     .x((d, i) -> x(d.time))
