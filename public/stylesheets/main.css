@@ -29,13 +29,21 @@ div#chart {
     font-size: 10px;
 }
 
+.foo {
+    stroke: blue;
+}
+
+.bar {
+    stroke: red;
+}
+
 label {
     width: 100px;
     border; 1px solid red;
 }
 
 svg {
-    border: 1px solid red;
+   border: 1px solid red;
 }
 
 text {
@@ -44,12 +52,6 @@ text {
     stroke: black;
     stroke-width:0px;
 }
-
-/* .chart { */
-/*     fill: steelblue; */
-/*     stroke: white; */
-/*     margin: 20px; */
-/* } */
 
 line {
     stroke: #bbb;

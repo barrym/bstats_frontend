@@ -1,18 +1,16 @@
 count = 0
-high_point = null
+high_point = []
 xrule_data = []
 xrulePeriod = 60 # seconds
 data_points = 300
 counter_data = [] # {} or []?
-# w = 650
-w = $(window).width()/2
-# h = 380
-h = $(window).height()/2
 p = 55
+w = ($(window).width() - 20)/2
+h = $(window).height()/2
 x = null
 y = null
 durationTime = 500
-yTickCount = 15
+yTickCount = 10
 times = []
 
 colors = []
@@ -78,7 +76,9 @@ calculate_scales = () ->
     else
         ymax = max
 
-    high_point = d3.first(all_data_objects.filter((e, i, a) -> e.value == max))
+    high_point.shift()
+    highest_current_point = d3.first(all_data_objects.filter((e, i, a) -> e.value == max))
+    high_point.push(highest_current_point) unless max == 0
     x = d3.scale.linear().domain([d3.min(times), d3.max(times)]).range([0 + p, w - p])
     y = d3.scale.linear().domain([0, ymax]).range([h - p, 0 + p])
 
@@ -87,12 +87,11 @@ formatDate = (timestamp) ->
     date = new Date(timestamp * 1000)
     dateFormatter(date)
 
-vis = d3.select("#per_second")
+vis = d3.selectAll(".per_second")
     .append("svg:svg")
     .attr("width", w)
     .attr("height", h)
     .append("svg:g")
-    # .attr("transform", "translate(#{p}, #{p})")
 
 vis.append("svg:text")
     .attr("x", p)
@@ -113,7 +112,6 @@ redraw = () ->
         .append("svg:path")
         .attr("d", path)
         .attr("class", (d) -> d3.first(d).counter)
-        .style("stroke", (d) -> getColor(d3.first(d).counter))
 
     paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
         .attr("d", path)
@@ -292,7 +290,7 @@ redraw = () ->
     exiting_legends.remove()
 
     high = vis.selectAll("g.high_point")
-        .data([high_point])
+        .data(high_point, (d) -> d.value)
 
     entering_high = high.enter()
         .append("svg:g")
@@ -309,7 +307,7 @@ redraw = () ->
         .attr("y", (d) -> y(d.value))
         .attr("text-anchor", "middle")
         .attr("dy", -10)
-        .text((d) -> d.value)
+        .text((d) -> "#{d.value} - #{d.counter}")
 
     high.select("circle")
         .attr("class", (d) -> d.counter)
@@ -320,9 +318,11 @@ redraw = () ->
         .attr("cy", (d) -> y(d.value))
 
     high.select("text")
-        .text((d) -> "#{d.value} - #{d.counter}")
         .transition()
         .duration(durationTime)
         .ease("linear")
         .attr("x", (d) -> x(d.time))
         .attr("y", (d) -> y(d.value))
+
+    exiting_high = high.exit()
+    exiting_high.remove()
