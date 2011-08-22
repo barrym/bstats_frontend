@@ -1,10 +1,10 @@
 count = 0
 high_point = []
 xrule_data = []
-xrulePeriod = 60 # seconds
-data_points = 300
+xrulePeriod = 10 # minutes
+data_points = 60
 counter_data = [] # {} or []?
-p = 55
+p = 75
 w = ($(window).width() - 20)/2
 h = $(window).height()/2
 x = null
@@ -19,13 +19,13 @@ getColor = (name) ->
         colors[name] = Math.floor(Math.random()*16777215).toString(16)
     colors[name]
 
-socket = io.connect("http://localhost:8888/bstats_counters_per_second")
+socket = io.connect("http://localhost:8888/bstats_counters_per_minute")
 
 socket.on('connect', () ->
     console.log("connected")
 )
 
-socket.on('bstats_counters_per_second', (new_data) ->
+socket.on('bstats_counters_per_minute', (new_data) ->
     new_data_keys = []
     new_timestamps = {}
     for data in new_data
@@ -87,7 +87,7 @@ formatDate = (timestamp) ->
     date = new Date(timestamp * 1000)
     dateFormatter(date)
 
-vis = d3.select("#per_second")
+vis = d3.select("#per_minute")
     .append("svg:svg")
     .attr("width", w)
     .attr("height", h)
@@ -97,7 +97,7 @@ vis.append("svg:text")
     .attr("x", p)
     .attr("y", h - 10)
     .attr("class", "title")
-    .text("Per second for the last 5 minutes")
+    .text("Per minute for the last hour")
 
 path = d3.svg.line()
     .x((d, i) -> x(d.time))
@@ -116,7 +116,7 @@ redraw = () ->
     paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
         .attr("d", path)
         .transition()
-        .ease("linear")
+        .ease("bounce")
         .duration(durationTime)
         .attr("transform", "translate(0)")
 
@@ -159,14 +159,14 @@ redraw = () ->
     xrule.select("line")
         .transition()
         .duration(durationTime)
-        .ease("linear")
+        .ease("bounce")
         .attr("x1", (d) -> x(d.time))
         .attr("x2", (d) -> x(d.time))
 
     xrule.select("text")
         .transition()
         .duration(durationTime)
-        .ease("linear")
+        .ease("bounce")
         .attr("x", (d) -> x(d.time))
 
     exiting_xrule = xrule.exit()
@@ -313,14 +313,14 @@ redraw = () ->
         .attr("class", (d) -> d.counter)
         .transition()
         .duration(durationTime)
-        .ease("linear")
+        .ease("bounce")
         .attr("cx", (d) -> x(d.time))
         .attr("cy", (d) -> y(d.value))
 
     high.select("text")
         .transition()
         .duration(durationTime)
-        .ease("linear")
+        .ease("bounce")
         .attr("x", (d) -> x(d.time))
         .attr("y", (d) -> y(d.value))
 

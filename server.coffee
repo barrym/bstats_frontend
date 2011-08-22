@@ -18,15 +18,23 @@ per_second_sockets = io.of('/bstats_counters_per_second').on('connection', (sock
     init_per_second_objects(socket, 300)
 )
 
+per_minute_sockets = io.of('/bstats_counters_per_minute').on('connection', (socket) ->
+    console.log("per minute client connected")
+    init_per_minute_objects(socket, 60)
+)
+
 setInterval(
     () ->
         now = timestamp() - seconds_offset
-        send_counter_objects_for_timestamp(per_second_sockets, [now])
+        send_counter_objects_for_timestamp(per_second_sockets, [now], 'bstats_counters_per_second')
 , 1000)
 
 setInterval(
     () ->
-        console.log(minute_timestamp())
+        d = new Date()
+        current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
+        now = timestamp_for_date(current_minute)
+        send_counter_objects_for_timestamp(per_minute_sockets, [now], 'bstats_counters_per_minute')
 , 60000)
 
 # --------------- PER SECOND ------------------
@@ -34,29 +42,44 @@ setInterval(
 init_per_second_objects = (sockets, data_points) ->
     now = timestamp() - seconds_offset
     timestamps = [(now - data_points)...now]
-    send_counter_objects_for_timestamp(sockets, timestamps)
+    send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_second')
+
+# --------------- PER MINUTE ------------------
+
+init_per_minute_objects = (sockets, data_points) ->
+    d = new Date()
+    current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
+    now = timestamp_for_date(current_minute)
+    timestamps = (x for x in [(now - data_points * 60)...now] by 60)
+
+    send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_minute')
 
 # --------------- GENERAL ---------------------
 
-send_counter_objects_for_timestamp = (sockets, timestamps) ->
+send_counter_objects_for_timestamp = (sockets, timestamps, channel) ->
     if config.counters == 'all'
         get_all_counters((counters) ->
-            send_counter_objects(sockets, timestamps, counters)
+            send_counter_objects(sockets, timestamps, channel, counters)
         )
     else
-        send_counter_objects(sockets, timestamps, config.counters)
+        send_counter_objects(sockets, timestamps, channel, config.counters)
 
-send_counter_objects = (sockets, timestamps, counters) ->
-    timestamps_and_counters = timestamps.map((t) -> {timestamp:t, counters:counters})
+send_counter_objects = (sockets, timestamps, channel, counters) ->
+    timestamps_and_counters = timestamps.map((t) ->
+        {
+            timestamp : t,
+            timestep : if channel == "bstats_counters_per_second" then "per_second" else "per_minute",
+            counters : counters
+        })
     async.map(timestamps_and_counters, get_counter_objects, (err, results) ->
         flattened_results = results.reduce((a, b) ->
             a.concat(b)
         )
-        send_data(sockets, 'bstats_counters_per_second', flattened_results) unless flattened_results.length == 0
+        send_data(sockets, channel, flattened_results) unless flattened_results.length == 0
     )
 
 get_counter_objects = (params, callback) ->
-    keys = params.counters.map((counter) -> "bstats:counter:#{counter}:#{params.timestamp}")
+    keys = params.counters.map((counter) -> "bstats:counter:#{params.timestep}:#{counter}:#{params.timestamp}")
 
     redis.mget(keys, (err, res) ->
         objects = params.counters.map((counter, i) ->
@@ -82,14 +105,6 @@ send_data = (sockets, channel, data) ->
     sockets.emit(channel, data)
 
 timestamp = () ->
-    Math.round(new Date().getTime() / 1000)
-
-minute_timestamp = () ->
-    date = new Date()
-    "#{date.getFullYear()}#{zero_pad(date.getMonth() + 1)}#{zero_pad(date.getDate())}#{zero_pad(date.getHours())}#{zero_pad(date.getMinutes())}"
-
-zero_pad = (number) ->
-    if number.toString().length == 2
-        number
-    else
-        '0' + number
+    timestamp_for_date(new Date())
+timestamp_for_date = (date) ->
+    Math.round(date.getTime() / 1000)
