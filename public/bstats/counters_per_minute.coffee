@@ -13,58 +13,62 @@ durationTime = 500
 yTickCount = 10
 times = []
 
+
+# Remove when legends go
 colors = []
 getColor = (name) ->
     if !colors[name]
         colors[name] = Math.floor(Math.random()*16777215).toString(16)
     colors[name]
 
-socket = io.connect("http://localhost:8888/bstats_counters_per_minute")
+$.get('/config', (data) ->
+    socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_minute")
 
-socket.on('connect', () ->
-    console.log("connected")
-)
-
-socket.on('bstats_counters_per_minute', (new_data) ->
-    new_data_keys = []
-    new_timestamps = {}
-    for data in new_data
-        if !counter_data[data.counter]
-            # populate whole dummy data for new variables
-            # is this hacky?
-            counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter, time:x,value:0})
-
-        counter_data[data.counter].shift()
-        counter_data[data.counter].push(
-            {
-                counter : data.counter,
-                time    : data.time,
-                value   : data.value
-            }
-        )
-        new_data_keys.push(data.counter)
-        new_timestamps[data.time] = data.time
-
-    keys = d3.keys(counter_data)
-    for key in keys
-        if new_data_keys.indexOf(key) == -1
-            console.log("Removing #{key}")
-            delete counter_data[key]
-
-    d3.keys(new_timestamps).map((timestamp) ->
-        times.push(timestamp)
-
-        times.shift() if times.length > data_points
-        count++
-        if count == xrulePeriod
-            xrule_data.push({time:timestamp})
-            if xrule_data.length == (data_points/xrulePeriod) + 1 # On first load it might not have 3 elements
-                xrule_data.shift()
-            count = 0
+    socket.on('connect', () ->
+        console.log("connected")
     )
 
-    calculate_scales()
-    redraw()
+    socket.on('bstats_counters_per_minute', (new_data) ->
+        new_data_keys = []
+        new_timestamps = {}
+        for data in new_data
+            if !counter_data[data.counter]
+                # populate whole dummy data for new variables
+                # is this hacky?
+                counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter, time:x,value:0})
+
+            counter_data[data.counter].shift()
+            counter_data[data.counter].push(
+                {
+                    counter : data.counter,
+                    time    : data.time,
+                    value   : data.value
+                }
+            )
+            new_data_keys.push(data.counter)
+            new_timestamps[data.time] = data.time
+
+        keys = d3.keys(counter_data)
+        for key in keys
+            if new_data_keys.indexOf(key) == -1
+                console.log("Removing #{key}")
+                delete counter_data[key]
+
+        d3.keys(new_timestamps).map((timestamp) ->
+            times.push(timestamp)
+
+            times.shift() if times.length > data_points
+            count++
+            if count == xrulePeriod
+                xrule_data.push({time:timestamp})
+                if xrule_data.length == (data_points/xrulePeriod) + 1 # On first load it might not have 3 elements
+                    xrule_data.shift()
+                count = 0
+        )
+
+        calculate_scales()
+        redraw()
+    )
 )
 
 calculate_scales = () ->

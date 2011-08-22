@@ -5,6 +5,10 @@ app     = express.createServer()
 app.use(express.static("#{__dirname }/public"))
 app.listen(config.listen_port)
 
+app.get('/config', (req, res) ->
+    res.send({hostname:config.hostname, port:config.listen_port})
+)
+
 io             = require('socket.io').listen(app)
 redis          = require('redis').createClient(config.redis_port, config.redis_server, {})
 seconds_offset = 2
