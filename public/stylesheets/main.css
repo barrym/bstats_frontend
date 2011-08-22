@@ -11,7 +11,7 @@ a {
 
 div {
     float: left;
-    border:1px solid;
+    /* border:1px solid; */
 }
 
 div#chart {
@@ -35,7 +35,7 @@ label {
 }
 
 svg {
-    /* border: 1px solid #ccc; */
+    border: 1px solid red;
 }
 
 text {

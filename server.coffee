@@ -13,7 +13,7 @@ connected_sockets = io.sockets.on('connection', (socket) ->
     console.log("socket client connected")
 )
 
-per_second_sockets = io.of('/per_second').on('connection', (socket) ->
+per_second_sockets = io.of('/bstats_counters_per_second').on('connection', (socket) ->
     console.log("per second client connected")
     init_per_second_objects(socket, 300)
 )
@@ -52,7 +52,7 @@ send_counter_objects = (sockets, timestamps, counters) ->
         flattened_results = results.reduce((a, b) ->
             a.concat(b)
         )
-        send_data(sockets, 'bstat_counters', flattened_results) unless flattened_results.length == 0
+        send_data(sockets, 'bstats_counters_per_second', flattened_results) unless flattened_results.length == 0
     )
 
 get_counter_objects = (params, callback) ->

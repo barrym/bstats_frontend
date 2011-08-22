@@ -4,9 +4,11 @@ xrule_data = []
 xrulePeriod = 60 # seconds
 data_points = 300
 counter_data = [] # {} or []?
-w = 610
-h = 380
-p = 30
+# w = 650
+w = $(window).width()/2
+# h = 380
+h = $(window).height()/2
+p = 55
 x = null
 y = null
 durationTime = 500
@@ -19,27 +21,27 @@ getColor = (name) ->
         colors[name] = Math.floor(Math.random()*16777215).toString(16)
     colors[name]
 
-socket = io.connect("http://localhost:8888/per_second")
+socket = io.connect("http://localhost:8888/bstats_counters_per_second")
 
 socket.on('connect', () ->
     console.log("connected")
 )
 
-socket.on('bstat_counters', (new_data) ->
+socket.on('bstats_counters_per_second', (new_data) ->
     new_data_keys = []
     new_timestamps = {}
     for data in new_data
         if !counter_data[data.counter]
             # populate whole dummy data for new variables
             # is this hacky?
-            counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter,time:x,value:0})
+            counter_data[data.counter] = d3.range(data_points).map((x) -> {counter:data.counter, time:x,value:0})
 
         counter_data[data.counter].shift()
         counter_data[data.counter].push(
             {
-                counter:data.counter,
-                time:data.time,
-                value:data.value
+                counter : data.counter,
+                time    : data.time,
+                value   : data.value
             }
         )
         new_data_keys.push(data.counter)
@@ -77,7 +79,7 @@ calculate_scales = () ->
         ymax = max
 
     high_point = d3.first(all_data_objects.filter((e, i, a) -> e.value == max))
-    x = d3.scale.linear().domain([d3.min(times), d3.max(times)]).range([0 + 2 * p, w - p])
+    x = d3.scale.linear().domain([d3.min(times), d3.max(times)]).range([0 + p, w - p])
     y = d3.scale.linear().domain([0, ymax]).range([h - p, 0 + p])
 
 dateFormatter = d3.time.format("%H:%M:%S")
@@ -87,10 +89,16 @@ formatDate = (timestamp) ->
 
 vis = d3.select("#per_second")
     .append("svg:svg")
-    .attr("width", w + p) # To make room for the labels
-    .attr("height", h + p)
+    .attr("width", w)
+    .attr("height", h)
     .append("svg:g")
-    .attr("transform", "translate(#{p}, #{p})")
+    # .attr("transform", "translate(#{p}, #{p})")
+
+vis.append("svg:text")
+    .attr("x", p)
+    .attr("y", h - 10)
+    .attr("class", "title")
+    .text("foo")
 
 path = d3.svg.line()
     .x((d, i) -> x(d.time))
@@ -131,7 +139,7 @@ redraw = () ->
         .attr("x1", w + p)
         .attr("y1", h - p)
         .attr("x2", w + p)
-        .attr("y2", 0)
+        .attr("y2", 0 + p)
         .transition()
         .duration(durationTime)
         .ease("bounce")
@@ -191,7 +199,7 @@ redraw = () ->
         .style("shape-rendering", "crispEdges")
         .attr("x1", p)
         .attr("y1", 0)
-        .attr("x2", w)
+        .attr("x2", w - p)
         .attr("y2", 0)
         .transition()
         .duration(durationTime)
@@ -312,10 +320,9 @@ redraw = () ->
         .attr("cy", (d) -> y(d.value))
 
     high.select("text")
-        .text((d) -> d.value)
+        .text((d) -> "#{d.value} - #{d.counter}")
         .transition()
         .duration(durationTime)
         .ease("linear")
         .attr("x", (d) -> x(d.time))
         .attr("y", (d) -> y(d.value))
-
