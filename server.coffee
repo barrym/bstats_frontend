@@ -17,20 +17,20 @@ connected_sockets = io.sockets.on('connection', (socket) ->
     console.log("socket client connected")
 )
 
-per_second_sockets = io.of('/bstats_counters_per_second').on('connection', (socket) ->
-    console.log("per second client connected")
+counters_per_second_sockets = io.of('/bstats_counters_per_second').on('connection', (socket) ->
+    console.log("counters per second client connected")
     init_per_second_objects(socket, 300)
 )
 
-per_minute_sockets = io.of('/bstats_counters_per_minute').on('connection', (socket) ->
-    console.log("per minute client connected")
+counters_per_minute_sockets = io.of('/bstats_counters_per_minute').on('connection', (socket) ->
+    console.log("counters per minute client connected")
     init_per_minute_objects(socket, 60)
 )
 
 setInterval(
     () ->
         now = timestamp() - seconds_offset
-        send_counter_objects_for_timestamp(per_second_sockets, [now], 'bstats_counters_per_second')
+        send_counter_objects_for_timestamp(counters_per_second_sockets, [now], 'bstats_counters_per_second')
 , 1000)
 
 setInterval(
@@ -38,7 +38,7 @@ setInterval(
         d = new Date()
         current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
         now = timestamp_for_date(current_minute)
-        send_counter_objects_for_timestamp(per_minute_sockets, [now], 'bstats_counters_per_minute')
+        send_counter_objects_for_timestamp(counters_per_minute_sockets, [now], 'bstats_counters_per_minute')
 , 60000)
 
 # --------------- PER SECOND ------------------
