@@ -109,27 +109,6 @@ path = d3.svg.line()
     .interpolate("linear")
 
 redraw = () ->
-    paths = vis.selectAll("path")
-        .data(d3.values(counter_data), (d, i) -> i)
-
-    paths.enter()
-        .append("svg:path")
-        .attr("d", path)
-        .attr("class", (d) -> d3.first(d).counter)
-
-    paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
-        .attr("d", path)
-        .transition()
-        .ease("bounce")
-        .duration(durationTime)
-        .attr("transform", "translate(0)")
-
-    paths.exit()
-        .transition()
-        .duration(durationTime)
-        .style("opacity", 0)
-        .remove()
-
     xrule = vis.selectAll("g.x")
         .data(xrule_data, (d) -> d.time)
 
@@ -330,3 +309,25 @@ redraw = () ->
 
     exiting_high = high.exit()
     exiting_high.remove()
+
+    paths = vis.selectAll("path")
+        .data(d3.values(counter_data), (d, i) -> i)
+
+    paths.enter()
+        .append("svg:path")
+        .attr("d", path)
+        .attr("class", (d) -> d3.first(d).counter)
+
+    paths.attr("transform", "translate(#{x(times[5]) - x(times[4])})")
+        .attr("d", path)
+        .transition()
+        .ease("bounce")
+        .duration(durationTime)
+        .attr("transform", "translate(0)")
+
+    paths.exit()
+        .transition()
+        .duration(durationTime)
+        .style("opacity", 0)
+        .remove()
+
