@@ -19,18 +19,24 @@ connected_sockets = io.sockets.on('connection', (socket) ->
 
 counters_per_second_sockets = io.of('/bstats_counters_per_second').on('connection', (socket) ->
     console.log("counters per second client connected")
-    init_per_second_objects(socket, 300)
+    init_per_second_counter_objects(socket, 300)
+)
+
+gauges_per_second_sockets = io.of('/bstats_gauges_per_second').on('connection', (socket) ->
+    console.log("gauges per second client connected")
+    init_per_second_gauge_objects(socket, 300)
 )
 
 counters_per_minute_sockets = io.of('/bstats_counters_per_minute').on('connection', (socket) ->
     console.log("counters per minute client connected")
-    init_per_minute_objects(socket, 60)
+    init_per_minute_counter_objects(socket, 60)
 )
 
 setInterval(
     () ->
         now = timestamp() - seconds_offset
         send_counter_objects_for_timestamp(counters_per_second_sockets, [now], 'bstats_counters_per_second')
+        send_gauge_objects_for_timestamp(gauges_per_second_sockets, [now], 'bstats_gauges_per_second')
 , 1000)
 
 setInterval(
@@ -43,14 +49,19 @@ setInterval(
 
 # --------------- PER SECOND ------------------
 
-init_per_second_objects = (sockets, data_points) ->
+init_per_second_counter_objects = (sockets, data_points) ->
     now = timestamp() - seconds_offset
     timestamps = [(now - data_points)...now]
     send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_second')
 
+init_per_second_gauge_objects = (sockets, data_points) ->
+    now = timestamp() - seconds_offset
+    timestamps = [(now - data_points)...now]
+    send_gauge_objects_for_timestamp(sockets, timestamps, 'bstats_gauges_per_second')
+
 # --------------- PER MINUTE ------------------
 
-init_per_minute_objects = (sockets, data_points) ->
+init_per_minute_counter_objects = (sockets, data_points) ->
     d = new Date()
     current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
     now = timestamp_for_date(current_minute)
@@ -58,7 +69,7 @@ init_per_minute_objects = (sockets, data_points) ->
 
     send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_minute')
 
-# --------------- GENERAL ---------------------
+# --------------- COUNTERS ---------------------
 
 send_counter_objects_for_timestamp = (sockets, timestamps, channel) ->
     if config.counters == 'all'
@@ -68,12 +79,18 @@ send_counter_objects_for_timestamp = (sockets, timestamps, channel) ->
     else
         send_counter_objects(sockets, timestamps, channel, config.counters)
 
+get_all_counters = (callback) ->
+    redis.smembers("bstats:counters", (err, counters) ->
+        counters = counters ?= []
+        callback(counters)
+    )
+
 send_counter_objects = (sockets, timestamps, channel, counters) ->
     timestamps_and_counters = timestamps.map((t) ->
         {
             timestamp : t,
-            timestep : if channel == "bstats_counters_per_second" then "per_second" else "per_minute",
-            counters : counters
+            timestep  : if channel == "bstats_counters_per_second" then "per_second" else "per_minute",
+            counters  : counters
         })
     async.map(timestamps_and_counters, get_counter_objects, (err, results) ->
         flattened_results = results.reduce((a, b) ->
@@ -97,12 +114,84 @@ get_counter_objects = (params, callback) ->
         callback(err, objects)
     )
 
+# --------------- GAUGES ---------------------
+
+send_gauge_objects_for_timestamp = (sockets, timestamps, channel) ->
+    if config.gauges == 'all'
+        get_all_gauges((gauges) ->
+            send_gauge_objects(sockets, timestamps, channel, gauges)
+        )
+    else
+        send_gauge_objects(sockets, timestamps, channel, config.gauges)
+
+get_all_gauges = (callback) ->
+    redis.smembers("bstats:gauges", (err, gauges) ->
+        gauges = gauges ?= []
+        callback(gauges)
+    )
+
+send_gauge_objects = (sockets, timestamps, channel, gauges) ->
+    timestamps_and_gauges = timestamps.map((t) ->
+        {
+            timestamp : t,
+            timestep  : if channel == "bstats_gauges_per_second" then "per_second" else "per_minute",
+            gauges    : gauges
+        })
+    async.map(timestamps_and_gauges, get_gauge_objects, (err, results) ->
+        flattened_results = flatten_array(results)
+        send_data(sockets, channel, flattened_results) unless flattened_results.length == 0
+    )
+
+get_gauge_objects = (params, final_callback) ->
+    async.map(params.gauges, (gauge, map_callback) ->
+        async.series([
+            (callback) ->
+                key = "bstats:gauge:#{params.timestep}:#{gauge}:sum:#{params.timestamp}"
+                redis.get(key, (err, res) ->
+                    sum = parseInt(res)/1000
+                    callback(null, sum)
+                )
+            ,
+            (callback) ->
+                key = "bstats:gauge:#{params.timestep}:#{gauge}:count:#{params.timestamp}"
+                redis.get(key, (err, res) ->
+                    count = parseInt(res)
+                    callback(null, count)
+                )
+            ,
+            (callback) ->
+                key = "bstats:gauge:#{params.timestep}:#{gauge}:max:#{params.timestamp}"
+                redis.zrange(key, 0, 0, (err, res) ->
+                    max =  parseInt(res)/1000
+                    callback(null, max)
+                )
+            ,
+            (callback) ->
+                key = "bstats:gauge:#{params.timestep}:#{gauge}:min:#{params.timestamp}"
+                redis.zrange(key, 0, 0, (err, res) ->
+                    min = parseInt(res)/1000
+                    callback(null, min)
+                )
+        ], (err, results) ->
+            avg = results[0]/results[1]
+            object = {
+                gauge     : gauge,
+                timestamp : params.timestamp,
+                max       : results[2] || 0,
+                min       : results[3] || 0,
+                avg       : avg || 0
+            }
+            map_callback(null, object)
+        )
+    , (err, results) ->
+        final_callback(null, results)
+    )
+
 # ----------------------- INTERNAL ------------------------
 
-get_all_counters = (callback) ->
-    redis.smembers("bstats:counters", (err, counters) ->
-        counters = counters ?= []
-        callback(counters)
+flatten_array = (array) ->
+    array.reduce((a, b) ->
+        a.concat(b)
     )
 
 send_data = (sockets, channel, data) ->
