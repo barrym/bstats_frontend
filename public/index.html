@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <div id="per_second"></div>
-        <div id="per_minute"></div>
+        <div id="filters">
+            <a href="#" filter="*">all</a>
+            <a href="#" filter=".per_second">per second</a>
+            <a href="#" filter=".per_minute">per minute</a>
+            <a href="#" filter=".plasma">plasmas</a>
+        </div>
+        <div id="container">
+            <div id="per_second" class="chart per_second plasma"></div>
+            <div id="per_minute" class="chart per_minute"></div>
+            <div id="vote_recorded_per_second" class="chart per_second plasma"></div>
+            <div id="vote_recorded_per_minute" class="chart per_minute"></div>
+        </div>
     </body>
     <head>
         <title>bstats</title>
         <script type="text/javascript" src="/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="/jquery.isotope.min.js"></script>
         <script type="text/javascript" src="/d3/d3.js"></script>
         <script type="text/javascript" src="/d3/d3.time.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="/bstats/bstats_counter_line_graph.js"></script>
+        <!-- <script type="text/javascript" src="/bstats/isotope_setup.js"></script> -->
         <link type="text/css" rel="stylesheet" href="/stylesheets/main.css"/>
     </head>
 </html>

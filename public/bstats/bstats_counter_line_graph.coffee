@@ -303,8 +303,8 @@ class BstatsCounterLineGraph
 # ------------- DRAW GRAPHS ------------- #
 
 $.get('/config', (data) ->
-    width  = ($(window).width() - 20)/2
-    height = $(window).height()/2
+    width  = ($(window).width() - 20) * 0.47
+    height = $(window).height() * 0.45
 
     new BstatsCounterLineGraph({
         counters     : ["facebook_purchase_failed"]
@@ -333,4 +333,45 @@ $.get('/config', (data) ->
         height       : height
         padding      : 55
     })
+
+    new BstatsCounterLineGraph({
+        counters     : ["vote_recorded"]
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#vote_recorded_per_second"
+        data_points  : 300
+        xrule_period : 60
+        socket_path  : 'bstats_counters_per_second'
+        title        : "Votes Per second for the past 5 mins"
+        width        : width
+        height       : height
+        padding      : 55
+    })
+
+    new BstatsCounterLineGraph({
+        counters     : ["vote_recorded"]
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#vote_recorded_per_minute"
+        data_points  : 600
+        xrule_period : 10
+        socket_path  : 'bstats_counters_per_minute'
+        title        : "Votes Per minute for the past hour"
+        width        : width
+        height       : height
+        padding      : 55
+    })
+
+    $('#container').isotope({
+        itemSelector: '.chart'
+        animationEngine: 'best-available'
+        filter: '.plasma'
+        # layoutMode: 'fitRows'
+    })
+
+    $('#filters a').click(() ->
+        selector = $(this).attr('filter')
+        $('#container').isotope({ filter: selector })
+        false
+    )
 )
