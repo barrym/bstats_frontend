@@ -14,6 +14,15 @@ div {
     /* border:1px solid; */
 }
 
+div#nav {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+div#filters {
+    float:right;
+}
+
 div#container {
     width: 100%;
     /* height: 600px; */
@@ -23,7 +32,11 @@ div#container {
 div.chart {
     width: 49%;
     /* height: 70%; */
-    /* border: 1px solid blue; */
+    /* border: 1px solid #AAA; */
+}
+
+div#legend {
+    margin-left: 10px;
 }
 
 
@@ -32,8 +45,82 @@ div.chart {
     font-size:8em;
 }
 
+.title {
+    text-align: center; /* :( but I don't care */
+    font-weight: bold;
+    float: none;
+}
+
+
+.square {
+    width:15px;
+    height: 15px;
+    margin: 0 5px 0 5px;
+}
+
+.selected {
+    color: #CC0000;
+}
+
+@facebook: #3B5998;
+@facebook_error: #FF5998;
+
+@userpass: #CC0000;
+@userpass_error: #CCCC00;
+
+@vote_recorded: #008800;
+
+div.facebook {
+    background-color: @facebook;
+}
+
+div.facebook_error {
+    background-color: @facebook_error;
+}
+
+div.userpass {
+    background-color: @userpass;
+}
+
+div.userpass_error {
+    background-color: @userpass_error;
+}
+
+div.vote_recorded {
+    background-color: @vote_recorded;
+}
+
+.facebook_user_login_success {
+    stroke: @facebook;
+}
+
+.facebook_user_login_failed {
+    stroke: @facebook_error;
+}
+
+.userpass_user_login_success {
+    stroke: @userpass;
+}
+
+.userpass_user_login_failed {
+    stroke: @userpass_error;
+}
+
+.vote_recorded {
+    stroke: @vote_recorded;
+}
+
+circle { stroke: #000000 !important; }
+circle.facebook_user_login_success { fill: @facebook; }
+circle.facebook_user_login_failed { fill: @facebook_error; }
+circle.userpass_user_login_success { fill: @userpass; }
+circle.userpass_user_login_failed { fill: @userpass_error; }
+circle.vote_recorded { fill: @vote_recorded; }
+
+
+
 svg {
-   /* border: 1px solid red; */
+   /* border: 1px solid #aaa; */
 }
 
 text {

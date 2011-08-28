@@ -7,11 +7,14 @@ class BstatsCounterLineGraph
         @port          = params.port
         @div_id        = params.div_id
         @data_points   = params.data_points
-        @xrule_period  = params.xrule_period
-        @title         = params.title
+        @x_tick_count  = params.x_tick_count || 6
+        # @title         = params.title
         @w             = params.width
         @h             = params.height
-        @p             = params.padding
+        @p_top         = params.padding_top || 25
+        @p_right       = params.padding_right || 25
+        @p_bottom      = params.padding_bottom || 25
+        @p_left        = params.padding_left || 55
         @y_tick_count  = params.y_tick_count || 10
         @duration_time = params.duration_time || 500
         @count         = 0
@@ -21,6 +24,7 @@ class BstatsCounterLineGraph
         @times         = []
         @xrule_data    = []
         @high_point    = []
+        @xrule_period  = Math.round(@data_points/@x_tick_count)
         @dateFormatter = d3.time.format("%H:%M:%S")
         @format_date   = (timestamp) =>
             date = new Date(timestamp * 1000)
@@ -37,11 +41,11 @@ class BstatsCounterLineGraph
             .attr("height", @h)
             .append("svg:g")
 
-        @vis.append("svg:text")
-            .attr("x", @p)
-            .attr("y", @h - 10)
-            .attr("class", "title")
-            .text(@title)
+        # @vis.append("svg:text")
+        #     .attr("x", @p)
+        #     .attr("y", @h - 10)
+        #     .attr("class", "title")
+        #     .text(@title)
 
         socket = io.connect("http://#{@hostname}:#{@port}/#{@socket_path}")
 
@@ -52,7 +56,6 @@ class BstatsCounterLineGraph
         socket.on(@socket_path, @process_new_data)
 
     process_new_data: (new_data) =>
-        # TODO: is this inefficient? look into making server only send what we need?
         if @counters == 'all'
             data_to_process = new_data
         else
@@ -114,8 +117,8 @@ class BstatsCounterLineGraph
         highest_current_point = d3.first(all_data_objects.filter((e, i, a) -> e.value == max))
         @high_point.shift()
         @high_point.push(highest_current_point) unless max == 0
-        @x = d3.scale.linear().domain([d3.min(@times), d3.max(@times)]).range([0 + @p, @w - @p])
-        @y = d3.scale.linear().domain([0, ymax]).range([@h - @p, 0 + @p])
+        @x = d3.scale.linear().domain([d3.min(@times), d3.max(@times)]).range([0 + @p_left, @w - @p_right])
+        @y = d3.scale.linear().domain([0, ymax]).range([@h - @p_bottom, 0 + @p_top])
 
     redraw: () =>
         xrule = @vis.selectAll("g.x")
@@ -126,10 +129,10 @@ class BstatsCounterLineGraph
 
         entering_xrule.append("svg:line")
             .style("shape-rendering", "crispEdges")
-            .attr("x1", @w + @p)
-            .attr("y1", @h - @p)
-            .attr("x2", @w + @p)
-            .attr("y2", 0 + @p)
+            .attr("x1", @w + @p_left)
+            .attr("y1", @h - @p_bottom)
+            .attr("x2", @w + @p_left)
+            .attr("y2", 0 + @p_top)
             .transition()
             .duration(@duration_time)
             .ease("bounce")
@@ -140,8 +143,8 @@ class BstatsCounterLineGraph
             .text((d) => @format_date(d.time))
             .style("font-size", "14")
             .attr("text-anchor", "middle")
-            .attr("x", @w + @p)
-            .attr("y", @h - @p)
+            .attr("x", @w + @p_left)
+            .attr("y", @h - @p_bottom)
             .attr("dy", 15)
             .transition()
             .duration(@duration_time)
@@ -187,9 +190,9 @@ class BstatsCounterLineGraph
 
         entering_yrule.append("svg:line")
             .style("shape-rendering", "crispEdges")
-            .attr("x1", @p)
+            .attr("x1", @p_left)
             .attr("y1", 0)
-            .attr("x2", @w - @p)
+            .attr("x2", @w - @p_right)
             .attr("y2", 0)
             .transition()
             .duration(@duration_time)
@@ -201,7 +204,7 @@ class BstatsCounterLineGraph
             .text(@y.tickFormat(@y_tick_count))
             .attr("text-anchor", "end")
             .attr("dx", -5)
-            .attr("x", @p)
+            .attr("x", @p_left)
             .attr("y", 0)
             .transition()
             .duration(@duration_time)
@@ -257,7 +260,7 @@ class BstatsCounterLineGraph
             .attr("y", (d) => @y(d.value))
             .attr("text-anchor", "middle")
             .attr("dy", -10)
-            .text((d) -> "#{d.value} - #{d.counter}")
+            .text((d) -> d.value)
 
         high.select("circle")
             .attr("class", (d) -> d.counter)
@@ -306,60 +309,59 @@ $.get('/config', (data) ->
     width  = ($(window).width() - 20) * 0.47
     height = $(window).height() * 0.45
 
-    new BstatsCounterLineGraph({
-        counters     : ["facebook_purchase_failed"]
+    login_counters = [
+        "facebook_user_login_success",
+        "facebook_user_login_failed",
+        "userpass_user_login_success",
+        "userpass_user_login_failed",
+    ]
+
+    logins_per_second = new BstatsCounterLineGraph({
+        counters     : login_counters
         hostname     : data.hostname
         port         : data.port
-        div_id       : "#per_second"
+        div_id       : "#logins_per_second"
         data_points  : 300
-        xrule_period : 60
         socket_path  : 'bstats_counters_per_second'
-        title        : "Per second for the past 5 mins"
+        title        : "Logins per second"
         width        : width
         height       : height
-        padding      : 55
     })
 
-    new BstatsCounterLineGraph({
-        counters     : ["facebook_purchase_failed"]
+    logins_per_minute = new BstatsCounterLineGraph({
+        counters     : login_counters
         hostname     : data.hostname
         port         : data.port
-        div_id       : "#per_minute"
+        div_id       : "#logins_per_minute"
         data_points  : 60
-        xrule_period : 10
         socket_path  : 'bstats_counters_per_minute'
-        title        : "Per minute for the last hour"
+        title        : "Logins per minute"
         width        : width
         height       : height
-        padding      : 55
     })
 
-    new BstatsCounterLineGraph({
+    votes_per_second = new BstatsCounterLineGraph({
         counters     : ["vote_recorded"]
         hostname     : data.hostname
         port         : data.port
         div_id       : "#vote_recorded_per_second"
         data_points  : 300
-        xrule_period : 60
         socket_path  : 'bstats_counters_per_second'
-        title        : "Votes Per second for the past 5 mins"
+        title        : "Votes per second"
         width        : width
         height       : height
-        padding      : 55
     })
 
-    new BstatsCounterLineGraph({
+    votes_per_minute = new BstatsCounterLineGraph({
         counters     : ["vote_recorded"]
         hostname     : data.hostname
         port         : data.port
         div_id       : "#vote_recorded_per_minute"
         data_points  : 60
-        xrule_period : 10
         socket_path  : 'bstats_counters_per_minute'
-        title        : "Votes Per minute for the past hour"
+        title        : "Votes per minute"
         width        : width
         height       : height
-        padding      : 55
     })
 
     $('#container').isotope({
@@ -371,6 +373,8 @@ $.get('/config', (data) ->
 
     $('#filters a').click(() ->
         selector = $(this).attr('filter')
+        $('#filters a').removeClass("selected")
+        $(this).addClass("selected")
         $('#container').isotope({ filter: selector })
         false
     )

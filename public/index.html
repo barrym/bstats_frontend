@@ -1,17 +1,47 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <div id="filters">
-            <a href="#" filter="*">all</a>
-            <a href="#" filter=".per_second">per second</a>
-            <a href="#" filter=".per_minute">per minute</a>
-            <a href="#" filter=".plasma">plasmas</a>
+        <div id="nav">
+            <div id="legend">
+                <div class="square facebook"></div>
+                <div>Facebook</div>
+
+                <div class="square facebook_error"></div>
+                <div>Facebook Errors</div>
+
+                <div class="square userpass"></div>
+                <div>iPhone/Android</div>
+
+                <div class="square userpass_error"></div>
+                <div>iPhone/Android Errors</div>
+
+                <div class="square vote_recorded"></div>
+                <div>Votes</div>
+            </div>
+            <div id="filters">
+                <a href="#" filter="*">all</a>
+                <a href="#" filter=".per_second">per second</a>
+                <a href="#" filter=".per_minute">per minute</a>
+                <a href="#" filter=".plasma" class="selected">plasmas</a>
+            </div>
         </div>
         <div id="container">
-            <div id="per_second" class="chart per_second plasma"></div>
-            <div id="per_minute" class="chart per_minute"></div>
-            <div id="vote_recorded_per_second" class="chart per_second plasma"></div>
-            <div id="vote_recorded_per_minute" class="chart per_minute"></div>
+            <div class="chart per_second plasma">
+                <div class="title">Logins per second</div>
+                <div id="logins_per_second"></div>
+            </div>
+            <div class="chart per_minute plasma">
+                <div class="title">Logins per minute</div>
+                <div id="logins_per_minute"></div>
+            </div>
+            <div class="chart per_second">
+                <div class="title">Votes per second</div>
+                <div id="vote_recorded_per_second"></div>
+            </div>
+            <div class="chart per_minute">
+                <div class="title">Votes per minute</div>
+                <div id="vote_recorded_per_minute"></div>
+            </div>
         </div>
     </body>
     <head>
