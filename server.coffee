@@ -12,6 +12,7 @@ app.get('/config', (req, res) ->
 io             = require('socket.io').listen(app)
 redis          = require('redis').createClient(config.redis_port, config.redis_server, {})
 seconds_offset = 3
+minutes_offset = 1
 
 connected_sockets = io.sockets.on('connection', (socket) ->
     console.log("socket client connected")
@@ -43,7 +44,7 @@ setInterval(
     () ->
         d = new Date()
         current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
-        now = timestamp_for_date(current_minute)
+        now = timestamp_for_date(current_minute) - minutes_offset * 60
         send_counter_objects_for_timestamp(counters_per_minute_sockets, [now], 'bstats_counters_per_minute')
 , 60000)
 
@@ -64,7 +65,7 @@ init_per_second_gauge_objects = (sockets, data_points) ->
 init_per_minute_counter_objects = (sockets, data_points) ->
     d = new Date()
     current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
-    now = timestamp_for_date(current_minute)
+    now = timestamp_for_date(current_minute) - minutes_offset * 60
     timestamps = (x for x in [(now - data_points * 60)...now] by 60)
 
     send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_minute')
