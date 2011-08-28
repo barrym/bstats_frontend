@@ -1,0 +1,76 @@
+body {
+   font-family:"Helvetica";
+    background-color: #ddd;
+    color: #000;
+}
+
+a {
+    text-decoration: none;
+    color: steelblue;
+}
+
+div {
+    float: left;
+    /* border:1px solid; */
+}
+
+div#container {
+    width: 100%;
+    /* height: 600px; */
+    /* border: 1px solid black; */
+}
+
+div.chart {
+    width: 49%;
+    /* height: 70%; */
+    /* border: 1px solid blue; */
+}
+
+
+.large {
+    font-weight:bold;
+    font-size:8em;
+}
+
+svg {
+   /* border: 1px solid red; */
+}
+
+text {
+    font-family: Helvetica;
+    fill: black;
+    stroke: black;
+    stroke-width:0px;
+}
+
+line {
+    stroke: #bbb;
+}
+
+path {
+    stroke: steelblue;
+    stroke-width: 1.5px;
+    fill:none;
+}
+
+
+/* ------------- ISOTOPE ---------------- */
+.isotope,
+.isotope .isotope-item {
+    /* change duration value to whatever you like */
+    -webkit-transition-duration: 0.8s;
+    -moz-transition-duration: 0.8s;
+    transition-duration: 0.8s;
+}
+
+.isotope {
+    -webkit-transition-property: height, width;
+    -moz-transition-property: height, width;
+    transition-property: height, width;
+}
+
+.isotope .isotope-item {
+    -webkit-transition-property: -webkit-transform, opacity;
+    -moz-transition-property:    -moz-transform, opacity;
+    transition-property:         transform, opacity;
+}
