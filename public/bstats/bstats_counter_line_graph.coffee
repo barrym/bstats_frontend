@@ -1,31 +1,32 @@
 class BstatsCounterLineGraph
 
     constructor: (params) ->
-        @counters      = params.counters || "all"
-        @hostname      = params.hostname
-        @socket_path   = params.socket_path
-        @port          = params.port
-        @div_id        = params.div_id
-        @data_points   = params.data_points
-        @x_tick_count  = params.x_tick_count || 6
-        @w             = params.width
-        @h             = params.height
-        @p_top         = params.padding_top || 25
-        @p_right       = params.padding_right || 25
-        @p_bottom      = params.padding_bottom || 25
-        @p_left        = params.padding_left || 55
-        @y_tick_count  = params.y_tick_count || 10
-        @duration_time = params.duration_time || 500
-        @count         = 0
-        @x             = null
-        @y             = null
-        @counter_data  = {}
-        @times         = []
-        @xrule_data    = []
-        @high_point    = []
-        @xrule_period  = Math.round(@data_points/@x_tick_count)
-        @dateFormatter = d3.time.format("%H:%M:%S")
-        @format_date   = (timestamp) =>
+        @counters        = params.counters || "all"
+        @hostname        = params.hostname
+        @socket_path     = params.socket_path
+        @port            = params.port
+        @div_id          = params.div_id
+        @data_points     = params.data_points
+        @x_tick_count    = params.x_tick_count || 6
+        @w               = params.width
+        @h               = params.height
+        @p_top           = params.padding_top || 25
+        @p_right         = params.padding_right || 25
+        @p_bottom        = params.padding_bottom || 25
+        @p_left          = params.padding_left || 55
+        @y_tick_count    = params.y_tick_count || 10
+        @duration_time   = params.duration_time || 500
+        @update_callback = params.update_callback
+        @count           = 0
+        @x               = null
+        @y               = null
+        @counter_data    = {}
+        @times           = []
+        @xrule_data      = []
+        @high_point      = []
+        @xrule_period    = Math.round(@data_points/@x_tick_count)
+        @dateFormatter   = d3.time.format("%H:%M:%S")
+        @format_date     = (timestamp) =>
             date = new Date(timestamp * 1000)
             @dateFormatter(date)
 
@@ -97,6 +98,9 @@ class BstatsCounterLineGraph
 
         @calculate_scales()
         @redraw()
+        if @update_callback
+            @update_callback(data_to_process)
+
 
     calculate_scales: () =>
         all_data_objects = d3.merge(d3.values(@counter_data))
@@ -352,6 +356,9 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : height
+        update_callback: (data) ->
+            total_votes_in_the_last_hour = d3.sum(@counter_data.vote_recorded.map((d) -> d.value))
+            $('#total_votes_in_the_last_hour').text(total_votes_in_the_last_hour)
     })
 
     # ------------ CREDITS ----------- #
@@ -386,7 +393,9 @@ $.get('/config', (data) ->
         itemSelector: '.chart'
         animationEngine: 'best-available'
         filter: '.plasma'
-        # layoutMode: 'fitRows'
+        # masonry: {
+        #     columnWidth: Math.round(width)
+        # }
     })
 
     $('#filters a').click(() ->
