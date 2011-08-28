@@ -30,9 +30,11 @@ div#container {
 }
 
 div.chart {
+    margin-top: 20px;
     width: 49%;
     /* height: 70%; */
     /* border: 1px solid #AAA; */
+    border-bottom: 1px solid #AAA;
 }
 
 div#legend {
@@ -63,10 +65,11 @@ div#legend {
 }
 
 @facebook: #3B5998;
-@facebook_error: #FF5998;
 
 @userpass: #CC0000;
-@userpass_error: #CCCC00;
+
+@android: #00DD00;
+@iphone: #3333DD;
 
 @vote_recorded: #008800;
 
@@ -74,16 +77,16 @@ div.facebook {
     background-color: @facebook;
 }
 
-div.facebook_error {
-    background-color: @facebook_error;
-}
-
 div.userpass {
     background-color: @userpass;
 }
 
-div.userpass_error {
-    background-color: @userpass_error;
+div.android {
+    background-color: @android;
+}
+
+div.iphone {
+    background-color: @iphone;
 }
 
 div.vote_recorded {
@@ -94,16 +97,20 @@ div.vote_recorded {
     stroke: @facebook;
 }
 
-.facebook_user_login_failed {
-    stroke: @facebook_error;
-}
-
 .userpass_user_login_success {
     stroke: @userpass;
 }
 
-.userpass_user_login_failed {
-    stroke: @userpass_error;
+.facebook_purchase_success {
+    stroke: @facebook;
+}
+
+.psms_purchase_success {
+    stroke: @android;
+}
+
+.itunes_purchase_success {
+    stroke: @iphone;
 }
 
 .vote_recorded {
@@ -112,9 +119,7 @@ div.vote_recorded {
 
 circle { stroke: #000000 !important; }
 circle.facebook_user_login_success { fill: @facebook; }
-circle.facebook_user_login_failed { fill: @facebook_error; }
 circle.userpass_user_login_success { fill: @userpass; }
-circle.userpass_user_login_failed { fill: @userpass_error; }
 circle.vote_recorded { fill: @vote_recorded; }
 
 

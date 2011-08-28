@@ -8,7 +8,6 @@ class BstatsCounterLineGraph
         @div_id        = params.div_id
         @data_points   = params.data_points
         @x_tick_count  = params.x_tick_count || 6
-        # @title         = params.title
         @w             = params.width
         @h             = params.height
         @p_top         = params.padding_top || 25
@@ -40,12 +39,6 @@ class BstatsCounterLineGraph
             .attr("width", @w)
             .attr("height", @h)
             .append("svg:g")
-
-        # @vis.append("svg:text")
-        #     .attr("x", @p)
-        #     .attr("y", @h - 10)
-        #     .attr("class", "title")
-        #     .text(@title)
 
         socket = io.connect("http://#{@hostname}:#{@port}/#{@socket_path}")
 
@@ -307,13 +300,13 @@ class BstatsCounterLineGraph
 
 $.get('/config', (data) ->
     width  = ($(window).width() - 20) * 0.47
-    height = $(window).height() * 0.45
+    height = $(window).height() * 0.35
+
+    # ------------ LOGINS ----------- #
 
     login_counters = [
         "facebook_user_login_success",
-        "facebook_user_login_failed",
-        "userpass_user_login_success",
-        "userpass_user_login_failed",
+        "userpass_user_login_success"
     ]
 
     logins_per_second = new BstatsCounterLineGraph({
@@ -323,7 +316,6 @@ $.get('/config', (data) ->
         div_id       : "#logins_per_second"
         data_points  : 300
         socket_path  : 'bstats_counters_per_second'
-        title        : "Logins per second"
         width        : width
         height       : height
     })
@@ -335,11 +327,11 @@ $.get('/config', (data) ->
         div_id       : "#logins_per_minute"
         data_points  : 60
         socket_path  : 'bstats_counters_per_minute'
-        title        : "Logins per minute"
         width        : width
         height       : height
     })
 
+    # ------------ VOTES ----------- #
     votes_per_second = new BstatsCounterLineGraph({
         counters     : ["vote_recorded"]
         hostname     : data.hostname
@@ -347,7 +339,6 @@ $.get('/config', (data) ->
         div_id       : "#vote_recorded_per_second"
         data_points  : 300
         socket_path  : 'bstats_counters_per_second'
-        title        : "Votes per second"
         width        : width
         height       : height
     })
@@ -359,7 +350,34 @@ $.get('/config', (data) ->
         div_id       : "#vote_recorded_per_minute"
         data_points  : 60
         socket_path  : 'bstats_counters_per_minute'
-        title        : "Votes per minute"
+        width        : width
+        height       : height
+    })
+
+    # ------------ CREDITS ----------- #
+    credit_counters = [
+        "facebook_purchase_success",
+        "psms_purchase_success",
+        "itunes_purchase_success"
+    ]
+    credits_per_second = new BstatsCounterLineGraph({
+        counters     : credit_counters
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#credits_per_second"
+        data_points  : 300
+        socket_path  : 'bstats_counters_per_second'
+        width        : width
+        height       : height
+    })
+
+    credits_per_minute = new BstatsCounterLineGraph({
+        counters     : credit_counters
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#credits_per_minute"
+        data_points  : 60
+        socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : height
     })
