@@ -11,7 +11,7 @@ app.get('/config', (req, res) ->
 
 io             = require('socket.io').listen(app)
 redis          = require('redis').createClient(config.redis_port, config.redis_server, {})
-seconds_offset = 2
+seconds_offset = 3
 
 connected_sockets = io.sockets.on('connection', (socket) ->
     console.log("socket client connected")

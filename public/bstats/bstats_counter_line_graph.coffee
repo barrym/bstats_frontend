@@ -17,7 +17,7 @@ class BstatsCounterLineGraph
         @count         = 0
         @x             = null
         @y             = null
-        @counter_data  = []
+        @counter_data  = {}
         @times         = []
         @xrule_data    = []
         @high_point    = []
@@ -325,7 +325,7 @@ $.get('/config', (data) ->
         hostname     : data.hostname
         port         : data.port
         div_id       : "#per_minute"
-        data_points  : 600
+        data_points  : 60
         xrule_period : 10
         socket_path  : 'bstats_counters_per_minute'
         title        : "Per minute for the last hour"
@@ -353,7 +353,7 @@ $.get('/config', (data) ->
         hostname     : data.hostname
         port         : data.port
         div_id       : "#vote_recorded_per_minute"
-        data_points  : 600
+        data_points  : 60
         xrule_period : 10
         socket_path  : 'bstats_counters_per_minute'
         title        : "Votes Per minute for the past hour"
