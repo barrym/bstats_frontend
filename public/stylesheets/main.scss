@@ -32,6 +32,30 @@ div.chart {
     font-size:8em;
 }
 
+.facebook_purchase_failed {
+    stroke: #3440ff;
+}
+
+.facebook_user_login_success {
+    stroke: #3440ff;
+}
+
+.facebook_user_login_failed {
+    stroke: #cc0000;
+}
+
+.userpass_user_login_success {
+    stroke: #00dd00;
+}
+
+.userpass_user_login_faied {
+    stroke: #330033;
+}
+
+.vote_recorded {
+    stroke: #dd0000;
+}
+
 svg {
    /* border: 1px solid red; */
 }
