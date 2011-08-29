@@ -17,50 +17,29 @@
             </div>
             <div id="filters">
                 <a href="#" filter="*">everything</a>
-                <a href="#" filter=".per_second">per second</a>
-                <a href="#" filter=".per_minute">per minute</a>
                 <a href="#" filter=".text">text</a>
+                <a href="#" filter=".per_minute">per minute</a>
+                <a href="#" filter=".per_second">per second</a>
                 <a href="#" filter=".plasma" class="selected">plasmas</a>
             </div>
         </div>
         <div id="container">
             <!--LOGINS-->
-            <div class="chart per_minute">
-                <div class="title">Logins per minute</div>
-                <div id="logins_per_minute"></div>
-            </div>
-            <div class="chart per_second">
-                <div class="title">Logins per second</div>
-                <div id="logins_per_second"></div>
-            </div>
+            <div class="chart per_minute" id="logins_per_minute"></div>
+            <div class="chart per_second" id="logins_per_second"></div>
             <!--TEXT-->
             <div class="chart large text">
                 <div class="highlight">In the last hour</div><br/>
-                <div><span id="total_votes_in_the_last_hour"></span> votes cast</div>
-                <div><span id="total_credits_in_the_last_hour"></span> purchases made</div>
+                <div><span id="total_votes_in_the_last_hour" class="green"></span> votes cast</div>
+                <div><span id="total_credits_in_the_last_hour" class="green"></span> purchases made</div>
             </div>
             <!--VOTES-->
-            <div class="chart per_minute plasma">
-                <div class="title">Votes per minute</div>
-                <div id="vote_recorded_per_minute"></div>
-            </div>
-            <div class="chart per_second plasma">
-                <div class="title">Votes per second</div>
-                <div id="vote_recorded_per_second"></div>
-            </div>
+            <div class="chart per_minute plasma" id="vote_recorded_per_minute"></div>
+            <div class="chart per_second plasma" id="vote_recorded_per_second"></div>
             <!--CREDITS-->
-            <div class="chart per_minute plasma">
-                <div class="title">Purchases per minute</div>
-                <div id="credits_per_minute"></div>
-            </div>
-            <div class="chart per_second">
-                <div class="title">Purchases per second</div>
-                <div id="credits_per_second"></div>
-            </div>
-            <div class="chart per_minute">
-                <div class="title">Purchases in the last hour</div>
-                <div id="credits_in_the_last_hour_pie"></div>
-            </div>
+            <div class="chart per_minute plasma" id="credits_per_minute"></div>
+            <div class="chart per_second" id="credits_per_second"></div>
+            <div class="chart per_minute" id="credits_in_the_last_hour_pie"></div>
         </div>
     </body>
     <head>

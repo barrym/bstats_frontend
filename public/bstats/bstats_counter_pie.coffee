@@ -16,11 +16,17 @@ class BstatsCounterPie
         @data_points     = params.data_points
         @duration_time   = params.duration_time || 500
         @update_callback = params.update_callback
+        @title           = params.title || "No title"
         @counter_data    = {}
         @sums            = {}
 
-        @vis = d3.select(@div_id)
-            .append("svg:svg")
+        div = d3.select(@div_id)
+
+        div.append("div")
+            .attr("class", "title")
+            .text(@title)
+
+        @vis = div.append("svg:svg")
             .attr("width", @w)
             .attr("height", @h)
             .append("svg:g")
@@ -128,6 +134,7 @@ $.get('/config', (data) ->
         width        : width
         height       : height
         radius       : Math.min(width, height) * 0.4
+        title        : "Purchases in the last hour"
     })
 
 )

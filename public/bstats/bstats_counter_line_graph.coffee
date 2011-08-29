@@ -17,6 +17,7 @@ class BstatsCounterLineGraph
         @y_tick_count    = params.y_tick_count || 10
         @duration_time   = params.duration_time || 500
         @update_callback = params.update_callback
+        @title           = params.title || "No title"
         @count           = 0
         @x               = null
         @y               = null
@@ -35,8 +36,13 @@ class BstatsCounterLineGraph
             .y((d) => @y(d.value))
             .interpolate("linear")
 
-        @vis = d3.select(@div_id)
-            .append("svg:svg")
+        div = d3.select(@div_id)
+
+        div.append("div")
+            .attr("class", "title")
+            .text(@title)
+
+        @vis = div.append("svg:svg")
             .attr("width", @w)
             .attr("height", @h)
             .append("svg:g")
@@ -322,6 +328,7 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_second'
         width        : width
         height       : height
+        title        : "Logins per second"
     })
 
     logins_per_minute = new BstatsCounterLineGraph({
@@ -333,6 +340,7 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : height
+        title        : "Logins per minute"
     })
 
     # ------------ VOTES ----------- #
@@ -345,18 +353,20 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_second'
         width        : width
         height       : height
+        title        : "Votes per second"
     })
 
     votes_per_minute = new BstatsCounterLineGraph({
-        counters     : ["vote_recorded"]
-        hostname     : data.hostname
-        port         : data.port
-        div_id       : "#vote_recorded_per_minute"
-        data_points  : 60
-        socket_path  : 'bstats_counters_per_minute'
-        width        : width
-        height       : height
-        update_callback: (data) ->
+        counters        : ["vote_recorded"]
+        hostname        : data.hostname
+        port            : data.port
+        div_id          : "#vote_recorded_per_minute"
+        data_points     : 60
+        socket_path     : 'bstats_counters_per_minute'
+        width           : width
+        height          : height
+        title           : "Votes per minute"
+        update_callback : (data) ->
             total_votes_in_the_last_hour = d3.sum(@counter_data.vote_recorded.map((d) -> d.value))
             $('#total_votes_in_the_last_hour').text(d3.format(",")(total_votes_in_the_last_hour))
     })
@@ -376,18 +386,20 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_second'
         width        : width
         height       : height
+        title        : "Purchases per second"
     })
 
     credits_per_minute = new BstatsCounterLineGraph({
-        counters     : credit_counters
-        hostname     : data.hostname
-        port         : data.port
-        div_id       : "#credits_per_minute"
-        data_points  : 60
-        socket_path  : 'bstats_counters_per_minute'
-        width        : width
-        height       : height
-        update_callback: (data) ->
+        counters        : credit_counters
+        hostname        : data.hostname
+        port            : data.port
+        div_id          : "#credits_per_minute"
+        data_points     : 60
+        socket_path     : 'bstats_counters_per_minute'
+        width           : width
+        height          : height
+        title           : "Purchases per minute"
+        update_callback : (data) ->
             total_credits_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
             $('#total_credits_in_the_last_hour').text(d3.format(",")(total_credits_in_the_last_hour))
     })
