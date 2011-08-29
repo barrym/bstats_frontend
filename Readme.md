@@ -1,3 +1,5 @@
+# Production
+
 npm install -g coffee-script
 
 npm install
@@ -8,10 +10,14 @@ node server.js
 
 # Dev
 
-npm install coffeescript-growl
+bundle
 
-npm install node-dev
+npm install -g coffee-script
 
-coffee -r coffeescript-growl -b -c -w public/\*/\*.coffee
+npm install -g coffeescript-growl
 
-node-dev server.js
+npm install -g node-dev
+
+npm install
+
+foreman start
