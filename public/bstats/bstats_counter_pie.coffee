@@ -117,13 +117,14 @@ $.get('/config', (data) ->
         "psms_purchase_success",
         "itunes_purchase_success"
     ]
-    credits_per_second = new BstatsCounterPie({
+
+    new BstatsCounterPie({
         counters     : credit_counters
         hostname     : data.hostname
         port         : data.port
-        div_id       : "#pie"
-        data_points  : 300
-        socket_path  : 'bstats_counters_per_second'
+        div_id       : "#credits_in_the_last_hour_pie"
+        data_points  : 60
+        socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : height
         radius       : Math.min(width, height) * 0.4
