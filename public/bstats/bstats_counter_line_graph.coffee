@@ -250,7 +250,7 @@ class BstatsCounterLineGraph
             .attr("cx", (d) => @x(d.time))
             .attr("cy", (d) => @y(d.value))
             .attr("class", (d) -> d.counter)
-            .attr("r", 4)
+            .attr("r", 3)
 
         entering_high.append("svg:text")
             .attr("x", (d) => @x(d.time))
@@ -358,7 +358,7 @@ $.get('/config', (data) ->
         height       : height
         update_callback: (data) ->
             total_votes_in_the_last_hour = d3.sum(@counter_data.vote_recorded.map((d) -> d.value))
-            $('#total_votes_in_the_last_hour').text(total_votes_in_the_last_hour)
+            $('#total_votes_in_the_last_hour').text(d3.format(",")(total_votes_in_the_last_hour))
     })
 
     # ------------ CREDITS ----------- #
@@ -387,6 +387,9 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : height
+        update_callback: (data) ->
+            total_credits_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
+            $('#total_credits_in_the_last_hour').text(d3.format(",")(total_credits_in_the_last_hour))
     })
 
     $('#container').isotope({

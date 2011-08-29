@@ -23,15 +23,16 @@ counters_per_second_sockets = io.of('/bstats_counters_per_second').on('connectio
     init_per_second_counter_objects(socket, 300)
 )
 
+counters_per_minute_sockets = io.of('/bstats_counters_per_minute').on('connection', (socket) ->
+    console.log("counters per minute client connected")
+    init_per_minute_counter_objects(socket, 60)
+)
+
 gauges_per_second_sockets = io.of('/bstats_gauges_per_second').on('connection', (socket) ->
     console.log("gauges per second client connected")
     init_per_second_gauge_objects(socket, 300)
 )
 
-counters_per_minute_sockets = io.of('/bstats_counters_per_minute').on('connection', (socket) ->
-    console.log("counters per minute client connected")
-    init_per_minute_counter_objects(socket, 60)
-)
 
 setInterval(
     () ->

@@ -1,7 +1,12 @@
+@background_color: #ccc;
+@text_color: #000;
+@grid_color: #aaa;
+@font_family: "Helvetica";
+
 body {
-   font-family:"Helvetica";
-    background-color: #ddd;
-    color: #000;
+    font-family: @font_family;
+    background-color: @background_color;
+    color: @text_color;
 }
 
 a {
@@ -15,7 +20,7 @@ div {
 }
 
 div#nav {
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     width: 100%;
 }
 
@@ -30,10 +35,11 @@ div#container {
 }
 
 div.chart {
+    background-color: #ddddff;
     margin-top: 20px;
     width: 49%;
     /* height: 70%; */
-    border: 1px solid blue;
+    border: 1px solid #aaa;
     border-bottom: 1px solid #AAA;
 }
 
@@ -44,13 +50,18 @@ div#legend {
 
 .large {
     font-weight:bold;
-    font-size:8em;
+    font-size:6em;
+}
+
+.highlight {
+    background-color: #FFFF00;
 }
 
 .title {
     text-align: center; /* :( but I don't care */
     font-weight: bold;
     float: none;
+    font-size: 2em;
 }
 
 
@@ -72,10 +83,8 @@ div.text {
 
 @userpass: #CC0000;
 
-@android: #00DD00;
-@iphone: #3333DD;
-
-@vote_recorded: #008800;
+@android: #ff5200;
+@iphone: #d40097;
 
 div.facebook {
     background-color: @facebook;
@@ -91,10 +100,6 @@ div.android {
 
 div.iphone {
     background-color: @iphone;
-}
-
-div.vote_recorded {
-    background-color: @vote_recorded;
 }
 
 .facebook_user_login_success {
@@ -117,15 +122,21 @@ div.vote_recorded {
     stroke: @iphone;
 }
 
-.vote_recorded {
-    stroke: @vote_recorded;
-}
-
 circle { stroke: #000000 !important; }
 circle.facebook_user_login_success { fill: @facebook; }
 circle.userpass_user_login_success { fill: @userpass; }
-circle.vote_recorded { fill: @vote_recorded; }
 
+g.arc path.facebook_purchase_success {
+    fill: @facebook;
+}
+
+g.arc path.psms_purchase_success {
+    fill: @android;
+}
+
+g.arc path.itunes_purchase_success {
+    fill: @iphone;
+}
 
 
 svg {
@@ -133,19 +144,19 @@ svg {
 }
 
 text {
-    font-family: Helvetica;
-    fill: black;
-    stroke: black;
+    font-family: @font_family;
+    fill: @text_color;
+    stroke: @text_color;
     stroke-width:0px;
 }
 
 line {
-    stroke: #bbb;
+    stroke: @grid_color;
 }
 
 path {
     stroke: steelblue;
-    stroke-width: 1.5px;
+    stroke-width: 2px;
     fill:none;
 }
 
