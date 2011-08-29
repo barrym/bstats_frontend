@@ -32,6 +32,7 @@ redis = Redis.new
 while true do
   t = Time.now
   mins = Time.at(t.to_i - t.sec)
+  hours = Time.at(t.to_i - t.min * 60 - t.sec)
   @counters.each do |counter|
     val = 30 + rand(3)
     redis_key = "bstats:counter:per_second:#{counter}:#{t.to_i}"
@@ -41,6 +42,10 @@ while true do
     redis_key = "bstats:counter:per_minute:#{counter}:#{mins.to_i}"
     redis.incrby redis_key, val
     redis.expire redis_key, 3600
+
+    redis_key = "bstats:counter:per_hour:#{counter}:#{hours.to_i}"
+    redis.incrby redis_key, val
+    redis.expire redis_key, 3600 * 24
   end
   sleep 1
 end
