@@ -1,4 +1,4 @@
-class BstatsCounterPie
+class BstatsBase
 
     constructor: (params) ->
         @counters        = params.counters || "all"
@@ -8,7 +8,6 @@ class BstatsCounterPie
         @div_id          = params.div_id
         @w               = params.width
         @h               = params.height
-        @r               = params.radius
         @p_top           = params.padding_top || 25
         @p_right         = params.padding_right || 25
         @p_bottom        = params.padding_bottom || 25
@@ -18,7 +17,6 @@ class BstatsCounterPie
         @update_callback = params.update_callback
         @title           = params.title || "No title"
         @counter_data    = {}
-        @sums            = []
 
         div = d3.select(@div_id)
 
@@ -30,9 +28,6 @@ class BstatsCounterPie
             .attr("width", @w)
             .attr("height", @h)
             .append("svg:g")
-
-        @arc = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
-        @donut = d3.layout.pie().sort(d3.descending).value((d) -> d.sum)
 
         socket = io.connect("http://#{@hostname}:#{@port}/#{@socket_path}")
 
@@ -46,17 +41,30 @@ class BstatsCounterPie
         d3.format(",")(num)
 
     process_new_data: (new_data) =>
+        # Filter out counters we're not interested in
         if @counters == 'all'
-            data_to_process = new_data
+            @data_to_process = new_data
         else
-            data_to_process = new_data.filter((e, i, a) =>
+            @data_to_process = new_data.filter((e, i, a) =>
                 @counters.some((counter, ei, ea) ->
                     counter == e.counter
                 )
             )
 
+class BstatsCounterPie extends BstatsBase
+
+    constructor: (params) ->
+        super params
+        @r               = params.radius
+        @sums            = []
+        @arc = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
+        @donut = d3.layout.pie().sort(d3.descending).value((d) -> d.sum)
+
+    process_new_data: (new_data) =>
+        super new_data
+
         new_data_keys = []
-        for data in data_to_process
+        for data in @data_to_process
             if !@counter_data[data.counter]
                 @counter_data[data.counter] = d3.range(@data_points).map((x) -> 0)
 
@@ -81,9 +89,8 @@ class BstatsCounterPie
                 }
 
         @redraw()
-
         if @update_callback
-            @update_callback(data_to_process)
+            @update_callback(@data_to_process)
 
     redraw: () =>
         arcs = @vis.selectAll("g.arc")
@@ -131,35 +138,20 @@ class BstatsCounterPie
         centre_label.select("text")
             .text((d) => @format(d))
 
-
-class BstatsCounterLineGraph
+class BstatsCounterLineGraph extends BstatsBase
 
     constructor: (params) ->
-        @counters        = params.counters || "all"
-        @hostname        = params.hostname
-        @socket_path     = params.socket_path
-        @port            = params.port
-        @div_id          = params.div_id
-        @data_points     = params.data_points
+        super params
         @x_tick_count    = params.x_tick_count || 6
-        @w               = params.width
-        @h               = params.height
-        @p_top           = params.padding_top || 25
-        @p_right         = params.padding_right || 25
-        @p_bottom        = params.padding_bottom || 25
-        @p_left          = params.padding_left || 55
         @y_tick_count    = params.y_tick_count || 10
-        @duration_time   = params.duration_time || 500
-        @update_callback = params.update_callback
-        @title           = params.title || "No title"
         @count           = 0
         @x               = null
         @y               = null
-        @counter_data    = {}
         @times           = []
         @xrule_data      = []
         @high_point      = []
         @xrule_period    = Math.round(@data_points/@x_tick_count)
+
         @dateFormatter   = d3.time.format("%H:%M:%S")
         @format_date     = (timestamp) =>
             date = new Date(timestamp * 1000)
@@ -170,38 +162,12 @@ class BstatsCounterLineGraph
             .y((d) => @y(d.value))
             .interpolate("linear")
 
-        div = d3.select(@div_id)
-
-        div.append("div")
-            .attr("class", "title")
-            .text(@title)
-
-        @vis = div.append("svg:svg")
-            .attr("width", @w)
-            .attr("height", @h)
-            .append("svg:g")
-
-        socket = io.connect("http://#{@hostname}:#{@port}/#{@socket_path}")
-
-        socket.on('connect', () =>
-            console.log("connected to #{@socket_path}")
-        )
-
-        socket.on(@socket_path, @process_new_data)
-
     process_new_data: (new_data) =>
-        if @counters == 'all'
-            data_to_process = new_data
-        else
-            data_to_process = new_data.filter((e, i, a) =>
-                @counters.some((counter, ei, ea) ->
-                    counter == e.counter
-                )
-            )
+        super new_data
 
         new_data_keys = []
         new_timestamps = {}
-        for data in data_to_process
+        for data in @data_to_process
             if !@counter_data[data.counter]
                 # populate whole dummy data for new variables
                 # is this hacky?
@@ -239,8 +205,7 @@ class BstatsCounterLineGraph
         @calculate_scales()
         @redraw()
         if @update_callback
-            @update_callback(data_to_process)
-
+            @update_callback(@data_to_process)
 
     calculate_scales: () =>
         all_data_objects = d3.merge(d3.values(@counter_data))
@@ -397,7 +362,7 @@ class BstatsCounterLineGraph
             .attr("y", (d) => @y(d.value))
             .attr("text-anchor", "middle")
             .attr("dy", -10)
-            .text((d) -> d3.format(",")(d.value))
+            .text((d) => @format(d.value))
 
         high.select("circle")
             .attr("class", (d) -> d.counter)
