@@ -68,10 +68,14 @@ class BstatsCounterPie
                 delete @counter_data[key]
 
         for entries in d3.entries(@counter_data)
-            @sums[entries.key] = {
-                    counter: entries.key
-                    sum: d3.sum(entries.value)
-            }
+            sum = d3.sum(entries.value)
+            if sum == 0
+                delete @sums[entries.key]
+            else
+                @sums[entries.key] = {
+                        counter: entries.key
+                        sum: sum
+                }
 
         @redraw()
 
@@ -85,10 +89,11 @@ class BstatsCounterPie
         entering_arcs = arcs.enter()
             .append("svg:g")
             .attr("class", "arc")
+            .attr('fill-rule', 'evenodd')
             .attr("transform", "translate(#{@w/2}, #{@h/2})")
 
         entering_arcs.append("svg:path")
-            .attr('d', (d) => @arc(d))
+            .attr('d', (d) => console.log(d);@arc(d))
             .attr('class', (d) -> d.data.counter)
 
         entering_arcs.append("svg:text")
