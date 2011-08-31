@@ -1,11 +1,10 @@
-# ------------- DRAW GRAPHS ------------- #
-
 $.get('/config', (data) ->
     width  = ($(window).width() - 20) * 0.47
     height = $(window).height() * 0.35
 
-    # ------------ LOGINS ----------- #
+    # --- LINE CHARTS --- #
 
+    # ------------ LOGINS ----------- #
     login_counters = [
         "facebook_user_login_success",
         "userpass_user_login_success"
@@ -94,6 +93,28 @@ $.get('/config', (data) ->
         update_callback : (data) ->
             total_credits_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
             $('#total_credits_in_the_last_hour').text(d3.format(",")(total_credits_in_the_last_hour))
+    })
+
+    # --- PIE CHARTS --- #
+
+    # ------------ CREDITS ----------- #
+    credit_counters = [
+        "facebook_purchase_success",
+        "psms_purchase_success",
+        "itunes_purchase_success"
+    ]
+
+    new BstatsCounterPie({
+        counters     : credit_counters
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#credits_in_the_last_hour_pie"
+        data_points  : 60
+        socket_path  : 'bstats_counters_per_minute'
+        width        : width
+        height       : height
+        radius       : Math.min(width, height) * 0.4
+        title        : "Purchases in the last hour"
     })
 
     $('#container').isotope({
