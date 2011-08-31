@@ -1,7 +1,14 @@
-@background_color: #ccc;
+@background_color: #EFEDDC;
 @text_color: #000;
 @grid_color: #aaa;
 @font_family: "Helvetica";
+@highlight_background: #FFFF00;
+@legend_size: 20px;
+
+@facebook: #3B5998;
+@userpass: #CC0000;
+@android: #ff5200;
+@iphone: #9AB12C;
 
 body {
     font-family: @font_family;
@@ -35,26 +42,27 @@ div#container {
 }
 
 div.chart {
-    /*background-color: #ddddff;*/
-    margin-top: 20px;
+    /* background-color: darken(@background_color, 20%); */
+    margin-top: 5px;
     width: 49%;
     /* height: 70%; */
-    /*border: 1px solid #aaa;*/
-    /*border-bottom: 1px solid #AAA;*/
+    /* border: 1px solid #aaa; */
+    /* border-bottom: 1px solid #AAA; */
 }
 
 div#legend {
     margin-left: 10px;
+    font-size: @legend_size;
 }
 
 
 .large {
     font-weight:bold;
-    font-size:6em;
+    font-size:2.5em;
 }
 
 .highlight {
-    background-color: #FFFF00;
+    background-color: @highlight_background;
 }
 
 .green {
@@ -70,9 +78,9 @@ div#legend {
 
 
 .square {
-    width:15px;
-    height: 15px;
-    margin: 0 5px 0 5px;
+    width: @legend_size;
+    height: @legend_size;
+    margin: 0 (@legend_size/3) 0 @legend_size;
 }
 
 .selected {
@@ -80,15 +88,13 @@ div#legend {
 }
 
 div.text {
-    width: 100%;
+    margin-top: 60px;
+    /* width: 100%; */
+    div {
+        float: right;
+        clear: both;
+    }
 }
-
-@facebook: #3B5998;
-
-@userpass: #CC0000;
-
-@android: #ff5200;
-@iphone: #00aa00;
 
 div.facebook {
     background-color: @facebook;
