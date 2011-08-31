@@ -4,7 +4,7 @@
 @font_family: "Helvetica";
 @highlight_background: #FFFF00;
 @legend_size: 20px;
-@default_stroke: #712F9E;
+@default_stroke: lighten(#712F9E, 20%);
 
 @facebook: #3B5998;
 @userpass: #CC0000;
@@ -44,7 +44,7 @@ div#container {
 
 div.chart {
     /* background-color: darken(@background_color, 20%); */
-    margin-top: 5px;
+    margin-top: 10px;
     width: 49%;
     /* height: 70%; */
     /* border: 1px solid #aaa; */
@@ -63,11 +63,16 @@ div#legend {
 }
 
 .highlight {
+    font-size: 1em;
     background-color: @highlight_background;
 }
 
 .green {
     color: #006600;
+}
+
+.grey {
+    color: #999999;
 }
 
 .title {
@@ -89,10 +94,9 @@ div#legend {
 }
 
 div.text {
-    margin-top: 60px;
+    /* margin-top: 60px; */
     /* width: 100%; */
     div {
-        float: right;
         clear: both;
     }
 }

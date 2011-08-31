@@ -9,6 +9,25 @@ $.get('/config', (data) ->
 
     # --- LINE CHARTS --- #
 
+    # ---- REGISTRATIONS ----- #
+    registration_counters = [
+        "facebook_user_registration_success",
+        "userpass_user_registration_success"
+    ]
+
+    registrations_per_minute = new BstatsCounterLineGraph({
+        counters     : registration_counters
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#registrations_per_minute"
+        data_points  : 60
+        socket_path  : 'bstats_counters_per_minute'
+        width        : width
+        height       : per_minute_height
+        y_tick_count : per_minute_y_ticks
+        title        : "Registrations per minute"
+    })
+
     # ------------ LOGINS ----------- #
     login_counters = [
         "facebook_user_login_success",
@@ -124,7 +143,7 @@ $.get('/config', (data) ->
         socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : height
-        radius       : Math.min(width, height) * 0.4
+        radius       : Math.min(width, height) * 0.45
         title        : "Purchases in the last hour"
     })
 
@@ -132,8 +151,9 @@ $.get('/config', (data) ->
         itemSelector: '.chart'
         animationEngine: 'best-available'
         filter: '.plasma'
+        layoutMode: 'masonry'
         # masonry: {
-        #     columnWidth: Math.round(width)
+        #     columnWidth: Math.round(width/3)
         # }
     })
 

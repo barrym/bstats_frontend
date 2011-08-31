@@ -55,6 +55,7 @@ class BstatsBase
                     counter == e.counter
                 )
             )
+        new_data = null
 
 class BstatsCounterPie extends BstatsBase
 
@@ -190,6 +191,8 @@ class BstatsCounterLineGraph extends BstatsBase
                 console.log("Removing #{key}")
                 delete @counter_data[key]
 
+        keys = null
+
         d3.keys(new_timestamps).map((timestamp) =>
             @times.push(timestamp)
 
@@ -201,6 +204,9 @@ class BstatsCounterLineGraph extends BstatsBase
                     @xrule_data.shift()
                 @count = 0
         )
+
+        new_data_keys = null
+        new_timestamps = null
 
         @calculate_scales()
         @redraw()
