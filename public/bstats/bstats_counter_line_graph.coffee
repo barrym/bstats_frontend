@@ -263,7 +263,7 @@ class BstatsCounterLineGraph
             .attr("y", (d) => @y(d.value))
             .attr("text-anchor", "middle")
             .attr("dy", -10)
-            .text((d) -> d.value)
+            .text((d) -> d3.format(",")(d.value))
 
         high.select("circle")
             .attr("class", (d) -> d.counter)

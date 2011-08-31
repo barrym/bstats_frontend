@@ -18,7 +18,7 @@ class BstatsCounterPie
         @update_callback = params.update_callback
         @title           = params.title || "No title"
         @counter_data    = {}
-        @sums            = {}
+        @sums            = []
 
         div = d3.select(@div_id)
 
@@ -41,6 +41,9 @@ class BstatsCounterPie
         )
 
         socket.on(@socket_path, @process_new_data)
+
+    format: (num) ->
+        d3.format(",")(num)
 
     process_new_data: (new_data) =>
         if @counters == 'all'
@@ -93,14 +96,14 @@ class BstatsCounterPie
             .attr("transform", "translate(#{@w/2}, #{@h/2})")
 
         entering_arcs.append("svg:path")
-            .attr('d', (d) => console.log(d);@arc(d))
+            .attr('d', (d) => @arc(d))
             .attr('class', (d) -> d.data.counter)
 
         entering_arcs.append("svg:text")
             .attr('transform', (d) => "translate(#{@arc.centroid(d)})")
             .attr('text-anchor', 'middle')
             .attr('dy', '.35em')
-            .text((d) -> d.data.sum)
+            .text((d) => @format(d.value))
 
         arcs.select("path")
             .transition()
@@ -112,7 +115,21 @@ class BstatsCounterPie
             .attr('transform', (d) => "translate(#{@arc.centroid(d)})")
             .attr('text-anchor', 'middle')
             .attr('dy', '.35em')
-            .text((d) -> d.data.sum)
+            .text((d) => @format(d.value))
+
+        centre_label = @vis.selectAll("g.centre_label")
+            .data([d3.sum(d3.values(@sums), (d) -> d.sum)])
+
+        centre_label.enter()
+            .append("svg:g")
+            .attr("class", "centre_label")
+            .attr("transform", "translate(#{@w/2}, #{@h/2})")
+            .append("svg:text")
+            .attr("text-anchor", "middle")
+            .text((d) => @format(d))
+
+        centre_label.select("text")
+            .text((d) => @format(d))
 
 
 
