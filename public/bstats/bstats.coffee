@@ -17,6 +17,7 @@ class BstatsBase
         @update_callback = params.update_callback
         @title           = params.title || "No title"
         @counter_data    = {}
+        @dateFormatter   = d3.time.format("%H:%M:%S")
 
         div = d3.select(@div_id)
 
@@ -39,6 +40,10 @@ class BstatsBase
 
     format: (num) ->
         d3.format(",")(num)
+
+    format_timestamp: (timestamp) =>
+        date = new Date(timestamp * 1000)
+        @dateFormatter(date)
 
     process_new_data: (new_data) =>
         # Filter out counters we're not interested in
@@ -152,11 +157,6 @@ class BstatsCounterLineGraph extends BstatsBase
         @high_point      = []
         @xrule_period    = Math.round(@data_points/@x_tick_count)
 
-        @dateFormatter   = d3.time.format("%H:%M:%S")
-        @format_date     = (timestamp) =>
-            date = new Date(timestamp * 1000)
-            @dateFormatter(date)
-
         @path = d3.svg.line()
             .x((d, i) => @x(d.time))
             .y((d) => @y(d.value))
@@ -242,7 +242,7 @@ class BstatsCounterLineGraph extends BstatsBase
             .attr("x2", (d) => @x(d.time))
 
         entering_xrule.append("svg:text")
-            .text((d) => @format_date(d.time))
+            .text((d) => @format_timestamp(d.time))
             .style("font-size", "14")
             .attr("text-anchor", "middle")
             .attr("x", @w + @p_left)
