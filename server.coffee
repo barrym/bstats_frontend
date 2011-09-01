@@ -38,8 +38,8 @@ gauges_per_second_sockets = io.of('/bstats_gauges_per_second').on('connection', 
 setInterval(
     () ->
         now = timestamp() - seconds_offset
-        send_counter_objects_for_timestamp(counters_per_second_sockets, [now], 'new_data')
-        send_gauge_objects_for_timestamp(gauges_per_second_sockets, [now], 'new_data')
+        send_counter_objects_for_timestamp(counters_per_second_sockets, [now], 'bstats_counters_per_second')
+        send_gauge_objects_for_timestamp(gauges_per_second_sockets, [now], 'bstats_gauges_per_second')
 , 1000)
 
 setInterval(
@@ -47,7 +47,7 @@ setInterval(
         d = new Date()
         current_minute = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes())
         now = timestamp_for_date(current_minute) - minutes_offset * 60
-        send_counter_objects_for_timestamp(counters_per_minute_sockets, [now], 'new_data')
+        send_counter_objects_for_timestamp(counters_per_minute_sockets, [now], 'bstats_counters_per_minute')
 , 60000)
 
 # --------------- PER SECOND ------------------
@@ -55,12 +55,12 @@ setInterval(
 init_per_second_counter_objects = (sockets, data_points) ->
     now = timestamp() - seconds_offset
     timestamps = [(now - data_points)...now]
-    send_counter_objects_for_timestamp(sockets, timestamps, 'new_data')
+    send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_second')
 
 init_per_second_gauge_objects = (sockets, data_points) ->
     now = timestamp() - seconds_offset
     timestamps = [(now - data_points)...now]
-    send_gauge_objects_for_timestamp(sockets, timestamps, 'new_data')
+    send_gauge_objects_for_timestamp(sockets, timestamps, 'bstats_gauges_per_second')
 
 # --------------- PER MINUTE ------------------
 
@@ -70,7 +70,7 @@ init_per_minute_counter_objects = (sockets, data_points) ->
     now = timestamp_for_date(current_minute) - minutes_offset * 60
     timestamps = (x for x in [(now - data_points * 60)...now] by 60)
 
-    send_counter_objects_for_timestamp(sockets, timestamps, 'new_data')
+    send_counter_objects_for_timestamp(sockets, timestamps, 'bstats_counters_per_minute')
 
 # --------------- COUNTERS ---------------------
 
