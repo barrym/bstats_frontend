@@ -17,11 +17,9 @@ $.get('/config', (data) ->
 
     registrations_per_minute = new BstatsCounterLineGraph({
         counters     : registration_counters
-        hostname     : data.hostname
-        port         : data.port
         div_id       : "#registrations_per_minute"
-        data_points  : 60
-        socket_path  : 'bstats_counters_per_minute'
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_minute'
         width        : width
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
@@ -36,11 +34,9 @@ $.get('/config', (data) ->
 
     logins_per_minute = new BstatsCounterLineGraph({
         counters     : login_counters
-        hostname     : data.hostname
-        port         : data.port
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_minute'
         div_id       : "#logins_per_minute"
-        data_points  : 60
-        socket_path  : 'bstats_counters_per_minute'
         width        : width
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
@@ -50,11 +46,9 @@ $.get('/config', (data) ->
     # ------------ VOTES ----------- #
     votes_per_second = new BstatsCounterLineGraph({
         counters     : ["vote_recorded"]
-        hostname     : data.hostname
-        port         : data.port
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_second'
         div_id       : "#vote_recorded_per_second"
-        data_points  : 300
-        socket_path  : 'bstats_counters_per_second'
         width        : width
         height       : per_second_height
         y_tick_count : per_second_y_ticks
@@ -63,11 +57,9 @@ $.get('/config', (data) ->
 
     votes_per_minute = new BstatsCounterLineGraph({
         counters        : ["vote_recorded"]
-        hostname        : data.hostname
-        port            : data.port
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_minute'
         div_id          : "#vote_recorded_per_minute"
-        data_points     : 60
-        socket_path     : 'bstats_counters_per_minute'
         width           : width
         height          : per_minute_height
         y_tick_count : per_minute_y_ticks
@@ -86,11 +78,9 @@ $.get('/config', (data) ->
 
     purchases_per_minute = new BstatsCounterLineGraph({
         counters        : credit_counters
-        hostname        : data.hostname
-        port            : data.port
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_minute'
         div_id          : "#purchases_per_minute"
-        data_points     : 60
-        socket_path     : 'bstats_counters_per_minute'
         width           : width
         height          : per_minute_height
         y_tick_count : per_minute_y_ticks
@@ -111,40 +101,30 @@ $.get('/config', (data) ->
 
     purchases_pie = new BstatsCounterPie({
         counters     : purchase_counters
-        hostname     : data.hostname
-        port         : data.port
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_minute'
         div_id       : "#purchases_in_the_last_hour_pie"
-        data_points  : 60
-        socket_path  : 'bstats_counters_per_minute'
         width        : Math.min(width, height)
         height       : Math.min(width, height)
         radius       : Math.min(width, height) * 0.45
-        # title        : "Purchases in the last hour"
         inner_title  : "purchases"
     })
 
     logins_pie = new BstatsCounterPie({
         counters     : login_counters
-        hostname     : data.hostname
-        port         : data.port
+        socket_host  : "http://#{data.hostname}:#{data.port}"
+        timestep     : 'per_minute'
         div_id       : "#logins_in_the_last_hour_pie"
-        data_points  : 60
-        socket_path  : 'bstats_counters_per_minute'
         width        : Math.min(width, height)
         height       : Math.min(width, height)
         radius       : Math.min(width, height) * 0.45
-        # title        : "Purchases in the last hour"
         inner_title  : "logins"
     })
 
     $('#container').isotope({
         itemSelector: '.chart'
         animationEngine: 'best-available'
-        # filter: '.plasma'
         layoutMode: 'masonry'
-        # masonry: {
-        #     columnWidth: Math.round(width/3)
-        # }
     })
 
     $('#filters a').click(() ->

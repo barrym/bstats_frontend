@@ -2,9 +2,11 @@ class BstatsBase
 
     constructor: (params) ->
         @counters        = params.counters || "all"
-        @hostname        = params.hostname
-        @socket_path     = params.socket_path
-        @port            = params.port
+        # @hostname        = params.hostname
+        # @socket_path     = params.socket_path
+        # @port            = params.port
+        @socket_host     = params.socket_host
+        @timestep        = params.timestep
         @div_id          = params.div_id
         @w               = params.width
         @h               = params.height
@@ -12,12 +14,13 @@ class BstatsBase
         @p_right         = params.padding_right || 25
         @p_bottom        = params.padding_bottom || 25
         @p_left          = params.padding_left || 65
-        @data_points     = params.data_points
+        # @data_points     = params.data_points
         @duration_time   = params.duration_time || 500
         @update_callback = params.update_callback
         @title           = params.title
         @counter_data    = {}
         @dateFormatter   = d3.time.format("%H:%M:%S")
+        @data_points = if @timestep == 'per_second' then 300 else 60
 
         div = d3.select(@div_id)
 
@@ -31,13 +34,15 @@ class BstatsBase
             .attr("height", @h)
             .append("svg:g")
 
-        socket = io.connect("http://#{@hostname}:#{@port}/#{@socket_path}")
+        if @socket_host
+            socket_url = "#{@socket_host}/bstats_counters_#{@timestep}"
+            socket = io.connect(socket_url)
 
-        socket.on('connect', () =>
-            console.log("connected to #{@socket_path}")
-        )
+            socket.on('connect', () =>
+                console.log("connected to #{socket_url}")
+            )
 
-        socket.on(@socket_path, @process_new_data)
+            socket.on("bstats_counters_#{@timestep}", @process_new_data)
 
     format: (num) ->
         d3.format(",")(num)
