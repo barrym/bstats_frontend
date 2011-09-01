@@ -34,19 +34,6 @@ $.get('/config', (data) ->
         "userpass_user_login_success"
     ]
 
-    logins_per_second = new BstatsCounterLineGraph({
-        counters     : login_counters
-        hostname     : data.hostname
-        port         : data.port
-        div_id       : "#logins_per_second"
-        data_points  : 300
-        socket_path  : 'bstats_counters_per_second'
-        width        : width
-        height       : per_second_height
-        y_tick_count : per_second_y_ticks
-        title        : "Logins"
-    })
-
     logins_per_minute = new BstatsCounterLineGraph({
         counters     : login_counters
         hostname     : data.hostname
@@ -96,18 +83,6 @@ $.get('/config', (data) ->
         "psms_purchase_success",
         "itunes_purchase_success"
     ]
-    purchases_per_second = new BstatsCounterLineGraph({
-        counters     : credit_counters
-        hostname     : data.hostname
-        port         : data.port
-        div_id       : "#purchases_per_second"
-        data_points  : 300
-        socket_path  : 'bstats_counters_per_second'
-        width        : width
-        height       : per_second_height
-        y_tick_count : per_second_y_ticks
-        title        : "Purchases"
-    })
 
     purchases_per_minute = new BstatsCounterLineGraph({
         counters        : credit_counters
