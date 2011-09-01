@@ -1,7 +1,7 @@
 @background_color: #EFEDDC;
 @text_color: #000;
 @grid_color: #aaa;
-@font_family: "Helvetica";
+@font_family: "museo-sans";
 @highlight_background: #FFFF00;
 @legend_size: 20px;
 @default_stroke: lighten(#712F9E, 20%);
@@ -49,6 +49,12 @@ div.chart {
     /* height: 70%; */
     /* border: 1px solid #aaa; */
     /* border-bottom: 1px solid #AAA; */
+
+    svg {
+        /* border: 1px solid blue; */
+        float: none;
+        margin: auto;
+    }
 }
 
 div#legend {
@@ -76,12 +82,14 @@ div#legend {
 }
 
 .title {
-    text-align: center; /* :( but I don't care */
+    text-align: left; /* :( but I don't care */
     font-weight: bold;
-    float: none;
     font-size: 2em;
 }
 
+.inner_title {
+    font-weight: bold;
+}
 
 .square {
     width: @legend_size;
@@ -160,6 +168,14 @@ g.arc path.psms_purchase_success {
 
 g.arc path.itunes_purchase_success {
     fill: @iphone;
+}
+
+g.arc path.facebook_user_login_success {
+    fill: @facebook;
+}
+
+g.arc path.userpass_user_login_success {
+    fill: @userpass;
 }
 
 
