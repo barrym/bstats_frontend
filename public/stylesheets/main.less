@@ -172,9 +172,14 @@ div.iphone {
     stroke: @iphone;
 }
 
-circle { stroke: #000000 !important; }
+circle {
+    stroke: #000000 !important;
+    fill: @default_stroke;
+}
 circle.facebook_user_login_success { fill: @facebook; }
+circle.facebook_user_registration_success { fill: @facebook; }
 circle.userpass_user_login_success { fill: @userpass; }
+circle.userpass_user_registration_success { fill: @userpass; }
 
 g.arc path.facebook_purchase_success {
     fill: @facebook;
