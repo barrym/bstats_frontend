@@ -29,14 +29,28 @@ redis = Redis.new
   :itunes_request_failed
 ]
 
+@values = {}
+
 while true do
   t = Time.now
   mins = Time.at(t.to_i - t.sec)
   hours = Time.at(t.to_i - t.min * 60 - t.sec)
   @counters.each do |counter|
-    val = 30 + rand(3)
+    @values[counter] ||= 0
+    case rand(3)
+    when 0:
+      @values[counter] += 1 + rand(2)
+    when 1:
+      @values[counter] -= (1 + rand(2))
+      if @values[counter] <= 0
+        @values[counter] = 0
+      end
+    when 2:
+    end
+    val = @values[counter]
+
     redis_key = "bstats:counter:per_second:#{counter}:#{t.to_i}"
-    redis.incrby redis_key, val
+    redis.set redis_key, val
     redis.expire redis_key, 60 * 5
 
     redis_key = "bstats:counter:per_minute:#{counter}:#{mins.to_i}"
@@ -47,5 +61,5 @@ while true do
     redis.incrby redis_key, val
     redis.expire redis_key, 3600 * 24
   end
-  sleep 1
+  sleep 0.8
 end
