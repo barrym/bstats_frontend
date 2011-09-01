@@ -2,9 +2,7 @@ class BstatsBase
 
     constructor: (params) ->
         @counters        = params.counters || "all"
-        @hostname        = params.hostname
-        @socket_path     = params.socket_path
-        @port            = params.port
+        @socket_url      = params.socket_url
         @div_id          = params.div_id
         @w               = params.width
         @h               = params.height
@@ -31,13 +29,14 @@ class BstatsBase
             .attr("height", @h)
             .append("svg:g")
 
-        socket = io.connect("http://#{@hostname}:#{@port}/#{@socket_path}")
+        if @socket_url
+            socket = io.connect(@socket_url)
 
-        socket.on('connect', () =>
-            console.log("connected to #{@socket_path}")
-        )
+            socket.on('connect', () =>
+                console.log("connected to #{@socket_url}")
+            )
 
-        socket.on(@socket_path, @process_new_data)
+            socket.on('new_data', @process_new_data)
 
     format: (num) ->
         d3.format(",")(num)
