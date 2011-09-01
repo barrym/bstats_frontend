@@ -29,23 +29,35 @@ redis = Redis.new
   :itunes_request_failed
 ]
 
+@counters.each do |counter|
+  redis.sadd "bstats:counters", counter
+end
+
 @values = {}
 
 while true do
   t = Time.now
   mins = Time.at(t.to_i - t.sec)
   hours = Time.at(t.to_i - t.min * 60 - t.sec)
+
   @counters.each do |counter|
     @values[counter] ||= 0
-    case rand(3)
+
+    if @values[counter] >= 50
+      weight = 4
+    else
+      weight = 3
+    end
+
+    case rand(weight)
     when 0:
       @values[counter] += 1 + rand(2)
     when 1:
+    when 2:
       @values[counter] -= (1 + rand(2))
       if @values[counter] <= 0
         @values[counter] = 0
       end
-    when 2:
     end
     val = @values[counter]
 
@@ -61,5 +73,7 @@ while true do
     redis.incrby redis_key, val
     redis.expire redis_key, 3600 * 24
   end
+  puts t.to_i
+  puts @values[:vote_recorded]
   sleep 0.8
 end
