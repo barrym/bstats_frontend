@@ -11,19 +11,20 @@ class BstatsBase
         @p_top           = params.padding_top || 25
         @p_right         = params.padding_right || 25
         @p_bottom        = params.padding_bottom || 25
-        @p_left          = params.padding_left || 55
+        @p_left          = params.padding_left || 65
         @data_points     = params.data_points
         @duration_time   = params.duration_time || 500
         @update_callback = params.update_callback
-        @title           = params.title || "No title"
+        @title           = params.title
         @counter_data    = {}
         @dateFormatter   = d3.time.format("%H:%M:%S")
 
         div = d3.select(@div_id)
 
-        div.append("div")
-            .attr("class", "title")
-            .text(@title)
+        if @title
+            div.append("div")
+                .attr("class", "title")
+                .text(@title)
 
         @vis = div.append("svg:svg")
             .attr("width", @w)
@@ -62,6 +63,7 @@ class BstatsCounterPie extends BstatsBase
     constructor: (params) ->
         super params
         @r               = params.radius
+        @inner_title     = params.inner_title
         @sums            = []
         @arc = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
         @donut = d3.layout.pie().sort(d3.descending).value((d) -> d.sum)
@@ -133,15 +135,30 @@ class BstatsCounterPie extends BstatsBase
         centre_label = @vis.selectAll("g.centre_label")
             .data([d3.sum(d3.values(@sums), (d) -> d.sum)])
 
-        centre_label.enter()
+        new_label = centre_label.enter()
             .append("svg:g")
             .attr("class", "centre_label")
             .attr("transform", "translate(#{@w/2}, #{@h/2})")
-            .append("svg:text")
-            .attr("text-anchor", "middle")
-            .text((d) => @format(d))
 
-        centre_label.select("text")
+        if @inner_title
+            new_label.append("svg:text")
+                .attr("class", "number")
+                .attr('dy', -10)
+                .attr("text-anchor", "middle")
+                .text((d) => @format(d))
+
+            new_label.append("svg:text")
+                .attr('dy', 10)
+                .attr("text-anchor", "middle")
+                .attr("class", "inner_title")
+                .text(@inner_title)
+        else
+            new_label.append("svg:text")
+                .attr("class", "number")
+                .attr("text-anchor", "middle")
+                .text((d) => @format(d))
+
+        centre_label.select("text.number")
             .text((d) => @format(d))
 
 class BstatsCounterLineGraph extends BstatsBase

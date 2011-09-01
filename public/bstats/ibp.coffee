@@ -25,7 +25,7 @@ $.get('/config', (data) ->
         width        : width
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title        : "Registrations per minute"
+        title        : "Registrations"
     })
 
     # ------------ LOGINS ----------- #
@@ -44,7 +44,7 @@ $.get('/config', (data) ->
         width        : width
         height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title        : "Logins per second"
+        title        : "Logins"
     })
 
     logins_per_minute = new BstatsCounterLineGraph({
@@ -57,7 +57,7 @@ $.get('/config', (data) ->
         width        : width
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title        : "Logins per minute"
+        title        : "Logins"
     })
 
     # ------------ VOTES ----------- #
@@ -71,7 +71,7 @@ $.get('/config', (data) ->
         width        : width
         height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title        : "Votes per second"
+        title        : "Votes"
     })
 
     votes_per_minute = new BstatsCounterLineGraph({
@@ -84,13 +84,13 @@ $.get('/config', (data) ->
         width           : width
         height          : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title           : "Votes per minute"
+        title           : "Votes"
         update_callback : (data) ->
             total_votes_in_the_last_hour = d3.sum(@counter_data.vote_recorded.map((d) -> d.value))
             $('#total_votes_in_the_last_hour').text(d3.format(",")(total_votes_in_the_last_hour))
     })
 
-    # ------------ purchases ----------- #
+    # ------------ PURCHASES ----------- #
     credit_counters = [
         "facebook_purchase_success",
         "psms_purchase_success",
@@ -106,7 +106,7 @@ $.get('/config', (data) ->
         width        : width
         height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title        : "Purchases per second"
+        title        : "Purchases"
     })
 
     purchases_per_minute = new BstatsCounterLineGraph({
@@ -119,7 +119,7 @@ $.get('/config', (data) ->
         width           : width
         height          : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title           : "Purchases per minute"
+        title           : "Purchases"
         update_callback : (data) ->
             total_purchases_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
             $('#total_purchases_in_the_last_hour').text(d3.format(",")(total_purchases_in_the_last_hour))
@@ -128,23 +128,38 @@ $.get('/config', (data) ->
     # --- PIE CHARTS --- #
 
     # ------------ purchases ----------- #
-    credit_counters = [
+    purchase_counters = [
         "facebook_purchase_success",
         "psms_purchase_success",
         "itunes_purchase_success"
     ]
 
-    new BstatsCounterPie({
-        counters     : credit_counters
+    purchases_pie = new BstatsCounterPie({
+        counters     : purchase_counters
         hostname     : data.hostname
         port         : data.port
         div_id       : "#purchases_in_the_last_hour_pie"
         data_points  : 60
         socket_path  : 'bstats_counters_per_minute'
-        width        : width
-        height       : height
+        width        : Math.min(width, height)
+        height       : Math.min(width, height)
         radius       : Math.min(width, height) * 0.45
-        title        : "Purchases in the last hour"
+        # title        : "Purchases in the last hour"
+        inner_title  : "purchases"
+    })
+
+    logins_pie = new BstatsCounterPie({
+        counters     : login_counters
+        hostname     : data.hostname
+        port         : data.port
+        div_id       : "#logins_in_the_last_hour_pie"
+        data_points  : 60
+        socket_path  : 'bstats_counters_per_minute'
+        width        : Math.min(width, height)
+        height       : Math.min(width, height)
+        radius       : Math.min(width, height) * 0.45
+        # title        : "Purchases in the last hour"
+        inner_title  : "logins"
     })
 
     $('#container').isotope({
