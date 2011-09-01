@@ -140,7 +140,7 @@ $.get('/config', (data) ->
     $('#container').isotope({
         itemSelector: '.chart'
         animationEngine: 'best-available'
-        filter: '.plasma'
+        # filter: '.plasma'
         layoutMode: 'masonry'
         # masonry: {
         #     columnWidth: Math.round(width/3)

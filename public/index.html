@@ -16,21 +16,6 @@
         <script type="text/javascript" src="/bstats/ibp.js"></script>
     </head>
     <body>
-        <div id="nav">
-            <div id="legend">
-                <div class="square facebook"></div>
-                <div>Facebook</div>
-
-                <div class="square iphone"></div>
-                <div>iPhone</div>
-
-                <div class="square android"></div>
-                <div>Android</div>
-
-                <div class="square userpass"></div>
-                <div>iPhone/Android</div>
-            </div>
-        </div>
         <div id="container">
             <div class="chart per_second plasma" id="vote_recorded_per_second"></div>
 
@@ -51,6 +36,30 @@
             </div>
 
             <div class="chart per_minute plasma" id="vote_recorded_per_minute"></div>
+
+
+            <div class="chart" id="legend">
+                <div class="legend_item">
+                    <div class="square facebook"></div>
+                    <div>Facebook</div>
+                </div>
+
+                <div class="legend_item">
+                    <div class="square iphone"></div>
+                    <div>iPhone</div>
+                </div>
+
+                <div class="legend_item">
+                    <div class="square android"></div>
+                    <div>Android</div>
+                </div>
+
+                <div class="legend_item">
+                    <div class="square userpass"></div>
+                    <div>iPhone/Android</div>
+                </div>
+            </div>
+
         </div>
     </body>
 </html>
