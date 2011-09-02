@@ -2,9 +2,6 @@ class BstatsBase
 
     constructor: (params) ->
         @counters        = params.counters || "all"
-        # @hostname        = params.hostname
-        # @socket_path     = params.socket_path
-        # @port            = params.port
         @socket_host     = params.socket_host
         @timestep        = params.timestep
         @div_id          = params.div_id
@@ -14,7 +11,6 @@ class BstatsBase
         @p_right         = params.padding_right || 25
         @p_bottom        = params.padding_bottom || 25
         @p_left          = params.padding_left || 65
-        # @data_points     = params.data_points
         @duration_time   = params.duration_time || 500
         @update_callback = params.update_callback
         @title           = params.title

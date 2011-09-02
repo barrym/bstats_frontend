@@ -73,7 +73,5 @@ while true do
     redis.incrby redis_key, val
     redis.expire redis_key, 3600 * 24
   end
-  puts t.to_i
-  puts @values[:vote_recorded]
   sleep 0.8
 end
