@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>bstats</title>
+        <link rel="stylesheet/less" type="text/css" href="/stylesheets/main.less"/>
+        <script type="text/javascript" src="http://use.typekit.com/fuu0jix.js"></script>
+        <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+        <script type="text/javascript" src="/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="/jquery.isotope.min.js"></script>
+        <script type="text/javascript" src="/less-1.1.3.min.js"></script>
+        <script type="text/javascript" src="/d3/d3.js"></script>
+        <script type="text/javascript" src="/d3/d3.time.js"></script>
+        <script type="text/javascript" src="/d3/d3.layout.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="/bstats/bstats.js"></script>
+        <script type="text/javascript" src="/bstats/dev.js"></script>
+    </head>
+    <body class="tk-calluna-sans">
+        <div id="container">
+            <div id="nav">
+                <div id="legend">
+                    <div class="legend_item">
+                        <div class="square facebook"></div>
+                        <div>Facebook</div>
+                    </div>
+
+                    <div class="legend_item">
+                        <div class="square iphone"></div>
+                        <div>iPhone</div>
+                    </div>
+
+                    <div class="legend_item">
+                        <div class="square android"></div>
+                        <div>Android</div>
+                    </div>
+
+                    <div class="legend_item">
+                        <div class="square userpass"></div>
+                        <div>iPhone/Android</div>
+                    </div>
+                </div>
+                <div id="filters">
+                    <a href="#" filter="*">everything</a>
+                    <a href="#" filter=".per_minute" class="selected">per minute</a>
+                    <a href="#" filter=".per_second">per second</a>
+                </div>
+            </div>
+            <div id="isotopes">
+                <div class="chart label large grey">in the last hour</div>
+                <div class="chart label large grey">in the last 5 minutes</div>
+
+                <div class="chart per_minute" id="registrations_per_minute"></div>
+                <div class="chart per_second" id="registrations_per_second"></div>
+
+                <div class="chart per_minute" id="logins_per_minute"></div>
+                <div class="chart per_second" id="logins_per_second"></div>
+
+                <div class="chart per_minute" id="purchases_per_minute"></div>
+                <div class="chart per_second" id="purchases_per_second"></div>
+
+                <div class="chart per_minute" id="vote_recorded_per_minute"></div>
+                <div class="chart per_second" id="vote_recorded_per_second"></div>
+
+                <div class="chart per_minute" id="mt_sent_per_minute"></div>
+                <div class="chart per_second" id="mt_sent_per_second"></div>
+            </div>
+        </div>
+    </body>
+</html>

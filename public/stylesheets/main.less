@@ -1,7 +1,7 @@
 @background_color: #EFEDDC;
 @text_color: #000;
 @grid_color: #aaa;
-@font_family: "museo-sans";
+@font_family: "museo-sans", "helvetica";
 @highlight_background: #FFFF00;
 @legend_size: 20px;
 @default_stroke: lighten(#712F9E, 20%);
@@ -34,12 +34,20 @@ div.half {
 
 div#nav {
     /* margin-bottom: 10px; */
-    border: 1px solid black;
+    /* border: 1px solid black; */
     width: 100%;
 }
 
 div#filters {
     float:right;
+}
+
+div#isotopes {
+    width: 100%;
+
+    div {
+        width: 49%;
+    }
 }
 
 div#container {
@@ -81,6 +89,7 @@ div#legend {
 }
 
 .clear {
+    border: 1px solid red;
     clear: both;
     width: 100%;
 }

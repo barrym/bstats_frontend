@@ -4,14 +4,24 @@ $.get('/config', (data) ->
 
     per_second_height = height * 3/4
     per_second_y_ticks = 5
-    per_minute_height = height/2
-    per_minute_y_ticks = 3
+    per_minute_height = height * 3/4
+    per_minute_y_ticks = 4
 
     # ---- REGISTRATIONS ----- #
     registration_counters = [
         "facebook_user_registration_success",
         "userpass_user_registration_success"
     ]
+
+    registrations_per_second = new BstatsCounterLineGraph({
+        counters     : registration_counters
+        div_id       : "#registrations_per_second"
+        timestep     : 'per_second'
+        width        : width
+        height       : per_second_height
+        y_tick_count : per_second_y_ticks
+        title        : "Registrations"
+    })
 
     registrations_per_minute = new BstatsCounterLineGraph({
         counters     : registration_counters
@@ -29,6 +39,16 @@ $.get('/config', (data) ->
         "userpass_user_login_success"
     ]
 
+    logins_per_second = new BstatsCounterLineGraph({
+        counters     : login_counters
+        timestep     : 'per_second'
+        div_id       : "#logins_per_second"
+        width        : width
+        height       : per_second_height
+        y_tick_count : per_second_y_ticks
+        title        : "Logins"
+    })
+
     logins_per_minute = new BstatsCounterLineGraph({
         counters     : login_counters
         timestep     : 'per_minute'
@@ -37,16 +57,6 @@ $.get('/config', (data) ->
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
         title        : "Logins"
-    })
-
-    logins_pie = new BstatsCounterPie({
-        counters     : login_counters
-        timestep     : 'per_minute'
-        div_id       : "#logins_in_the_last_hour_pie"
-        width        : Math.min(width, height)
-        height       : Math.min(width, height)
-        radius       : Math.min(width, height) * 0.45
-        inner_title  : "logins"
     })
 
     # ------------ VOTES ----------- #
@@ -80,6 +90,16 @@ $.get('/config', (data) ->
         "itunes_purchase_success"
     ]
 
+    purchases_per_second = new BstatsCounterLineGraph({
+        counters        : purchase_counters
+        timestep     : 'per_second'
+        div_id          : "#purchases_per_second"
+        width           : width
+        height          : per_second_height
+        y_tick_count : per_second_y_ticks
+        title           : "Purchases"
+    })
+
     purchases_per_minute = new BstatsCounterLineGraph({
         counters        : purchase_counters
         timestep     : 'per_minute'
@@ -93,15 +113,26 @@ $.get('/config', (data) ->
             $('#total_purchases_in_the_last_hour').text(d3.format(",")(total_purchases_in_the_last_hour))
     })
 
-    purchases_pie = new BstatsCounterPie({
-        counters     : purchase_counters
-        timestep     : 'per_minute'
-        div_id       : "#purchases_in_the_last_hour_pie"
-        width        : Math.min(width, height)
-        height       : Math.min(width, height)
-        radius       : Math.min(width, height) * 0.45
-        inner_title  : "purchases"
+    mt_sent_per_second = new BstatsCounterLineGraph({
+        counters        : ["mt_sent"]
+        timestep     : 'per_second'
+        div_id          : "#mt_sent_per_second"
+        width           : width
+        height          : per_second_height
+        y_tick_count : per_second_y_ticks
+        title           : "MTs sent"
     })
+
+    mt_sent_per_minute = new BstatsCounterLineGraph({
+        counters        : ["mt_sent"]
+        timestep     : 'per_minute'
+        div_id          : "#mt_sent_per_minute"
+        width           : width
+        height          : per_minute_height
+        y_tick_count : per_minute_y_ticks
+        title           : "MTs sent"
+    })
+
 
     per_second_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_second")
 
@@ -110,7 +141,11 @@ $.get('/config', (data) ->
     )
 
     per_second_socket.on("bstats_counters_per_second", (new_data) ->
+        registrations_per_second.process_new_data(new_data)
+        logins_per_second.process_new_data(new_data)
+        purchases_per_second.process_new_data(new_data)
         votes_per_second.process_new_data(new_data)
+        mt_sent_per_second.process_new_data(new_data)
     )
 
     per_minute_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_minute")
@@ -124,7 +159,25 @@ $.get('/config', (data) ->
         logins_per_minute.process_new_data(new_data)
         votes_per_minute.process_new_data(new_data)
         purchases_per_minute.process_new_data(new_data)
-        purchases_pie.process_new_data(new_data)
-        logins_pie.process_new_data(new_data)
+        mt_sent_per_minute.process_new_data(new_data)
+    )
+
+    $('#isotopes').isotope({
+        itemSelector: '.chart'
+        animationEngine: 'best-available'
+        # layoutMode: 'straightDown'
+        filter: '.per_minute'
+        cellsByColumn: {
+            columnWidth: Math.round(width/2)
+            rowWidth: Math.round(height/2)
+        }
+    })
+
+    $('#filters a').click(() ->
+        selector = $(this).attr('filter')
+        $('#filters a').removeClass("selected")
+        $(this).addClass("selected")
+        $('#isotopes').isotope({ filter: selector })
+        false
     )
 )
