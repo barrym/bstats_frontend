@@ -17,49 +17,46 @@
     </head>
     <body>
         <div id="container">
-            <div class="chart per_second plasma" id="vote_recorded_per_second"></div>
+            <div class="half">
+                <div class="chart per_second plasma" id="vote_recorded_per_second"></div>
+                <div class="chart pie plasma">
+                    <div id="logins_in_the_last_hour_pie"></div>
+                    <div id="purchases_in_the_last_hour_pie"></div>
+                </div>
+                <div class="chart large text plasma">
+                    <div><span id="total_votes_in_the_last_hour" class="green"></span> votes cast</div>
+                    <div><span id="total_purchases_in_the_last_hour" class="green"></span> purchases made</div>
+                    <div class="grey">in the last hour</div><br/>
+                </div>
+                <div class="chart" id="legend">
+                    <div class="legend_item">
+                        <div class="square facebook"></div>
+                        <div>Facebook</div>
+                    </div>
 
-            <div class="chart per_minute plasma" id="registrations_per_minute"></div>
-            <div class="chart per_minute plasma" id="logins_per_minute"></div>
+                    <div class="legend_item">
+                        <div class="square iphone"></div>
+                        <div>iPhone</div>
+                    </div>
 
-            <div class="chart pie plasma">
-                <div id="logins_in_the_last_hour_pie"></div>
-                <div id="purchases_in_the_last_hour_pie"></div>
+                    <div class="legend_item">
+                        <div class="square android"></div>
+                        <div>Android</div>
+                    </div>
+
+                    <div class="legend_item">
+                        <div class="square userpass"></div>
+                        <div>iPhone/Android</div>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="chart per_minute plasma" id="purchases_per_minute"></div>
-
-            <div class="chart large text plasma">
-                <div><span id="total_votes_in_the_last_hour" class="green"></span> votes cast</div>
-                <div><span id="total_purchases_in_the_last_hour" class="green"></span> purchases made</div>
-                <div class="grey">in the last hour</div><br/>
+            <div class="half">
+                <div class="chart per_minute plasma" id="registrations_per_minute"></div>
+                <div class="chart per_minute plasma" id="logins_per_minute"></div>
+                <div class="chart per_minute plasma" id="purchases_per_minute"></div>
+                <div class="chart per_minute plasma" id="vote_recorded_per_minute"></div>
             </div>
-
-            <div class="chart per_minute plasma" id="vote_recorded_per_minute"></div>
-
-
-            <div class="chart" id="legend">
-                <div class="legend_item">
-                    <div class="square facebook"></div>
-                    <div>Facebook</div>
-                </div>
-
-                <div class="legend_item">
-                    <div class="square iphone"></div>
-                    <div>iPhone</div>
-                </div>
-
-                <div class="legend_item">
-                    <div class="square android"></div>
-                    <div>Android</div>
-                </div>
-
-                <div class="legend_item">
-                    <div class="square userpass"></div>
-                    <div>iPhone/Android</div>
-                </div>
-            </div>
-
         </div>
     </body>
 </html>

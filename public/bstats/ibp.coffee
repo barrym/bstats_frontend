@@ -1,5 +1,5 @@
 $.get('/config', (data) ->
-    width  = ($(window).width() - 20) * 0.47
+    width  = ($(window).width() - 20) * 0.44
     height = $(window).height() * 0.35
 
     per_second_height = height * 3/4
@@ -130,17 +130,10 @@ $.get('/config', (data) ->
         logins_pie.process_new_data(new_data)
     )
 
-    $('#container').isotope({
-        itemSelector: '.chart'
-        animationEngine: 'best-available'
-        layoutMode: 'masonry'
-    })
+    # $('#container').isotope({
+    #     itemSelector: '.chart'
+    #     animationEngine: 'best-available'
+    #     layoutMode: 'masonry'
+    # })
 
-    $('#filters a').click(() ->
-        selector = $(this).attr('filter')
-        $('#filters a').removeClass("selected")
-        $(this).addClass("selected")
-        $('#container').isotope({ filter: selector })
-        false
-    )
 )
