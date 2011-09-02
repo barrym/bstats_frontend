@@ -113,6 +113,7 @@ $.get('/config', (data) ->
             $('#total_purchases_in_the_last_hour').text(d3.format(",")(total_purchases_in_the_last_hour))
     })
 
+    # ------------ MTs ----------- #
     mt_sent_per_second = new BstatsCounterLineGraph({
         counters        : ["mt_sent"]
         timestep     : 'per_second'
@@ -133,6 +134,67 @@ $.get('/config', (data) ->
         title           : "MTs sent"
     })
 
+    mt_sending_error_per_second = new BstatsCounterLineGraph({
+        counters        : ["mt_sending_error"]
+        timestep     : 'per_second'
+        div_id          : "#mt_sending_error_per_second"
+        width           : width
+        height          : per_second_height
+        y_tick_count : per_second_y_ticks
+        title           : "MT sending errors"
+    })
+
+    mt_sending_error_per_minute = new BstatsCounterLineGraph({
+        counters        : ["mt_sending_error"]
+        timestep     : 'per_minute'
+        div_id          : "#mt_sending_error_per_minute"
+        width           : width
+        height          : per_minute_height
+        y_tick_count : per_minute_y_ticks
+        title           : "MT sending errors"
+    })
+
+    # ---- iTunes ----- #
+    itunes_request_success_per_second = new BstatsCounterLineGraph({
+        counters        : ["itunes_request_success"]
+        timestep     : 'per_second'
+        div_id          : "#itunes_request_success_per_second"
+        width           : width
+        height          : per_second_height
+        y_tick_count : per_second_y_ticks
+        title           : "iTunes success"
+    })
+
+    itunes_request_success_per_minute = new BstatsCounterLineGraph({
+        counters        : ["itunes_request_success"]
+        timestep     : 'per_minute'
+        div_id          : "#itunes_request_success_per_minute"
+        width           : width
+        height          : per_minute_height
+        y_tick_count : per_minute_y_ticks
+        title           : "iTunes success"
+    })
+
+    itunes_request_failed_per_second = new BstatsCounterLineGraph({
+        counters        : ["itunes_request_failed"]
+        timestep     : 'per_second'
+        div_id          : "#itunes_request_failed_per_second"
+        width           : width
+        height          : per_second_height
+        y_tick_count : per_second_y_ticks
+        title           : "iTunes failed"
+    })
+
+    itunes_request_failed_per_minute = new BstatsCounterLineGraph({
+        counters        : ["itunes_request_failed"]
+        timestep     : 'per_minute'
+        div_id          : "#itunes_request_failed_per_minute"
+        width           : width
+        height          : per_minute_height
+        y_tick_count : per_minute_y_ticks
+        title           : "iTunes failed"
+    })
+
 
     per_second_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_second")
 
@@ -146,6 +208,9 @@ $.get('/config', (data) ->
         purchases_per_second.process_new_data(new_data)
         votes_per_second.process_new_data(new_data)
         mt_sent_per_second.process_new_data(new_data)
+        mt_sending_error_per_second.process_new_data(new_data)
+        itunes_request_success_per_second.process_new_data(new_data)
+        itunes_request_failed_per_second.process_new_data(new_data)
     )
 
     per_minute_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_minute")
@@ -160,6 +225,9 @@ $.get('/config', (data) ->
         votes_per_minute.process_new_data(new_data)
         purchases_per_minute.process_new_data(new_data)
         mt_sent_per_minute.process_new_data(new_data)
+        mt_sending_error_per_minute.process_new_data(new_data)
+        itunes_request_success_per_minute.process_new_data(new_data)
+        itunes_request_failed_per_minute.process_new_data(new_data)
     )
 
     $('#isotopes').isotope({
