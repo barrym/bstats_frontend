@@ -7,13 +7,16 @@ $.get('/config', (data) ->
     per_minute_height = height * 3/4
     per_minute_y_ticks = 4
 
+    per_second = []
+    per_minute = []
+
     # ---- REGISTRATIONS ----- #
     registration_counters = [
         "facebook_user_registration_success",
         "userpass_user_registration_success"
     ]
 
-    registrations_per_second = new BstatsCounterLineGraph({
+    per_second.push(new BstatsCounterLineGraph({
         counters     : registration_counters
         div_id       : "#registrations_per_second"
         timestep     : 'per_second'
@@ -21,9 +24,9 @@ $.get('/config', (data) ->
         height       : per_second_height
         y_tick_count : per_second_y_ticks
         title        : "Registrations"
-    })
+    }))
 
-    registrations_per_minute = new BstatsCounterLineGraph({
+    per_minute.push(new BstatsCounterLineGraph({
         counters     : registration_counters
         div_id       : "#registrations_per_minute"
         timestep     : 'per_minute'
@@ -31,7 +34,7 @@ $.get('/config', (data) ->
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
         title        : "Registrations"
-    })
+    }))
 
     # ------------ LOGINS ----------- #
     login_counters = [
@@ -39,7 +42,7 @@ $.get('/config', (data) ->
         "userpass_user_login_success"
     ]
 
-    logins_per_second = new BstatsCounterLineGraph({
+    per_second.push(new BstatsCounterLineGraph({
         counters     : login_counters
         timestep     : 'per_second'
         div_id       : "#logins_per_second"
@@ -47,9 +50,9 @@ $.get('/config', (data) ->
         height       : per_second_height
         y_tick_count : per_second_y_ticks
         title        : "Logins"
-    })
+    }))
 
-    logins_per_minute = new BstatsCounterLineGraph({
+    per_minute.push(new BstatsCounterLineGraph({
         counters     : login_counters
         timestep     : 'per_minute'
         div_id       : "#logins_per_minute"
@@ -57,10 +60,10 @@ $.get('/config', (data) ->
         height       : per_minute_height
         y_tick_count : per_minute_y_ticks
         title        : "Logins"
-    })
+    }))
 
     # ------------ VOTES ----------- #
-    votes_per_second = new BstatsCounterLineGraph({
+    per_second.push(new BstatsCounterLineGraph({
         counters     : ["vote_recorded"]
         timestep     : 'per_second'
         div_id       : "#vote_recorded_per_second"
@@ -68,20 +71,20 @@ $.get('/config', (data) ->
         height       : per_second_height
         y_tick_count : per_second_y_ticks
         title        : "Votes"
-    })
+    }))
 
-    votes_per_minute = new BstatsCounterLineGraph({
+    per_minute.push( new BstatsCounterLineGraph({
         counters        : ["vote_recorded"]
-        timestep     : 'per_minute'
+        timestep        : 'per_minute'
         div_id          : "#vote_recorded_per_minute"
         width           : width
         height          : per_minute_height
-        y_tick_count : per_minute_y_ticks
+        y_tick_count    : per_minute_y_ticks
         title           : "Votes"
         update_callback : (data) ->
             total_votes_in_the_last_hour = d3.sum(@counter_data.vote_recorded.map((d) -> d.value))
             $('#total_votes_in_the_last_hour').text(d3.format(",")(total_votes_in_the_last_hour))
-    })
+    }))
 
     # ------------ PURCHASES ----------- #
     purchase_counters = [
@@ -90,111 +93,110 @@ $.get('/config', (data) ->
         "itunes_purchase_success"
     ]
 
-    purchases_per_second = new BstatsCounterLineGraph({
-        counters        : purchase_counters
+    per_second.push(new BstatsCounterLineGraph({
+        counters     : purchase_counters
         timestep     : 'per_second'
-        div_id          : "#purchases_per_second"
-        width           : width
-        height          : per_second_height
+        div_id       : "#purchases_per_second"
+        width        : width
+        height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title           : "Purchases"
-    })
+        title        : "Purchases"
+    }))
 
-    purchases_per_minute = new BstatsCounterLineGraph({
+    per_minute.push(new BstatsCounterLineGraph({
         counters        : purchase_counters
-        timestep     : 'per_minute'
+        timestep        : 'per_minute'
         div_id          : "#purchases_per_minute"
         width           : width
         height          : per_minute_height
-        y_tick_count : per_minute_y_ticks
+        y_tick_count    : per_minute_y_ticks
         title           : "Purchases"
         update_callback : (data) ->
             total_purchases_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
             $('#total_purchases_in_the_last_hour').text(d3.format(",")(total_purchases_in_the_last_hour))
-    })
+    }))
 
     # ------------ MTs ----------- #
-    mt_sent_per_second = new BstatsCounterLineGraph({
-        counters        : ["mt_sent"]
+    per_second.push(new BstatsCounterLineGraph({
+        counters     : ["mt_sent"]
         timestep     : 'per_second'
-        div_id          : "#mt_sent_per_second"
-        width           : width
-        height          : per_second_height
+        div_id       : "#mt_sent_per_second"
+        width        : width
+        height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title           : "MTs sent"
-    })
+        title        : "MTs sent"
+    }))
 
-    mt_sent_per_minute = new BstatsCounterLineGraph({
-        counters        : ["mt_sent"]
+    per_minute.push(new BstatsCounterLineGraph({
+        counters     : ["mt_sent"]
         timestep     : 'per_minute'
-        div_id          : "#mt_sent_per_minute"
-        width           : width
-        height          : per_minute_height
+        div_id       : "#mt_sent_per_minute"
+        width        : width
+        height       : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title           : "MTs sent"
-    })
+        title        : "MTs sent"
+    }))
 
-    mt_sending_error_per_second = new BstatsCounterLineGraph({
-        counters        : ["mt_sending_error"]
+    per_second.push(new BstatsCounterLineGraph({
+        counters     : ["mt_sending_error"]
         timestep     : 'per_second'
-        div_id          : "#mt_sending_error_per_second"
-        width           : width
-        height          : per_second_height
+        div_id       : "#mt_sending_error_per_second"
+        width        : width
+        height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title           : "MT sending errors"
-    })
+        title        : "MT sending errors"
+    }))
 
-    mt_sending_error_per_minute = new BstatsCounterLineGraph({
-        counters        : ["mt_sending_error"]
+    per_minute.push(new BstatsCounterLineGraph({
+        counters     : ["mt_sending_error"]
         timestep     : 'per_minute'
-        div_id          : "#mt_sending_error_per_minute"
-        width           : width
-        height          : per_minute_height
+        div_id       : "#mt_sending_error_per_minute"
+        width        : width
+        height       : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title           : "MT sending errors"
-    })
+        title        : "MT sending errors"
+    }))
 
     # ---- iTunes ----- #
-    itunes_request_success_per_second = new BstatsCounterLineGraph({
-        counters        : ["itunes_request_success"]
+    per_second.push(new BstatsCounterLineGraph({
+        counters     : ["itunes_request_success"]
         timestep     : 'per_second'
-        div_id          : "#itunes_request_success_per_second"
-        width           : width
-        height          : per_second_height
+        div_id       : "#itunes_request_success_per_second"
+        width        : width
+        height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title           : "iTunes success"
-    })
+        title        : "iTunes success"
+    }))
 
-    itunes_request_success_per_minute = new BstatsCounterLineGraph({
-        counters        : ["itunes_request_success"]
+    per_minute.push(new BstatsCounterLineGraph({
+        counters     : ["itunes_request_success"]
         timestep     : 'per_minute'
-        div_id          : "#itunes_request_success_per_minute"
-        width           : width
-        height          : per_minute_height
+        div_id       : "#itunes_request_success_per_minute"
+        width        : width
+        height       : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title           : "iTunes success"
-    })
+        title        : "iTunes success"
+    }))
 
-    itunes_request_failed_per_second = new BstatsCounterLineGraph({
-        counters        : ["itunes_request_failed"]
+    per_second.push(new BstatsCounterLineGraph({
+        counters     : ["itunes_request_failed"]
         timestep     : 'per_second'
-        div_id          : "#itunes_request_failed_per_second"
-        width           : width
-        height          : per_second_height
+        div_id       : "#itunes_request_failed_per_second"
+        width        : width
+        height       : per_second_height
         y_tick_count : per_second_y_ticks
-        title           : "iTunes failed"
-    })
+        title        : "iTunes failed"
+    }))
 
-    itunes_request_failed_per_minute = new BstatsCounterLineGraph({
-        counters        : ["itunes_request_failed"]
+    per_minute.push(new BstatsCounterLineGraph({
+        counters     : ["itunes_request_failed"]
         timestep     : 'per_minute'
-        div_id          : "#itunes_request_failed_per_minute"
-        width           : width
-        height          : per_minute_height
+        div_id       : "#itunes_request_failed_per_minute"
+        width        : width
+        height       : per_minute_height
         y_tick_count : per_minute_y_ticks
-        title           : "iTunes failed"
-    })
-
+        title        : "iTunes failed"
+    }))
 
     per_second_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_second")
 
@@ -203,14 +205,9 @@ $.get('/config', (data) ->
     )
 
     per_second_socket.on("bstats_counters_per_second", (new_data) ->
-        registrations_per_second.process_new_data(new_data)
-        logins_per_second.process_new_data(new_data)
-        purchases_per_second.process_new_data(new_data)
-        votes_per_second.process_new_data(new_data)
-        mt_sent_per_second.process_new_data(new_data)
-        mt_sending_error_per_second.process_new_data(new_data)
-        itunes_request_success_per_second.process_new_data(new_data)
-        itunes_request_failed_per_second.process_new_data(new_data)
+        per_second.map((b) ->
+            b.process_new_data(new_data)
+        )
     )
 
     per_minute_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_minute")
@@ -220,14 +217,9 @@ $.get('/config', (data) ->
     )
 
     per_minute_socket.on("bstats_counters_per_minute", (new_data) ->
-        registrations_per_minute.process_new_data(new_data)
-        logins_per_minute.process_new_data(new_data)
-        votes_per_minute.process_new_data(new_data)
-        purchases_per_minute.process_new_data(new_data)
-        mt_sent_per_minute.process_new_data(new_data)
-        mt_sending_error_per_minute.process_new_data(new_data)
-        itunes_request_success_per_minute.process_new_data(new_data)
-        itunes_request_failed_per_minute.process_new_data(new_data)
+        per_minute.map((b) ->
+            b.process_new_data(new_data)
+        )
     )
 
     $('#isotopes').isotope({
@@ -235,10 +227,10 @@ $.get('/config', (data) ->
         animationEngine: 'best-available'
         # layoutMode: 'straightDown'
         filter: '.per_minute'
-        cellsByColumn: {
-            columnWidth: Math.round(width/2)
-            rowWidth: Math.round(height/2)
-        }
+        # cellsByColumn: {
+        #     columnWidth: Math.round(width/2)
+        #     rowWidth: Math.round(height/2)
+        # }
     })
 
     $('#filters a').click(() ->

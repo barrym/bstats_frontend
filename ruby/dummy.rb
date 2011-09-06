@@ -50,10 +50,10 @@ while true do
     end
 
     case rand(weight)
-    when 0:
+    when 0
       @values[counter] += 1 + rand(2)
-    when 1:
-    when 2:
+    when 1
+    when 2
       @values[counter] -= (1 + rand(2))
       if @values[counter] <= 0
         @values[counter] = 0
