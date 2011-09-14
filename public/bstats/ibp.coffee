@@ -3,7 +3,7 @@ $.get('/config', (data) ->
     height = $(window).height() * 0.35
 
     per_second_height = height * 3/4
-    per_second_y_ticks = 5
+    per_second_y_ticks = 3
     per_minute_height = height/2
     per_minute_y_ticks = 3
 

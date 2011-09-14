@@ -133,6 +133,15 @@ class BstatsCounterPie extends BstatsBase
             .attr('dy', '.35em')
             .text((d) => @format(d.value))
 
+        exiting_arcs = arcs.exit()
+
+        exiting_arcs.select("path")
+            .transition()
+            .duration(@duration_time)
+            .style("opacity", 0)
+
+        exiting_arcs.remove()
+
         centre_label = @vis.selectAll("g.centre_label")
             .data([d3.sum(d3.values(@sums), (d) -> d.sum)])
 
