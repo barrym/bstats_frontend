@@ -126,6 +126,7 @@ class BstatsCounterPie extends BstatsBase
             .ease("bounce")
             .duration(500)
             .attr('d', (d) => @arc(d))
+            .attr('class', (d) -> d.data.counter)
 
         arcs.select("text")
             .attr('transform', (d) => "translate(#{@arc.centroid(d)})")
