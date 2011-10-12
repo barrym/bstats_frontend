@@ -2,7 +2,8 @@ config  = require('config')
 async   = require('async')
 express = require('express')
 app     = express.createServer()
-app.use(express.basicAuth('falcon', 'ibp2005'))
+if config.username && config.password
+    app.use(express.basicAuth(config.username, config.password))
 app.use(express.static("#{__dirname }/public"))
 app.listen(config.listen_port)
 
