@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>bstats</title>
+        <title>Buzzard</title>
         <link rel="stylesheet/less" type="text/css" href="/stylesheets/main.less"/>
         <script type="text/javascript" src="http://use.typekit.com/fuu0jix.js"></script>
         <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
@@ -13,49 +13,42 @@
         <script type="text/javascript" src="/d3/d3.layout.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="/bstats/bstats.js"></script>
-        <script type="text/javascript" src="/ibp/ibp.js"></script>
+        <script type="text/javascript" src="/buzzard/buzzard.js"></script>
     </head>
     <body>
         <div id="container">
             <div class="half">
-                <div class="chart per_second plasma" id="vote_recorded_per_second"></div>
-                <div class="chart pie plasma">
-                    <div id="logins_in_the_last_hour_pie"></div>
-                    <div id="purchases_in_the_last_hour_pie"></div>
-                </div>
-                <div class="chart large text plasma">
-                    <div><span id="total_votes_in_the_last_hour" class="green"></span> votes cast</div>
-                    <div><span id="total_purchases_in_the_last_hour" class="green"></span> purchases made</div>
-                    <div class="grey">in the last hour</div><br/>
-                </div>
+                <div class="chart" id="mt_sent_per_minute"></div>
+                <div class="chart" id="dr_request_received_per_minute"></div>
+
                 <div class="chart" id="legend">
                     <div class="legend_item">
-                        <div class="square facebook"></div>
-                        <div>Facebook</div>
+                        <div class="square uk_o2"></div>
+                        <div>O2</div>
                     </div>
-
                     <div class="legend_item">
-                        <div class="square iphone"></div>
-                        <div>iPhone</div>
+                        <div class="square uk_orange"></div>
+                        <div>Orange</div>
                     </div>
-
                     <div class="legend_item">
-                        <div class="square android"></div>
-                        <div>Android</div>
+                        <div class="square uk_vodafone"></div>
+                        <div>Vodafone</div>
                     </div>
-
                     <div class="legend_item">
-                        <div class="square userpass"></div>
-                        <div>iPhone/Android</div>
+                        <div class="square uk_three"></div>
+                        <div>Three</div>
+                    </div>
+                    <div class="legend_item">
+                        <div class="square uk_tmobile"></div>
+                        <div>T-Mobile</div>
                     </div>
                 </div>
 
             </div>
             <div class="half">
-                <div class="chart per_minute plasma" id="registrations_per_minute"></div>
-                <div class="chart per_minute plasma" id="logins_per_minute"></div>
-                <div class="chart per_minute plasma" id="purchases_per_minute"></div>
-                <div class="chart per_minute plasma" id="vote_recorded_per_minute"></div>
+                <div class="chart" id="mo_request_received_per_minute"></div>
+                <div class="chart" id="mt_sending_error_per_minute"></div>
+                <div class="chart" id="failed_to_send_mt_per_minute"></div>
             </div>
         </div>
     </body>

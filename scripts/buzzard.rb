@@ -19,13 +19,13 @@ redis = Redis.new
   :uk_orange,
   :uk_vodafone,
   :uk_tmobile,
-  :uk_three,
-  :ie_three,
-  :ie_meteor,
-  :ie_vodafone,
-  :ie_o2,
-  :ipx,
-  :reach_data
+  :uk_three
+  # :ie_three,
+  # :ie_meteor,
+  # :ie_vodafone,
+  # :ie_o2,
+  # :ipx,
+  # :reach_data
 ]
 
 @counters = []
