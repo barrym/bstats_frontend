@@ -2,116 +2,79 @@ $.get('/config', (data) ->
     width  = ($(window).width() - 20) * 0.44
     height = $(window).height() * 0.35
 
-    per_second_height = height * 3/4
-    per_second_y_ticks = 3
-    per_minute_height = height/2
-    per_minute_y_ticks = 3
+    large_height = height
+    large_y_ticks = 5
+    small_height = height/2
+    small_y_ticks = 3
 
-    # ---- REGISTRATIONS ----- #
-    registration_counters = [
-        "facebook_user_registration_success",
-        "userpass_user_registration_success"
+    operators = [
+        "uk_o2",
+        "uk_orange",
+        "uk_vodafone",
+        "uk_tmobile",
+        "uk_three"
+        # "ie_three",
+        # "ie_meteor",
+        # "ie_vodafone",
+        # "ie_o2",
+        # "ipx",
+        # "reach_data"
     ]
 
-    registrations_per_minute = new BstatsCounterLineGraph({
-        counters     : registration_counters
-        div_id       : "#registrations_per_minute"
+    mt_sent_counters = ("mt_sent_#{operator}" for operator in operators)
+    mt_sent_per_minute = new BstatsCounterLineGraph({
+        counters     : mt_sent_counters
+        div_id       : "#mt_sent_per_minute"
         timestep     : 'per_minute'
         width        : width
-        height       : per_minute_height
-        y_tick_count : per_minute_y_ticks
-        title        : "Registrations"
+        height       : large_height
+        y_tick_count : large_y_ticks
+        title        : "MTs sent"
     })
 
-    # ------------ LOGINS ----------- #
-    login_counters = [
-        "facebook_user_login_success",
-        "userpass_user_login_success"
-    ]
-
-    logins_per_minute = new BstatsCounterLineGraph({
-        counters     : login_counters
+    dr_request_received_counters = ("dr_request_received_#{operator}" for operator in operators)
+    dr_request_received_per_minute = new BstatsCounterLineGraph({
+        counters     : dr_request_received_counters
+        div_id       : "#dr_request_received_per_minute"
         timestep     : 'per_minute'
-        div_id       : "#logins_per_minute"
         width        : width
-        height       : per_minute_height
-        y_tick_count : per_minute_y_ticks
-        title        : "Logins"
+        height       : large_height
+        y_tick_count : large_y_ticks
+        title        : "DRs received"
     })
 
-    logins_pie = new BstatsCounterPie({
-        counters     : login_counters
+    mo_request_received_counters = ("mo_request_received_#{operator}" for operator in operators)
+    mo_request_received_per_minute = new BstatsCounterLineGraph({
+        counters     : mo_request_received_counters
+        div_id       : "#mo_request_received_per_minute"
         timestep     : 'per_minute'
-        div_id       : "#logins_in_the_last_hour_pie"
-        width        : Math.min(width, height)
-        height       : Math.min(width, height)
-        radius       : Math.min(width, height) * 0.45
-        inner_title  : "logins"
-    })
-
-    # ------------ VOTES ----------- #
-    votes_per_second = new BstatsCounterLineGraph({
-        counters     : ["vote_recorded"]
-        timestep     : 'per_second'
-        div_id       : "#vote_recorded_per_second"
         width        : width
-        height       : per_second_height
-        y_tick_count : per_second_y_ticks
-        title        : "Votes"
+        height       : large_height
+        y_tick_count : large_y_ticks
+        title        : "MOs received"
     })
 
-    votes_per_minute = new BstatsCounterLineGraph({
-        counters        : ["vote_recorded"]
+    mt_sending_error_counters = ("mt_sending_error_#{operator}" for operator in operators)
+    mt_sending_error_per_minute = new BstatsCounterLineGraph({
+        counters     : mt_sending_error_counters
+        div_id       : "#mt_sending_error_per_minute"
         timestep     : 'per_minute'
-        div_id          : "#vote_recorded_per_minute"
-        width           : width
-        height          : per_minute_height
-        y_tick_count : per_minute_y_ticks
-        title           : "Votes"
-        update_callback : (data) ->
-            total_votes_in_the_last_hour = d3.sum(@counter_data.vote_recorded.map((d) -> d.value))
-            $('#total_votes_in_the_last_hour').text(d3.format(",")(total_votes_in_the_last_hour))
+        width        : width
+        height       : small_height
+        y_tick_count : small_y_ticks
+        title        : "MT sending errors"
     })
 
-    # ------------ PURCHASES ----------- #
-    purchase_counters = [
-        "facebook_purchase_success",
-        "psms_purchase_success",
-        "itunes_purchase_success"
-    ]
-
-    purchases_per_minute = new BstatsCounterLineGraph({
-        counters        : purchase_counters
+    failed_to_send_mt_counters = ("failed_to_send_mt_#{operator}" for operator in operators)
+    failed_to_send_mt_per_minute = new BstatsCounterLineGraph({
+        counters     : failed_to_send_mt_counters
+        div_id       : "#failed_to_send_mt_per_minute"
         timestep     : 'per_minute'
-        div_id          : "#purchases_per_minute"
-        width           : width
-        height          : per_minute_height
-        y_tick_count : per_minute_y_ticks
-        title           : "Purchases"
-        update_callback : (data) ->
-            total_purchases_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
-            $('#total_purchases_in_the_last_hour').text(d3.format(",")(total_purchases_in_the_last_hour))
+        width        : width
+        height       : small_height
+        y_tick_count : small_y_ticks
+        title        : "Failed to send MT"
     })
-
-    purchases_pie = new BstatsCounterPie({
-        counters     : purchase_counters
-        timestep     : 'per_minute'
-        div_id       : "#purchases_in_the_last_hour_pie"
-        width        : Math.min(width, height)
-        height       : Math.min(width, height)
-        radius       : Math.min(width, height) * 0.45
-        inner_title  : "purchases"
-    })
-
-    per_second_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_second")
-
-    per_second_socket.on('connect', () =>
-        console.log("connected to per_second_socket")
-    )
-
-    per_second_socket.on("bstats_counters_per_second", (new_data) ->
-        votes_per_second.process_new_data(new_data)
-    )
 
     per_minute_socket = io.connect("http://#{data.hostname}:#{data.port}/bstats_counters_per_minute")
 
@@ -120,11 +83,10 @@ $.get('/config', (data) ->
     )
 
     per_minute_socket.on("bstats_counters_per_minute", (new_data) ->
-        registrations_per_minute.process_new_data(new_data)
-        logins_per_minute.process_new_data(new_data)
-        votes_per_minute.process_new_data(new_data)
-        purchases_per_minute.process_new_data(new_data)
-        purchases_pie.process_new_data(new_data)
-        logins_pie.process_new_data(new_data)
+        mt_sent_per_minute.process_new_data(new_data)
+        dr_request_received_per_minute.process_new_data(new_data)
+        mo_request_received_per_minute.process_new_data(new_data)
+        mt_sending_error_per_minute.process_new_data(new_data)
+        failed_to_send_mt_per_minute.process_new_data(new_data)
     )
 )

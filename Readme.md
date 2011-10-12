@@ -1,3 +1,5 @@
+Install node and npm
+
 # Production
 
 npm install -g coffee-script
