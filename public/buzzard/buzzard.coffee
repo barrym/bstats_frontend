@@ -2,10 +2,10 @@ $.get('/config', (data) ->
     width  = ($(window).width() - 20) * 0.44
     height = $(window).height() * 0.35
 
-    large_height = height
+    large_height = height * 0.8
     large_y_ticks = 5
-    small_height = height/2
-    small_y_ticks = 3
+    small_height = height * 0.5
+    small_y_ticks = 2
 
     operators = [
         "uk_o2",
@@ -23,35 +23,44 @@ $.get('/config', (data) ->
 
     mt_sent_counters = ("mt_sent_#{operator}" for operator in operators)
     mt_sent_per_minute = new BstatsCounterLineGraph({
-        counters     : mt_sent_counters
-        div_id       : "#mt_sent_per_minute"
-        timestep     : 'per_minute'
-        width        : width
-        height       : large_height
-        y_tick_count : large_y_ticks
-        title        : "MTs sent"
+        counters        : mt_sent_counters
+        div_id          : "#mt_sent_per_minute"
+        timestep        : 'per_minute'
+        width           : width
+        height          : large_height
+        y_tick_count    : large_y_ticks
+        title           : "MTs sent"
+        update_callback : (data) ->
+            total_mts_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
+            $('#total_mts_in_the_last_hour').text(d3.format(",")(total_mts_in_the_last_hour))
     })
 
     dr_request_received_counters = ("dr_request_received_#{operator}" for operator in operators)
     dr_request_received_per_minute = new BstatsCounterLineGraph({
-        counters     : dr_request_received_counters
-        div_id       : "#dr_request_received_per_minute"
-        timestep     : 'per_minute'
-        width        : width
-        height       : large_height
-        y_tick_count : large_y_ticks
-        title        : "DRs received"
+        counters        : dr_request_received_counters
+        div_id          : "#dr_request_received_per_minute"
+        timestep        : 'per_minute'
+        width           : width
+        height          : large_height
+        y_tick_count    : large_y_ticks
+        title           : "DRs received"
+        update_callback : (data) ->
+            total_drs_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
+            $('#total_drs_in_the_last_hour').text(d3.format(",")(total_drs_in_the_last_hour))
     })
 
     mo_request_received_counters = ("mo_request_received_#{operator}" for operator in operators)
     mo_request_received_per_minute = new BstatsCounterLineGraph({
-        counters     : mo_request_received_counters
-        div_id       : "#mo_request_received_per_minute"
-        timestep     : 'per_minute'
-        width        : width
-        height       : large_height
-        y_tick_count : large_y_ticks
-        title        : "MOs received"
+        counters        : mo_request_received_counters
+        div_id          : "#mo_request_received_per_minute"
+        timestep        : 'per_minute'
+        width           : width
+        height          : large_height
+        y_tick_count    : large_y_ticks
+        title           : "MOs received"
+        update_callback : (data) ->
+            total_mos_in_the_last_hour = d3.sum(d3.values(@counter_data).map((values) -> d3.sum(values.map((d) -> d.value))))
+            $('#total_mos_in_the_last_hour').text(d3.format(",")(total_mos_in_the_last_hour))
     })
 
     mt_sending_error_counters = ("mt_sending_error_#{operator}" for operator in operators)
