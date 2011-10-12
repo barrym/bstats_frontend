@@ -4,8 +4,7 @@ npm install -g coffee-script
 
 npm install
 
-coffee -c public/\*/\*.coffee
-
+cake build
 NODE_ENV=production node server.js
 
 # Dev
