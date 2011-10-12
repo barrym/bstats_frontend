@@ -6,7 +6,7 @@ npm install
 
 coffee -c public/\*/\*.coffee
 
-node server.js
+NODE_ENV=production node server.js
 
 # Dev
 
