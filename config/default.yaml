@@ -4,5 +4,5 @@ redis_server: localhost
 redis_port: 6379
 counters: all
 gauges: all
-username: foo
-password: bar
+# username: foo
+# password: bar
