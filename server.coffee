@@ -2,10 +2,22 @@ config  = require('config')
 async   = require('async')
 express = require('express')
 app     = express.createServer()
+
 if config.username && config.password
     app.use(express.basicAuth(config.username, config.password))
+
 app.use(express.static("#{__dirname }/public"))
 app.listen(config.listen_port)
+
+
+
+
+
+
+
+
+
+# --------------- SOCKET.IO CLIENT CODE ------------------
 
 app.get('/config', (req, res) ->
     res.send({hostname:config.hostname, port:config.listen_port})
@@ -34,7 +46,6 @@ gauges_per_second_sockets = io.of('/bstats_gauges_per_second').on('connection', 
     console.log("gauges per second client connected")
     init_per_second_gauge_objects(socket, 300)
 )
-
 
 setInterval(
     () ->
