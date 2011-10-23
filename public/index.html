@@ -17,14 +17,21 @@
 
         <script type="text/javascript" src="/app.js"></script>
 
-        <script type="text/template" id="app-template">
-            <%= name %>
-        </script>
-
         <script type="text/template" id="dashboard-template">
-            <%= name %>
+            <a href='#admin/dashboards/<%= id %>'><%= name %></a>
             (app: <%= app %>)
             <button class="destroy">Delete</button>
+        </script>
+
+        <script type="text/template" id="dashboard-show-template">
+            <h3><%= name %></h3>
+            App : <%= app %>
+            Available Counters:
+            <ul>
+            <% _.each(counters, function(counter) { %>
+                <li><%= counter %></li>
+            <% }); %>
+            </ul>
         </script>
 
         <script type="text/template" id="error-template">
@@ -51,11 +58,6 @@
                     <select name="app" id="app">
                         <option value="">Choose</option>
                     </select>
-                </div>
-
-                <div>
-                    <label for="counters">Counters</label>
-                    <input type=text name="counters" id="counters">
                 </div>
 
                 <div>

@@ -5,7 +5,7 @@ require 'redis'
 puts "Generating dummy data"
 
 redis = Redis.new
-redis.sadd "bstats:apps", "ibp"
+redis.sadd "bstats:apps", "falcon"
 
 @counters = [
   :facebook_user_login_success,

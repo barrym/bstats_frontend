@@ -77,6 +77,18 @@ window.DashboardView = Backbone.View.extend({
 
     })
 
+window.DashboardShowView = Backbone.View.extend({
+    initialize: () ->
+        _.bindAll(this, 'render')
+        @model.bind('change', @render)
+        @template = _.template($('#dashboard-show-template').html())
+
+    render: () ->
+        content = @template(@model.toJSON())
+        $(@el).html(content)
+        return this
+    })
+
 window.DashboardIndexView = Backbone.View.extend({
     tagName: 'section'
     className: 'dashboards'
@@ -126,7 +138,6 @@ window.DashboardNewView = Backbone.View.extend({
             Backbone.history.navigate("#admin", true)
 
         error: (model, errors) ->
-            console.log("error saving:")
             errorView = new ErrorView({errors:errors})
             $('#notices').empty()
             $('#notices').append(errorView.render().el)
@@ -157,9 +168,10 @@ window.DashboardNewView = Backbone.View.extend({
 
 window.BstatsFrontend = Backbone.Router.extend({
     routes: {
-        ''                     : 'home',
-        'admin'                : 'admin_index',
+        ''                     : 'home'
+        'admin'                : 'admin_index'
         'admin/dashboards/new' : 'admin_dashboards_new'
+        'admin/dashboards/:id' : 'admin_dashboards_show'
     }
 
     initialize: () ->
@@ -179,6 +191,18 @@ window.BstatsFrontend = Backbone.Router.extend({
         @dashboardNewView = new DashboardNewView({})
         $('#main').empty()
         $('#main').append(@dashboardNewView.render().el)
+
+    admin_dashboards_show: (id) ->
+        $('#main').empty()
+        dashboard = new Dashboard({id:id})
+        dashboard.fetch({
+            success: (model, resp) ->
+                showView = new DashboardShowView({model:model})
+                $('#main').append(showView.render().el)
+
+            error: () ->
+                $('#main').text("cant find")
+        })
 
     })
 

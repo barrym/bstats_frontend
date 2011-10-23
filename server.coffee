@@ -40,7 +40,10 @@ dashboard = {
             if err
                 res.send({status:"error"}, 400)
             else
-                res.send(JSON.parse(dashboard))
+                dashboard = JSON.parse(dashboard)
+                redis.smembers "bstats:#{dashboard.app}:counters", (err, counters) ->
+                    dashboard.counters = counters.sort()
+                    res.send(dashboard)
 
 
     }
