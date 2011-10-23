@@ -21,14 +21,56 @@
             <%= name %>
         </script>
 
-        <script type="text/template" id="admin-index-template">
+        <script type="text/template" id="dashboard-template">
+            <h3><%= name %></h3>
+            <button class="destroy">Delete</button>
+            <ul>
+                <li>app: <%= app %></li>
+                <li>counters: <%= counters %></li>
+            </ul>
+        </script>
+
+        <script type="text/template" id="dashboard-new-template">
+            <h2>New dashboard</h2>
+            <form>
+                <div>
+                    <label for="name">Name</label>
+                    <input type=text name="name" id="name">
+                </div>
+
+                <div>
+                    <label for="app">App</label>
+                    <input type=text name="app" id="app">
+                </div>
+
+                <div>
+                    <label for="counters">Counters</label>
+                    <input type=text name="counters" id="counters">
+                </div>
+
+                <div>
+                    <input type="submit" value="Save">
+                    <button class="cancel">Cancel</button>
+                </div>
+
+            </form>
+        </script>
+
+        <script type="text/template" id="app-index-template">
             <h2>Apps</h2>
             <ul id='apps'></ul>
+        </script>
+
+        <script type="text/template" id="dashboard-index-template">
+            <h2>Dashboards</h2>
+            <a href='#admin/dashboards/new'>new dashboard</a>
+            <ul id='dashboards'></ul>
         </script>
 
         <script type="application/javascript">
             jQuery(function() {
                     window.apps.fetch();
+                    window.dashboards.fetch();
                     })
         </script>
 

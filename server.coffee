@@ -3,17 +3,56 @@ async   = require('async')
 express = require('express')
 require('express-resource')
 app     = express.createServer()
+app.use(express.bodyParser());
+# TODO: separate these out so that the main server uses one redis config, and the dashboards have their own host/port details
+redis   = require('redis').createClient(config.redis_port, config.redis_server, {})
+
+dashboard = {
+    index: (req, res) ->
+        key = "bstats:dashboards"
+        redis.smembers key, (err, dashboards) ->
+            res.send(dashboards.map((d) -> JSON.parse(d)))
+
+    create: (req, res) ->
+        key = "bstats:dashboards"
+        dashboard = req.body
+        dashboard.id = guid()
+        redis.sadd key, JSON.stringify(dashboard), (err, redis_res) ->
+            if err
+                res.send({status:"error"}, 400)
+            else
+                redis.set "#{key}:#{dashboard.id}", JSON.stringify(dashboard), (err, redis_res) ->
+                    if err
+                    else
+                        res.send(dashboard)
+
+    destroy: (req, res) ->
+        # TODO: add error checking
+        key = "bstats:dashboards"
+        redis.get "#{key}:#{req.params.dashboard}", (err, dashboard) ->
+            redis.srem key, dashboard, (e, r) ->
+                redis.del "#{key}:#{req.params.dashboard}", (err, result) ->
+                    res.send(JSON.parse(dashboard))
+
+    show: (req, res) ->
+        key = "bstats:dashboards"
+        redis.get "#{key}:#{req.params.dashboard}", (err, dashboard) ->
+            if err
+                res.send({status:"error"}, 400)
+            else
+                res.send(JSON.parse(dashboard))
+
+
+    }
 
 app.resource('apps', require('./controllers/apps'), {format:'json'})
+app.resource('dashboards', dashboard, {format:'json'})
 
 if config.username && config.password
     app.use(express.basicAuth(config.username, config.password))
 
 app.use(express.static("#{__dirname }/public"))
 app.listen(config.listen_port)
-
-
-
 
 
 
@@ -27,7 +66,7 @@ app.get('/config', (req, res) ->
 )
 
 io             = require('socket.io').listen(app)
-redis          = require('redis').createClient(config.redis_port, config.redis_server, {})
+# redis          = require('redis').createClient(config.redis_port, config.redis_server, {})
 seconds_offset = 3
 minutes_offset = 1
 
@@ -219,3 +258,8 @@ timestamp = () ->
     timestamp_for_date(new Date())
 timestamp_for_date = (date) ->
     Math.round(date.getTime() / 1000)
+
+guid = () ->
+    S4 = () ->
+       (((1+Math.random())*0x10000)|0).toString(16).substring(1)
+    (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4())

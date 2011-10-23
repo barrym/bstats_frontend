@@ -1,4 +1,4 @@
-@background_color: #EFEDDC;
+@background_color: #C0DEED;
 @text_color: #000;
 @font_family: "museo-sans", "comic sans ms";
 
@@ -6,6 +6,8 @@ body {
     font-family: @font_family;
     background-color: @background_color;
     color: @text_color;
+    width:50%;
+    margin: 0 auto;
 }
 
 a {
@@ -14,11 +16,26 @@ a {
 }
 
 div#header {
-    border: 1px solid black;
+    /* border: 1px solid black; */
     padding: 1em;
+    background-color: darken(@background_color, 10%);
 }
 
 div#main {
-    border: 1px solid blue;
+    /* border: 1px solid blue; */
     padding: 1em;
+}
+
+label {
+    width: 30%;
+    float: left;
+    font-size: 2em;
+}
+
+input[type=text], input[type=submit] {
+    font-size: 2em;
+}
+
+button.destroy {
+    color: red;
 }
