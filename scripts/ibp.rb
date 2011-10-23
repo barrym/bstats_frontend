@@ -5,39 +5,33 @@ require 'redis'
 puts "Generating dummy data"
 
 redis = Redis.new
-redis.sadd "bstats:apps", "buzzard"
+redis.sadd "bstats:apps", "ibp"
 
-@buzzard_events = [
-  :failed_to_send_mt,
+@counters = [
+  :facebook_user_login_success,
+  :facebook_user_login_failed,
+  :userpass_user_login_success,
+  :userpass_user_login_failed,
+  :facebook_user_registration_success,
+  :facebook_user_registration_failed,
+  :userpass_user_registration_success,
+  :userpass_user_registration_failed,
+  :pending_purchase_created,
+  :purchase_delivered,
+  :facebook_purchase_success,
+  :facebook_purchase_failed,
+  :psms_purchase_success,
+  :itunes_purchase_success,
+  :itunes_purchase_failed,
+  :vote_recorded,
+  :mt_sent,
   :mt_sending_error,
-  :dr_request_received,
-  :mo_request_received,
-  :mt_sent
+  :itunes_request_success,
+  :itunes_request_failed
 ]
-
-@operators = [
-  :uk_o2,
-  :uk_orange,
-  :uk_vodafone,
-  :uk_tmobile,
-  :uk_three
-  # :ie_three,
-  # :ie_meteor,
-  # :ie_vodafone,
-  # :ie_o2,
-  # :ipx,
-  # :reach_data
-]
-
-@counters = []
-@buzzard_events.each do |event|
-   @operators.each do |operator|
-      @counters << "#{event}_#{operator}"
-   end
-end
 
 @counters.each do |counter|
-  redis.sadd "bstats:buzzard:counters", counter
+  redis.sadd "bstats:falcon:counters", counter
 end
 
 @values = {}
@@ -68,15 +62,15 @@ while true do
     end
     val = @values[counter]
 
-    redis_key = "bstats:buzzard:counter:per_second:#{counter}:#{t.to_i}"
+    redis_key = "bstats:falcon:counter:per_second:#{counter}:#{t.to_i}"
     redis.set redis_key, val
     redis.expire redis_key, 60 * 5
 
-    redis_key = "bstats:buzzard:counter:per_minute:#{counter}:#{mins.to_i}"
+    redis_key = "bstats:falcon:counter:per_minute:#{counter}:#{mins.to_i}"
     redis.incrby redis_key, val
     redis.expire redis_key, 3600
 
-    redis_key = "bstats:buzzard:counter:per_hour:#{counter}:#{hours.to_i}"
+    redis_key = "bstats:falcon:counter:per_hour:#{counter}:#{hours.to_i}"
     redis.incrby redis_key, val
     redis.expire redis_key, 3600 * 24
   end

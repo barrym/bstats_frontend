@@ -1,3 +1,4 @@
 coffee: coffee -r coffeescript-growl -c -w `find public -iname "*.coffee"`
 server: node-dev server.js
-dummy: ruby scripts/buzzard.rb
+dummy_buzzard: ruby scripts/buzzard.rb
+dummy_ibp: ruby scripts/ibp.rb
