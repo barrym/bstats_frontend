@@ -6,6 +6,10 @@ task 'build', 'compile coffeescripts', () ->
         console.log(stderr)
         console.log("coffeescripts compiled")
 
+task 'server:restart', 'start the server', () ->
+   server = exec "./node_modules/forever/bin/forever restart server.js"
+   server.stdout.on 'data', (data) -> console.log(data)
+
 task 'server:start', 'start the server', () ->
     server = exec "./node_modules/forever/bin/forever start server.js"
     server.stdout.on 'data', (data) -> console.log(data)
