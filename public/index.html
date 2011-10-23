@@ -16,6 +16,22 @@
         <script type="text/javascript" src="/vendor/backbone-min.js"></script>
 
         <script type="text/javascript" src="/app.js"></script>
+
+        <script type="text/template" id="app-template">
+            <%= name %>
+        </script>
+
+        <script type="text/template" id="admin-index-template">
+            <h2>Apps</h2>
+            <ul id='apps'></ul>
+        </script>
+
+        <script type="application/javascript">
+            jQuery(function() {
+                    window.apps.fetch();
+                    })
+        </script>
+
     </head>
     <body>
         <div id="container">
