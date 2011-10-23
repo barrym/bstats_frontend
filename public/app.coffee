@@ -1,16 +1,29 @@
 # ---------- MODELS -------------
-window.App = Backbone.Model.extend({})
+
+window.App = Backbone.Model.extend({
+        urlRoot: '/apps'
+    })
 
 window.Apps = Backbone.Collection.extend({
         model: App,
         url: '/apps'
+        comparator: (app) ->
+            app.get('name')
     })
-
-window.apps = new Apps()
-
 
 window.Dashboard = Backbone.Model.extend({
         urlRoot: '/dashboards'
+        validate: (attributes) ->
+            errors = []
+            if !attributes.app
+                errors.push "app cannot be blank"
+
+            if !attributes.name
+                errors.push "name cannot be blank"
+
+            if errors.length != 0
+                return errors
+
     })
 
 window.Dashboards = Backbone.Collection.extend({
@@ -24,24 +37,18 @@ window.dashboards = new Dashboards()
 
 # ----------- VIEWS -------------
 
-window.AppView = Backbone.View.extend({
-    tagName: 'li'
-    className:'app'
+window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
+        className: 'error'
 
-    initialize: () ->
-        _.bindAll(this, 'render')
-        @model.bind('change', @render)
-        @template = _.template($('#app-template').html())
+        initialize: () ->
+            @template = _.template($('#error-template').html())
 
-    render: () ->
-        content = @template(@model.toJSON())
-        $(@el).html(content)
-        return this
-
+        render: () ->
+            $(@el).html(@template({errors:this.options.errors}))
+            return this
     })
 
 window.DashboardView = Backbone.View.extend({
-    tagName: 'li'
     className:'dashboard'
     events: {
         'click button' : 'destroy'
@@ -66,29 +73,6 @@ window.DashboardView = Backbone.View.extend({
     render: () ->
         content = @template(@model.toJSON())
         $(@el).html(content)
-        return this
-
-    })
-
-window.AppIndexView = Backbone.View.extend({
-    tagName: 'section'
-    className: 'apps'
-
-    initialize: () ->
-        _.bindAll(this, 'render')
-        @template = _.template($('#app-index-template').html())
-        @collection.bind('reset', @render)
-
-    render: () ->
-        $(@el).html(@template({}))
-        $apps = this.$('#apps')
-        @collection.each (app) ->
-            view = new AppView({
-                model:app,
-                collection:@collection
-            })
-            $apps.append(view.render().el)
-
         return this
 
     })
@@ -128,6 +112,7 @@ window.DashboardNewView = Backbone.View.extend({
         _.bindAll(this, 'render')
         @template = _.template($('#dashboard-new-template').html())
         @model = new Dashboard()
+        @apps = new Apps()
 
     save: () ->
         self = this
@@ -140,9 +125,11 @@ window.DashboardNewView = Backbone.View.extend({
             dashboards.add(model)
             Backbone.history.navigate("#admin", true)
 
-        error: (model, res) ->
-            console.log("error")
-            console.log(res)
+        error: (model, errors) ->
+            console.log("error saving:")
+            errorView = new ErrorView({errors:errors})
+            $('#notices').empty()
+            $('#notices').append(errorView.render().el)
         )
         return false
 
@@ -153,6 +140,14 @@ window.DashboardNewView = Backbone.View.extend({
     render: () ->
         content = @template(@model.toJSON())
         $(@el).html(content)
+        $app = this.$('#app')
+        @apps.fetch({
+            success: (collection, response) ->
+                collection.each((app) ->
+                    $app.append("<option value='#{app.get('name')}'>#{app.get('name')}</option>")
+                )
+        })
+
 
         return this
     })
@@ -168,13 +163,9 @@ window.BstatsFrontend = Backbone.Router.extend({
     }
 
     initialize: () ->
-        @appIndexView = new AppIndexView({
-            collection: window.apps
-        })
         @dashboardIndexView = new DashboardIndexView({
             collection: window.dashboards
         })
-        # @dashboardNewView = new DashboardNewView({})
 
     home: () ->
         $('#main').empty()
@@ -183,7 +174,6 @@ window.BstatsFrontend = Backbone.Router.extend({
     admin_index: () ->
         $('#main').empty()
         $('#main').append(@dashboardIndexView.render().el)
-        $('#main').append(@appIndexView.render().el)
 
     admin_dashboards_new: () ->
         @dashboardNewView = new DashboardNewView({})

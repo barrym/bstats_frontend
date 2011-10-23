@@ -22,15 +22,23 @@
         </script>
 
         <script type="text/template" id="dashboard-template">
-            <h3><%= name %></h3>
+            <%= name %>
+            (app: <%= app %>)
             <button class="destroy">Delete</button>
+        </script>
+
+        <script type="text/template" id="error-template">
+            The following errors occurred:
             <ul>
-                <li>app: <%= app %></li>
-                <li>counters: <%= counters %></li>
+            <% _.each(errors, function(error) { %>
+                <li><%= error %></li>
+            <% }); %>
             </ul>
         </script>
 
         <script type="text/template" id="dashboard-new-template">
+            <div id="notices">
+            </div>
             <h2>New dashboard</h2>
             <form>
                 <div>
@@ -40,7 +48,9 @@
 
                 <div>
                     <label for="app">App</label>
-                    <input type=text name="app" id="app">
+                    <select name="app" id="app">
+                        <option value="">Choose</option>
+                    </select>
                 </div>
 
                 <div>
@@ -49,16 +59,11 @@
                 </div>
 
                 <div>
-                    <input type="submit" value="Save">
+                    <input type="submit" value="Save" class="save">
                     <button class="cancel">Cancel</button>
                 </div>
 
             </form>
-        </script>
-
-        <script type="text/template" id="app-index-template">
-            <h2>Apps</h2>
-            <ul id='apps'></ul>
         </script>
 
         <script type="text/template" id="dashboard-index-template">
@@ -69,7 +74,6 @@
 
         <script type="application/javascript">
             jQuery(function() {
-                    window.apps.fetch();
                     window.dashboards.fetch();
                     })
         </script>

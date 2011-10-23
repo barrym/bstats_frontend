@@ -45,8 +45,18 @@ dashboard = {
 
     }
 
-app.resource('apps', require('./controllers/apps'), {format:'json'})
+bstats_app = {
+    index: (req, res) ->
+        key = "bstats:apps"
+        redis.smembers key, (err, apps) ->
+            res.send(apps.map((app) -> {
+                id:app,
+                name:app
+            }))
+}
+
 app.resource('dashboards', dashboard, {format:'json'})
+app.resource('apps', bstats_app, {format:'json'})
 
 if config.username && config.password
     app.use(express.basicAuth(config.username, config.password))
