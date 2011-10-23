@@ -1,7 +1,10 @@
 config  = require('config')
 async   = require('async')
 express = require('express')
+require('express-resource')
 app     = express.createServer()
+
+app.resource('apps', require('./controllers/apps'), {format:'json'})
 
 if config.username && config.password
     app.use(express.basicAuth(config.username, config.password))
