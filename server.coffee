@@ -10,14 +10,20 @@ redis   = require('redis').createClient(config.redis_port, config.redis_server, 
 dashboard = {
     index: (req, res) ->
         key = "bstats:dashboards"
-        redis.smembers key, (err, dashboards) ->
-            res.send(dashboards.map((d) -> JSON.parse(d)))
+        redis.smembers key, (err, dashboard_ids) ->
+            if dashboard_ids.length != 0
+                keys = dashboard_ids.map((id) -> "#{key}:#{id}")
+                console.log(keys)
+                redis.mget keys, (err, dashboards) ->
+                    res.send(dashboards.map((d) -> JSON.parse(d)))
+            else
+                res.send([])
 
     create: (req, res) ->
         key = "bstats:dashboards"
         dashboard = req.body
         dashboard.id = guid()
-        redis.sadd key, JSON.stringify(dashboard), (err, redis_res) ->
+        redis.sadd key, dashboard.id, (err, redis_res) ->
             if err
                 res.send({status:"error"}, 400)
             else
@@ -26,13 +32,36 @@ dashboard = {
                     else
                         res.send(dashboard)
 
+    update: (req, res) ->
+        key = "bstats:dashboards"
+        dashboard = req.body
+        redis.set "#{key}:#{req.params.dashboard}", JSON.stringify(dashboard), (err, redis_res) ->
+            if err
+            else
+                res.send(dashboard)
+
     destroy: (req, res) ->
         # TODO: add error checking
+        console.log("destroying #{req.params.dashboard}")
         key = "bstats:dashboards"
         redis.get "#{key}:#{req.params.dashboard}", (err, dashboard) ->
-            redis.srem key, dashboard, (e, r) ->
-                redis.del "#{key}:#{req.params.dashboard}", (err, result) ->
-                    res.send(JSON.parse(dashboard))
+            if err
+                console.log("error with del")
+            else
+                console.log("removing #{dashboard}")
+                redis.srem key, req.params.dashboard, (e, r) ->
+                    if e
+                        console.log("error with srem")
+                    else
+                        console.log("sremmed")
+                        console.log(r)
+                        redis.del "#{key}:#{req.params.dashboard}", (err, result) ->
+                            if err
+                                console.log("error with del: #{err}")
+                                res.send({status:"error"}, 400)
+                            else
+                                # console.log("destroyed #{dashboard.name}")
+                                res.send(JSON.parse(dashboard))
 
     show: (req, res) ->
         key = "bstats:dashboards"

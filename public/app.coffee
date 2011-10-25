@@ -78,15 +78,121 @@ window.DashboardView = Backbone.View.extend({
     })
 
 window.DashboardShowView = Backbone.View.extend({
+
+    events:{
+        'click button.save'  : 'save',
+        'click button.add'   : 'add_item',
+        'change select.type' : 'type_changed'
+    }
+
     initialize: () ->
         _.bindAll(this, 'render')
         @model.bind('change', @render)
         @template = _.template($('#dashboard-show-template').html())
+        @item_template = _.template($('#dashboard-new-item-template').html())
+
+    add_item: () ->
+        top    = this.$('#canvas').position().top + 10
+        left   = this.$('#canvas').position().left + 10
+        height = 250
+        width  = 250
+
+        $newItem    = $(@item_template({
+            counters:@model.get('counters')
+        }))
+        @add_item_to_canvas($newItem, top, left, height, width)
+
+    type_changed: (event) ->
+        self = this
+        $element = $(event.currentTarget)
+        $parent = $element.parent()
+        type = $element.val()
+        if type == 'line' || type == 'pie'
+            $parent.find('.title').show()
+        else
+            $parent.find('.title').hide()
+
+    save: () ->
+        $canvas       = this.$('#canvas')
+        canvas_height = $canvas.height()
+        canvas_width  = $canvas.width()
+        items_to_save = []
+        $items        = this.$('#canvas .item')
+        $items.each () ->
+            id       = $(this).attr('id')
+            height   = Math.round(($(this).height()/canvas_height) * 100)/100
+            width    = Math.round(($(this).width()/canvas_width) * 100)/100
+            top      = Math.round(($(this).position().top/canvas_height) * 100)/100
+            left     = Math.round(($(this).position().left/canvas_width) * 100)/100
+            title    = $(this).find('.title').val()
+            timestep = $(this).find('.timestep').val()
+            type     = $(this).find('.type').val()
+            counters = $(this).find('.counters').val()
+            console.log("saving item t:#{top} l:#{left} h:#{height} w:#{width}")
+            items_to_save.push({
+                id       : id,
+                height   : height,
+                width    : width,
+                top      : top,
+                left     : left,
+                title    : title,
+                timestep : timestep,
+                type     : type,
+                counters : counters
+
+            })
+
+        console.log("items to save:")
+        console.log(items_to_save)
+        @model.set({items:items_to_save})
+        @model.save()
 
     render: () ->
+        item_count = 0
         content = @template(@model.toJSON())
         $(@el).html(content)
+        items = this.model.get('items')
+        if items
+            $canvas       = this.$('#canvas')
+            canvas_height = $canvas.height()
+            canvas_width  = $canvas.width()
+            canvas_top    = $canvas.position().top
+            canvas_left   = $canvas.position().left
+
+            canvas_top = 228
+            canvas_left = 375
+            console.log("canvas: t:#{canvas_top} l:#{canvas_left} h:#{canvas_height} w:#{canvas_width}")
+
+            for item in items
+                top    = canvas_top + item.top * canvas_height
+                left   = canvas_left + item.left * canvas_width
+                height = canvas_height * item.height
+                width  = canvas_width * item.width
+                item_count = item_count + 1
+                newItem = $(@item_template({
+                    id:item_count,
+                    counters:@model.get('counters')
+                })).append("<b>#{item_count}</b>")
+                # newItem.offset({top:top, left:left})
+                console.log("adding item #{item_count} t:#{top} l:#{left} h:#{height} w:#{width}")
+                @add_item_to_canvas(newItem, top, left, height, width)
+
         return this
+
+    add_item_to_canvas: (item, top, left, height, width) ->
+        item.draggable({
+            containment : "parent"
+            stack       : ".item"
+            grid        : [10, 10]
+            scroll      : false
+        }).resizable({
+            containment : "parent"
+            grid        : 10
+            minWidth    : 100
+            minHeight   : 100
+        }).height(height).width(width).offset({top:top, left:left})
+        $canvas = this.$('#canvas')
+        $canvas.append(item)
     })
 
 window.DashboardIndexView = Backbone.View.extend({

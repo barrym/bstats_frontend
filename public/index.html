@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>bstats frontend</title>
+        <title>bsf</title>
         <link rel="stylesheet/less" type="text/css" href="/stylesheets/app.less"/>
+        <link type="text/css" href="/stylesheets/smoothness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
         <script type="text/javascript" src="http://use.typekit.com/fuu0jix.js"></script>
         <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
         <script type="text/javascript" src="/vendor/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="/vendor/jquery-ui-1.8.16.custom.min.js"></script>
         <script type="text/javascript" src="/vendor/jquery.isotope.min.js"></script>
         <script type="text/javascript" src="/vendor/less-1.1.3.min.js"></script>
         <script type="text/javascript" src="/vendor/json2.js"></script>
@@ -23,8 +25,34 @@
             <button class="destroy">Delete</button>
         </script>
 
+        <script type="text/template" id="dashboard-new-item-template">
+            <div class="item" id="item_<%= id %>">
+                <select class="type">
+                    <option>Choose Type</option>
+                    <option value="line">Line Graph</option>
+                    <option value="pie">Pie Chart</option>
+                    <option value="text">Text</option>
+                </select>
+                <select class="timestep">
+                    <option>Choose Timestep</option>
+                    <option value="per_second">Per Second</option>
+                    <option value="per_minute">Per Minute</option>
+                </select>
+                <select class="counters" multiple>
+                    <% _.each(counters, function(counter) { %>
+                        <option value="<%= counter %>"><%= counter %>
+                    <% }); %>
+                </select>
+                <input type="text" class="title" style="display:none;" placeholder="Enter a title">
+            </div>
+        </script>
+
         <script type="text/template" id="dashboard-show-template">
             <h3><%= name %></h3>
+            <button class="add">Add Item</button>
+            <button class="save">Save</button>
+            <div id="canvas" style="height:450px;width:750px;">
+            </div>
             App : <%= app %>
             Available Counters:
             <ul>
@@ -84,7 +112,7 @@
     <body>
         <div id="container">
             <div id="header">
-                <h1>bstats frontend</h1>
+                <h1>bsf</h1>
                 <a href='#'>home</a>
                 <a href="#admin">admin</a>
             </div>
