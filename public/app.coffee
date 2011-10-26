@@ -88,7 +88,8 @@ window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
             return this
     })
 
-window.AdminDashboardView = Backbone.View.extend({
+window.AdminDashboardIndexItemView = Backbone.View.extend({
+    tagName: 'li'
     className:'admin_dashboard'
     events: {
         'click button' : 'destroy'
@@ -97,7 +98,7 @@ window.AdminDashboardView = Backbone.View.extend({
     initialize: () ->
         _.bindAll(this, 'render')
         @model.bind('change', @render)
-        @template = _.template($('#admin-dashboard-template').html())
+        @template = _.template($('#admin-dashboard-index-item-template').html())
 
     destroy: () ->
         @model.destroy({
@@ -258,7 +259,7 @@ window.AdminDashboardIndexView = Backbone.View.extend({
         $(@el).html(@template({}))
         $dashboards = this.$('#dashboards')
         @collection.each (dashboard) ->
-            view = new AdminDashboardView({
+            view = new AdminDashboardIndexItemView({
                 model:dashboard,
                 collection:@collection
             })

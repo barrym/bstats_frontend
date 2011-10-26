@@ -19,7 +19,16 @@
 
         <script type="text/javascript" src="/app.js"></script>
 
-        <script type="text/template" id="admin-dashboard-template">
+        <script type="text/template" id="error-template">
+            The following errors occurred:
+            <ul>
+            <% _.each(errors, function(error) { %>
+                <li><%= error %></li>
+            <% }); %>
+            </ul>
+        </script>
+
+        <script type="text/template" id="admin-dashboard-index-item-template">
             <a href='#admin/dashboards/<%= id %>'><%= name %></a>
             (app: <%= app %>)
             <button class="destroy">Delete</button>
@@ -58,15 +67,6 @@
             <ul>
             <% _.each(counters, function(counter) { %>
                 <li><%= counter %></li>
-            <% }); %>
-            </ul>
-        </script>
-
-        <script type="text/template" id="error-template">
-            The following errors occurred:
-            <ul>
-            <% _.each(errors, function(error) { %>
-                <li><%= error %></li>
             <% }); %>
             </ul>
         </script>
