@@ -241,7 +241,7 @@ window.DashboardNewView = Backbone.View.extend({
         },
         success: (model, res) ->
             dashboards.add(model)
-            Backbone.history.navigate("#admin", true)
+            Backbone.history.navigate("#admin/dashboards/#{model.id}", true)
 
         error: (model, errors) ->
             errorView = new ErrorView({errors:errors})
