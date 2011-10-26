@@ -19,13 +19,13 @@
 
         <script type="text/javascript" src="/app.js"></script>
 
-        <script type="text/template" id="dashboard-template">
+        <script type="text/template" id="admin-dashboard-template">
             <a href='#admin/dashboards/<%= id %>'><%= name %></a>
             (app: <%= app %>)
             <button class="destroy">Delete</button>
         </script>
 
-        <script type="text/template" id="dashboard-new-item-template">
+        <script type="text/template" id="admin-dashboard-new-item-template">
             <div class="item" id="<%= item.id %>">
                 <select class="type">
                     <option>Choose Type</option>
@@ -47,7 +47,7 @@
             </div>
         </script>
 
-        <script type="text/template" id="dashboard-show-template">
+        <script type="text/template" id="admin-dashboard-show-template">
             <h3><%= name %></h3>
             <button class="add">Add Item</button>
             <button class="save">Save</button>
@@ -71,7 +71,7 @@
             </ul>
         </script>
 
-        <script type="text/template" id="dashboard-new-template">
+        <script type="text/template" id="admin-dashboard-new-template">
             <div id="notices">
             </div>
             <h2>New dashboard</h2>
@@ -96,7 +96,7 @@
             </form>
         </script>
 
-        <script type="text/template" id="dashboard-index-template">
+        <script type="text/template" id="admin-dashboard-index-template">
             <h2>Dashboards</h2>
             <a href='#admin/dashboards/new'>new dashboard</a>
             <ul id='dashboards'></ul>

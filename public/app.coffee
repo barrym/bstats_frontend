@@ -48,8 +48,8 @@ window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
             return this
     })
 
-window.DashboardView = Backbone.View.extend({
-    className:'dashboard'
+window.AdminDashboardView = Backbone.View.extend({
+    className:'admin_dashboard'
     events: {
         'click button' : 'destroy'
     }
@@ -57,7 +57,7 @@ window.DashboardView = Backbone.View.extend({
     initialize: () ->
         _.bindAll(this, 'render')
         @model.bind('change', @render)
-        @template = _.template($('#dashboard-template').html())
+        @template = _.template($('#admin-dashboard-template').html())
 
     destroy: () ->
         @model.destroy({
@@ -77,7 +77,7 @@ window.DashboardView = Backbone.View.extend({
 
     })
 
-window.DashboardShowView = Backbone.View.extend({
+window.AdminDashboardShowView = Backbone.View.extend({
 
     events:{
         'click button.save'  : 'save',
@@ -89,8 +89,8 @@ window.DashboardShowView = Backbone.View.extend({
         @item_count = 0
         _.bindAll(this, 'render')
         @model.bind('change', @render)
-        @template = _.template($('#dashboard-show-template').html())
-        @item_template = _.template($('#dashboard-new-item-template').html())
+        @template = _.template($('#admin-dashboard-show-template').html())
+        @item_template = _.template($('#admin-dashboard-new-item-template').html())
 
     add_item: () ->
         @add_item_to_canvas({
@@ -204,13 +204,13 @@ window.DashboardShowView = Backbone.View.extend({
 
     })
 
-window.DashboardIndexView = Backbone.View.extend({
+window.AdminDashboardIndexView = Backbone.View.extend({
     tagName   : 'section'
     className : 'dashboards'
 
     initialize: () ->
         _.bindAll(this, 'render')
-        @template = _.template($('#dashboard-index-template').html())
+        @template = _.template($('#admin-dashboard-index-template').html())
         @collection.bind('reset', @render)
         @collection.bind('remove', @render)
 
@@ -218,7 +218,7 @@ window.DashboardIndexView = Backbone.View.extend({
         $(@el).html(@template({}))
         $dashboards = this.$('#dashboards')
         @collection.each (dashboard) ->
-            view = new DashboardView({
+            view = new AdminDashboardView({
                 model:dashboard,
                 collection:@collection
             })
@@ -228,7 +228,7 @@ window.DashboardIndexView = Backbone.View.extend({
 
     })
 
-window.DashboardNewView = Backbone.View.extend({
+window.AdminDashboardNewView = Backbone.View.extend({
 
     events: {
         "submit form" : "save",
@@ -237,7 +237,7 @@ window.DashboardNewView = Backbone.View.extend({
 
     initialize: () ->
         _.bindAll(this, 'render')
-        @template = _.template($('#dashboard-new-template').html())
+        @template = _.template($('#admin-dashboard-new-template').html())
         @model = new Dashboard()
         @apps = new Apps()
 
@@ -290,7 +290,7 @@ window.BstatsFrontend = Backbone.Router.extend({
     }
 
     initialize: () ->
-        @dashboardIndexView = new DashboardIndexView({
+        @adminDashboardIndexView = new AdminDashboardIndexView({
             collection: window.dashboards
         })
 
@@ -300,19 +300,19 @@ window.BstatsFrontend = Backbone.Router.extend({
 
     admin_index: () ->
         $('#main').empty()
-        $('#main').append(@dashboardIndexView.render().el)
+        $('#main').append(@adminDashboardIndexView.render().el)
 
     admin_dashboards_new: () ->
-        @dashboardNewView = new DashboardNewView({})
+        @adminDashboardNewView = new AdminDashboardNewView({})
         $('#main').empty()
-        $('#main').append(@dashboardNewView.render().el)
+        $('#main').append(@adminDashboardNewView.render().el)
 
     admin_dashboards_show: (id) ->
         $('#main').empty()
         dashboard = new Dashboard({id:id})
         dashboard.fetch({
             success: (model, resp) ->
-                showView = new DashboardShowView({model:model})
+                showView = new AdminDashboardShowView({model:model})
                 $('#main').append(showView.render().el)
 
             error: () ->
