@@ -88,6 +88,30 @@ window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
             return this
     })
 
+window.AdminDashboardIndexView = Backbone.View.extend({
+    tagName   : 'section'
+    className : 'dashboards'
+
+    initialize: () ->
+        _.bindAll(this, 'render')
+        @template = _.template($('#admin-dashboard-index-template').html())
+        @collection.bind('reset', @render)
+        @collection.bind('remove', @render)
+
+    render: () ->
+        $(@el).html(@template({}))
+        $dashboards = this.$('#dashboards')
+        @collection.each (dashboard) ->
+            view = new AdminDashboardIndexItemView({
+                model:dashboard,
+                collection:@collection
+            })
+            $dashboards.append(view.render().el)
+
+        return this
+
+    })
+
 window.AdminDashboardIndexItemView = Backbone.View.extend({
     tagName: 'li'
     className:'admin_dashboard'
@@ -242,30 +266,6 @@ window.AdminDashboardShowView = Backbone.View.extend({
             minWidth    : 100
             minHeight   : 100
         })
-
-    })
-
-window.AdminDashboardIndexView = Backbone.View.extend({
-    tagName   : 'section'
-    className : 'dashboards'
-
-    initialize: () ->
-        _.bindAll(this, 'render')
-        @template = _.template($('#admin-dashboard-index-template').html())
-        @collection.bind('reset', @render)
-        @collection.bind('remove', @render)
-
-    render: () ->
-        $(@el).html(@template({}))
-        $dashboards = this.$('#dashboards')
-        @collection.each (dashboard) ->
-            view = new AdminDashboardIndexItemView({
-                model:dashboard,
-                collection:@collection
-            })
-            $dashboards.append(view.render().el)
-
-        return this
 
     })
 
