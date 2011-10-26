@@ -13,16 +13,16 @@ window.Apps = Backbone.Collection.extend({
 
 window.Dashboard = Backbone.Model.extend({
         urlRoot: '/dashboards'
-        validate: (attributes) ->
-            errors = []
-            if !attributes.app
-                errors.push "app cannot be blank"
+        # validate: (attributes) ->
+        #     errors = []
+        #     if !attributes.app
+        #         errors.push "app cannot be blank"
 
-            if !attributes.name
-                errors.push "name cannot be blank"
+        #     if !attributes.name
+        #         errors.push "name cannot be blank"
 
-            if errors.length != 0
-                return errors
+        #     if errors.length != 0
+        #         return errors
 
     })
 
@@ -86,21 +86,19 @@ window.DashboardShowView = Backbone.View.extend({
     }
 
     initialize: () ->
+        @item_count = 0
         _.bindAll(this, 'render')
         @model.bind('change', @render)
         @template = _.template($('#dashboard-show-template').html())
         @item_template = _.template($('#dashboard-new-item-template').html())
 
     add_item: () ->
-        top    = this.$('#canvas').position().top + 10
-        left   = this.$('#canvas').position().left + 10
-        height = 250
-        width  = 250
-
-        $newItem    = $(@item_template({
-            counters:@model.get('counters')
-        }))
-        @add_item_to_canvas($newItem, top, left, height, width)
+        @add_item_to_canvas({
+            top    : 0.2
+            left   : 0.2
+            height : 0.4
+            width  : 0.3
+        })
 
     type_changed: (event) ->
         self = this
@@ -119,6 +117,8 @@ window.DashboardShowView = Backbone.View.extend({
         items_to_save = []
         $items        = this.$('#canvas .item')
         $items.each () ->
+            console.log("about to save item offset t:#{$(this).offset().top} l:#{$(this).offset().left}")
+            console.log("about to save item positi t:#{$(this).position().top} l:#{$(this).position().left}")
             id       = $(this).attr('id')
             height   = Math.round(($(this).height()/canvas_height) * 100)/100
             width    = Math.round(($(this).width()/canvas_width) * 100)/100
@@ -148,39 +148,49 @@ window.DashboardShowView = Backbone.View.extend({
         @model.save()
 
     render: () ->
-        item_count = 0
         content = @template(@model.toJSON())
         $(@el).html(content)
         items = this.model.get('items')
         if items
-            $canvas       = this.$('#canvas')
-            canvas_height = $canvas.height()
-            canvas_width  = $canvas.width()
-            canvas_top    = $canvas.position().top
-            canvas_left   = $canvas.position().left
-
-            canvas_top = 228
-            canvas_left = 375
-            console.log("canvas: t:#{canvas_top} l:#{canvas_left} h:#{canvas_height} w:#{canvas_width}")
-
             for item in items
-                top    = canvas_top + item.top * canvas_height
-                left   = canvas_left + item.left * canvas_width
-                height = canvas_height * item.height
-                width  = canvas_width * item.width
-                item_count = item_count + 1
-                newItem = $(@item_template({
-                    id:item_count,
-                    counters:@model.get('counters')
-                })).append("<b>#{item_count}</b>")
-                # newItem.offset({top:top, left:left})
-                console.log("adding item #{item_count} t:#{top} l:#{left} h:#{height} w:#{width}")
-                @add_item_to_canvas(newItem, top, left, height, width)
+                @add_item_to_canvas(item)
 
         return this
 
-    add_item_to_canvas: (item, top, left, height, width) ->
-        item.draggable({
+    add_item_to_canvas: (params) ->
+        $canvas       = this.$('#canvas')
+        canvas_height = $canvas.height()
+        canvas_width  = $canvas.width()
+        canvas_top    = $canvas.offset().top
+        canvas_left   = $canvas.offset().left
+        top           = canvas_top + params.top * canvas_height
+        left          = canvas_left + params.left * canvas_width
+        height        = canvas_height * params.height
+        width         = canvas_width * params.width
+
+        if !params.id
+            @item_count = @item_count + 1
+            id = @item_count
+        else
+            id = params.id
+
+        $item = $(@item_template({
+            item     : params,
+            counters : @model.get('counters')
+        }))
+        $item.find('.timestep').val(params.timestep)
+        $item.find('.type').val(params.type)
+        $item.find('.counters').val(params.counters)
+        if params.type == 'line' || params.type == 'pie'
+            $item.find('.title').show()
+        else
+            $item.find('.title').hide()
+
+        $canvas.append($item)
+        $item.append("<b>#{id}</b>")
+        $item.attr('style','position:absolute')
+        $item.height(height).width(width).offset({top:top, left:left})
+        $item.draggable({
             containment : "parent"
             stack       : ".item"
             grid        : [10, 10]
@@ -190,14 +200,13 @@ window.DashboardShowView = Backbone.View.extend({
             grid        : 10
             minWidth    : 100
             minHeight   : 100
-        }).height(height).width(width).offset({top:top, left:left})
-        $canvas = this.$('#canvas')
-        $canvas.append(item)
+        })
+
     })
 
 window.DashboardIndexView = Backbone.View.extend({
-    tagName: 'section'
-    className: 'dashboards'
+    tagName   : 'section'
+    className : 'dashboards'
 
     initialize: () ->
         _.bindAll(this, 'render')

@@ -26,7 +26,7 @@
         </script>
 
         <script type="text/template" id="dashboard-new-item-template">
-            <div class="item" id="item_<%= id %>">
+            <div class="item" id="<%= item.id %>">
                 <select class="type">
                     <option>Choose Type</option>
                     <option value="line">Line Graph</option>
@@ -43,7 +43,7 @@
                         <option value="<%= counter %>"><%= counter %>
                     <% }); %>
                 </select>
-                <input type="text" class="title" style="display:none;" placeholder="Enter a title">
+                <input type="text" class="title" style="display:none;" placeholder="Enter a title" value="<%= item.title %>">
             </div>
         </script>
 
@@ -51,7 +51,7 @@
             <h3><%= name %></h3>
             <button class="add">Add Item</button>
             <button class="save">Save</button>
-            <div id="canvas" style="height:450px;width:750px;">
+            <div id="canvas" style="height:562px;width:900px;">
             </div>
             App : <%= app %>
             Available Counters:
