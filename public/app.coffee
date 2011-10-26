@@ -37,6 +37,46 @@ window.dashboards = new Dashboards()
 
 # ----------- VIEWS -------------
 
+window.DashboardIndexView = Backbone.View.extend({
+    tagName   : 'section'
+    className : 'dashboards'
+
+    initialize: () ->
+        _.bindAll(this, 'render')
+        @template = _.template($('#dashboard-index-template').html())
+        @collection.bind('reset', @render)
+        @collection.bind('remove', @render)
+
+    render: () ->
+        $(@el).html(@template({}))
+        $dashboards = this.$('#dashboards')
+        @collection.each (dashboard) ->
+            view = new DashboardIndexItemView({
+                model:dashboard,
+                collection:@collection
+            })
+            $dashboards.append(view.render().el)
+
+        return this
+
+    })
+
+window.DashboardIndexItemView = Backbone.View.extend({
+    tagName: 'li'
+    className:'admin_dashboard'
+
+    initialize: () ->
+        _.bindAll(this, 'render')
+        @model.bind('change', @render)
+        @template = _.template($('#dashboard-index-item-template').html())
+
+    render: () ->
+        content = @template(@model.toJSON())
+        $(@el).html(content)
+        return this
+
+    })
+
 window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
         className: 'error'
 
@@ -293,10 +333,13 @@ window.BstatsFrontend = Backbone.Router.extend({
         @adminDashboardIndexView = new AdminDashboardIndexView({
             collection: window.dashboards
         })
+        @dashboardIndexView = new DashboardIndexView({
+            collection: window.dashboards
+        })
 
     home: () ->
         $('#main').empty()
-        $('#main').text('home page')
+        $('#main').append(@dashboardIndexView.render().el)
 
     admin_index: () ->
         $('#main').empty()
