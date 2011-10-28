@@ -9,6 +9,7 @@
         "async":"",
         "config":"",
         "forever":"",
-        "express-resource":""
+        "express-resource":"",
+        "node-uuid":""
     }
 }
