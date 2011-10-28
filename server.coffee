@@ -35,8 +35,13 @@ dashboard = {
     update: (req, res) ->
         key = "bstats:dashboards"
         dashboard = req.body
+        dashboard.items.map((item) ->
+            if !item.id
+                item.id = guid()
+            )
         redis.set "#{key}:#{req.params.dashboard}", JSON.stringify(dashboard), (err, redis_res) ->
             if err
+
             else
                 res.send(dashboard)
 
