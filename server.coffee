@@ -17,7 +17,6 @@ dashboard = {
         redis.smembers key, (err, dashboard_ids) ->
             if dashboard_ids.length != 0
                 keys = dashboard_ids.map((id) -> "#{key}:#{id}")
-                console.log(keys)
                 redis.mget keys, (err, dashboards) ->
                     res.send(dashboards.map((d) -> JSON.parse(d)))
             else
@@ -152,9 +151,9 @@ io.of('/bstats').on('connection', (socket) ->
     console.log("client connected to /bstats")
     socket.on('dashboard_subscribe', (data) ->
         if data.type == 'counters'
-            if !connected_dashboards.per_second[data.id]
-                connected_dashboards.per_second[data.id] = {}
-            connected_dashboards.per_second[data.id][socket.id] = socket
+            if !connected_dashboards[data.timestep][data.id]
+                connected_dashboards[data.timestep][data.id] = {}
+            connected_dashboards[data.timestep][data.id][socket.id] = socket
 
             if data.timestep == 'per_second'
                 init_per_second_counter_objects(socket, data.id, 300)
@@ -162,9 +161,9 @@ io.of('/bstats').on('connection', (socket) ->
                 init_per_minute_counter_objects(socket, data.id, 60)
 
             socket.on('disconnect', () ->
-                delete(connected_dashboards.per_second[data.id][socket.id])
-                if _.values(connected_dashboards.per_second[data.id]).length == 0
-                    delete(connected_dashboards.per_second[data.id])
+                delete connected_dashboards[data.timestep][data.id][socket.id]
+                if _.values(connected_dashboards[data.timestep][data.id]).length == 0
+                    delete connected_dashboards[data.timestep][data.id]
             )
     )
 )
