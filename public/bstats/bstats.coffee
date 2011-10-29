@@ -2,11 +2,8 @@ class BstatsBase
 
     constructor: (params) ->
         @counters        = params.counters || "all"
-        @socket_host     = params.socket_host
         @timestep        = params.timestep
         @div_id          = params.div_id
-        @w               = params.width
-        @h               = params.height
         @p_top           = params.padding_top || 25
         @p_right         = params.padding_right || 25
         @p_bottom        = params.padding_bottom || 25
@@ -19,8 +16,11 @@ class BstatsBase
         @data_points = if @timestep == 'per_second' then 300 else 60
 
         div = d3.select(@div_id)
+        @w = parseInt(div.style('width'))
+        @h = parseInt(div.style('height'))
 
         if @title
+            @h = @h * 0.85 # Make room for title
             div.append("div")
                 .attr("class", "title")
                 .text(@title)
@@ -29,16 +29,6 @@ class BstatsBase
             .attr("width", @w)
             .attr("height", @h)
             .append("svg:g")
-
-        if @socket_host
-            socket_url = "#{@socket_host}/bstats_counters_#{@timestep}"
-            socket = io.connect(socket_url)
-
-            socket.on('connect', () =>
-                console.log("connected to #{socket_url}")
-            )
-
-            socket.on("bstats_counters_#{@timestep}", @process_new_data)
 
     format: (num) ->
         d3.format(",")(num)
@@ -63,7 +53,9 @@ class BstatsCounterPie extends BstatsBase
 
     constructor: (params) ->
         super params
-        @r               = params.radius
+        @h               = Math.min(@w, @h)
+        @w               = Math.min(@w, @h)
+        @r               = params.radius || @w * 0.45
         @inner_title     = params.inner_title
         @sums            = []
         @arc = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
@@ -177,7 +169,7 @@ class BstatsCounterLineGraph extends BstatsBase
     constructor: (params) ->
         super params
         @x_tick_count    = params.x_tick_count || 6
-        @y_tick_count    = params.y_tick_count || 10
+        @y_tick_count    = params.y_tick_count || Math.round(@h/40)
         @count           = 0
         @x               = null
         @y               = null
@@ -436,3 +428,14 @@ class BstatsCounterLineGraph extends BstatsBase
             .duration(@duration_time)
             .style("opacity", 0)
             .remove()
+
+class BstatsCounterGraph
+    constructor: (params) ->
+        switch params.type
+            when 'pie'
+                params.inner_title = params.title
+                delete(params.title)
+                return new BstatsCounterPie(params)
+            when 'line'
+                return new BstatsCounterLineGraph(params)
+
