@@ -76,8 +76,9 @@
             <div id="colors">
                 <% _.each(counters, function(counter) { %>
                     <div>
+                        <div class="color_legend" style="background-color:<%= colors[counter] %>"></div>
                         <label for="color_<%= counter %>"><%= counter %></label>
-                        <input type="text" id="color_<%= counter %>" name="color_<%= counter %>" value="<%= colors[counter] %>">
+                        <input class="colors" type="text" id="color_<%= counter %>" name="color_<%= counter %>" value="<%= colors[counter] %>">
                     </div>
                 <% }); %>
             </div>

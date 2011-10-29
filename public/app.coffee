@@ -220,7 +220,8 @@ window.AdminDashboardShowView = Backbone.View.extend({
         'click button.add'     : 'add_item',
         'click button.destroy' : 'remove_item',
         'change select.type'   : 'type_changed',
-        'click #counter_link'  : 'toggle_counters'
+        'click #counter_link'  : 'toggle_counters',
+        'change input.colors'  : 'update_color_box'
     }
 
     initialize: () ->
@@ -246,6 +247,9 @@ window.AdminDashboardShowView = Backbone.View.extend({
         $parent.find('#counters_select').toggle()
         return false
 
+    update_color_box: (event) ->
+        $parent = $(event.currentTarget).parent()
+        $parent.find('.color_legend').css('background-color', $(event.currentTarget).val())
 
     type_changed: (event) ->
         $element = $(event.currentTarget)
