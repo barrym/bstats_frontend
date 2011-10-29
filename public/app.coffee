@@ -206,9 +206,10 @@ window.AdminDashboardIndexItemView = Backbone.View.extend({
 window.AdminDashboardShowView = Backbone.View.extend({
 
     events:{
-        'click button.save'  : 'save',
-        'click button.add'   : 'add_item',
-        'change select.type' : 'type_changed'
+        'click button.save'    : 'save',
+        'click button.add'     : 'add_item',
+        'click button.destroy' : 'remove_item',
+        'change select.type'   : 'type_changed'
     }
 
     initialize: () ->
@@ -226,11 +227,13 @@ window.AdminDashboardShowView = Backbone.View.extend({
             width  : 0.3
         })
 
+    remove_item: (event) ->
+        $(event.currentTarget).parent().remove()
+
     type_changed: (event) ->
-        self = this
         $element = $(event.currentTarget)
-        $parent = $element.parent()
-        type = $element.val()
+        $parent  = $element.parent()
+        type     = $element.val()
         switch type
             when 'line'
                 $parent.find('.title').show()
@@ -246,8 +249,6 @@ window.AdminDashboardShowView = Backbone.View.extend({
         items_to_save = []
         $items        = this.$('#canvas .item')
         $items.each () ->
-            console.log("about to save item offset t:#{$(this).offset().top} l:#{$(this).offset().left}")
-            console.log("about to save item positi t:#{$(this).position().top} l:#{$(this).position().left}")
             id       = $(this).attr('id')
             height   = Math.round(($(this).height()/canvas_height) * 100)/100
             width    = Math.round(($(this).width()/canvas_width) * 100)/100
@@ -257,7 +258,6 @@ window.AdminDashboardShowView = Backbone.View.extend({
             timestep = $(this).find('.timestep').val()
             type     = $(this).find('.type').val()
             counters = $(this).find('.counters').val()
-            console.log("saving item t:#{top} l:#{left} h:#{height} w:#{width}")
             items_to_save.push({
                 id       : id,
                 height   : height,
@@ -271,8 +271,6 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
             })
 
-        console.log("items to save:")
-        console.log(items_to_save)
         @model.set({
             items :items_to_save,
             name  : $('#name').val() # TODO: this doesnt refresh the name on the collections page
@@ -352,11 +350,10 @@ window.AdminDashboardNewView = Backbone.View.extend({
     initialize: () ->
         _.bindAll(this, 'render')
         @template = _.template($('#admin-dashboard-new-template').html())
-        @model = new Dashboard()
-        @apps = new Apps()
+        @model    = new Dashboard()
+        @apps     = new Apps()
 
     save: () ->
-        self = this
         @model.save({
             name     : this.$('#name').val()
             app      : this.$('#app').val()
