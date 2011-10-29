@@ -90,9 +90,11 @@ window.DashboardView = Backbone.View.extend({
 
         window.foo = @model
         for counter, color of @model.get('colors')
-            $("<style>#items path.#{counter} { stroke: #{color}}</style>").appendTo("head")
-            $("<style>#items g.arc path.#{counter} { fill: #{color}}</style>").appendTo("head")
-            $("<style>circle.#{counter} { fill: #{color}}</style>").appendTo("head")
+            $("<style>
+                #items path.#{counter} { stroke: #{color};}
+                #items g.arc path.#{counter} { fill: #{color};}
+                circle.#{counter} { fill: #{color};}
+               </style>").appendTo("head")
 
         window_width   = $(document).width()
         window_height  = $(document).height()
