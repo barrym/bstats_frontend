@@ -9,6 +9,9 @@
 
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
+        <script type="text/javascript" src="/vendor/d3/d3.min.js"></script>
+        <script type="text/javascript" src="/vendor/d3/d3.time.min.js"></script>
+        <script type="text/javascript" src="/vendor/d3/d3.layout.min.js"></script>
         <script type="text/javascript" src="/vendor/jquery-1.6.2.min.js"></script>
         <script type="text/javascript" src="/vendor/jquery-ui-1.8.16.custom.min.js"></script>
         <script type="text/javascript" src="/vendor/jquery.isotope.min.js"></script>
@@ -17,7 +20,10 @@
         <script type="text/javascript" src="/vendor/underscore-min.js"></script>
         <script type="text/javascript" src="/vendor/backbone-min.js"></script>
 
+        <script type="text/javascript" src="/bstats/bstats.js"></script>
         <script type="text/javascript" src="/app.js"></script>
+
+        <!-- ############### ADMIN PAGE ##################### -->
 
         <script type="text/template" id="error-template">
             The following errors occurred:
@@ -63,11 +69,6 @@
             <div id="canvas" style="height:562px;width:900px;">
             </div>
             App : <%= app %>
-            Available Counters:
-            <ul>
-            <% _.each(counters, function(counter) { %>
-                <li><%= counter %></li>
-            <% }); %>
             </ul>
         </script>
 
@@ -102,14 +103,25 @@
             <ul id='dashboards'></ul>
         </script>
 
+        <!-- ############# HOME PAGE #################### -->
+
         <script type="text/template" id="dashboard-index-template">
             <h2>Dashboards</h2>
             <ul id='dashboards'></ul>
         </script>
 
         <script type="text/template" id="dashboard-index-item-template">
-            <a href='#/dashboards/<%= id %>'><%= name %></a>
+            <a href='#dashboards/<%= id %>'><%= name %></a>
         </script>
+
+        <script type="text/template" id="dashboard-template">
+            <div id="items">
+            </div>
+        </script>
+
+
+
+
 
         <script type="application/javascript">
             jQuery(function() {

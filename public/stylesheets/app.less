@@ -7,13 +7,20 @@ body {
     font-family: @font_family;
     background-color: @background_color;
     color: @text_color;
-    width:960px;
-    margin: 0 auto;
 }
 
 a {
     text-decoration: none;
     color: steelblue;
+}
+
+div#dashboard {
+    background-color: darken(@background_color, 40%)
+}
+
+div#container {
+    width:960px;
+    margin: 0 auto;
 }
 
 div#header {
@@ -25,6 +32,7 @@ div#header {
 div#main {
     /* border: 1px solid blue; */
     padding: 1em;
+    background-color: darken(@background_color, 5%);
 }
 
 form div {
@@ -78,3 +86,46 @@ select {
         font-size:0.5em;
     }
 }
+
+
+@dashboard_background_color: #EFEDDC;
+@grid_color: #aaa;
+@default_stroke: lighten(#712F9E, 20%);
+
+.dashboard {
+    background-color: @dashboard_background_color;
+}
+
+#items {
+    background-color: @dashboard_background_color;
+
+    .item {
+        float: left;
+        border: none;
+        background-color: @dashboard_background_color;
+		border: 1px solid red;
+
+		svg {
+			border: 1px solid blue;
+		}
+    }
+
+    .title {
+        text-align: left; /* :( but I don't care */
+        font-weight: bold;
+        font-size: 1.5em;
+        /* color: #999999; */
+    }
+
+    line {
+        stroke: @grid_color;
+    }
+
+    path {
+        stroke: @default_stroke;
+        stroke-width: 2px;
+        fill:none;
+    }
+}
+
+

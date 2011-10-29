@@ -77,6 +77,67 @@ window.DashboardIndexItemView = Backbone.View.extend({
 
     })
 
+window.DashboardView = Backbone.View.extend({
+    initialize: () ->
+        _.bindAll(this, 'render')
+        @model.bind('change', @render)
+        @template = _.template($('#dashboard-template').html())
+
+    render: () ->
+        content = @template({})
+        $(@el).html(content)
+        document.title = @model.get('name')
+        window_width   = $(document).width()
+        window_height  = $(document).height()
+        items          = @model.get('items')
+        if items
+            $.get('/config', (data) =>
+                graphs = {
+                    'per_second' : [],
+                    'per_minute' : []
+                }
+                for item in items
+                    div_id = "item_#{item.id}"
+                    width  = window_width * item.width
+                    height = window_height * item.height
+                    $graph = $("<div id='#{div_id}' class='item'></div>")
+                    $graph.offset({top:(item.top * window_height), left:(item.left * window_width)})
+                    $graph.height(height)
+                    $graph.width(width)
+                    $graph.css('position', 'absolute')
+                    $('#items').append($graph)
+
+                    graphs[item.timestep].push(new BstatsCounterGraph({
+                        type         : item.type
+                        counters     : item.counters
+                        timestep     : item.timestep
+                        div_id       : "##{div_id}"
+                        title        : item.title
+                    }))
+
+                for timestep, timestep_graphs of graphs
+                    @init_graphs data.hostname, data.port, timestep, timestep_graphs
+            )
+
+        return this
+
+    init_graphs: (hostname, port, timestep, graphs) ->
+        if graphs.length != 0
+            socket = io.connect("http://#{hostname}:#{port}/bstats")
+
+            socket.emit('dashboard_subscribe', {
+                type         : 'counters',
+                id           : @model.id,
+                timestep     : timestep
+            })
+
+            socket.on(timestep, (new_data) ->
+                for graph in graphs
+                    graph.process_new_data(new_data)
+            )
+
+    })
+
 window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
         className: 'error'
 
@@ -170,10 +231,13 @@ window.AdminDashboardShowView = Backbone.View.extend({
         $element = $(event.currentTarget)
         $parent = $element.parent()
         type = $element.val()
-        if type == 'line' || type == 'pie'
-            $parent.find('.title').show()
-        else
-            $parent.find('.title').hide()
+        switch type
+            when 'line'
+                $parent.find('.title').show()
+            when 'pie'
+                $parent.find('.title').show()
+            else
+                $parent.find('.title').hide()
 
     save: () ->
         $canvas       = this.$('#canvas')
@@ -243,13 +307,6 @@ window.AdminDashboardShowView = Backbone.View.extend({
             item     : params,
             counters : @model.get('counters')
         }))
-        $item.find('.timestep').val(params.timestep)
-        $item.find('.type').val(params.type)
-        $item.find('.counters').val(params.counters)
-        if params.type == 'line' || params.type == 'pie'
-            $item.find('.title').show()
-        else
-            $item.find('.title').hide()
 
         $canvas.append($item)
         $item.attr('style','position:absolute')
@@ -269,6 +326,16 @@ window.AdminDashboardShowView = Backbone.View.extend({
         $item.hover(() ->
             $(this).css('cursor', 'move')
         )
+        $item.find('.timestep').val(params.timestep)
+        $item.find('.type').val(params.type)
+        $item.find('.counters').val(params.counters)
+        switch params.type
+            when 'line'
+                $item.find('.title').show()
+            when 'pie'
+                $item.find('.title').show()
+            else
+                $item.find('.title').hide()
 
     })
 
@@ -331,6 +398,7 @@ window.BstatsFrontend = Backbone.Router.extend({
         'admin'                : 'admin_index'
         'admin/dashboards/new' : 'admin_dashboards_new'
         'admin/dashboards/:id' : 'admin_dashboards_show'
+        'dashboards/:id'       : 'dashboard'
     }
 
     initialize: () ->
@@ -344,6 +412,21 @@ window.BstatsFrontend = Backbone.Router.extend({
     home: () ->
         $('#main').empty()
         $('#main').append(@dashboardIndexView.render().el)
+
+    dashboard: (id) ->
+        dashboard = new Dashboard({id:id})
+        dashboard.fetch({
+            success: (model, resp) ->
+                $('body').empty()
+                $('body').toggleClass('dashboard')
+                showView = new DashboardView({model:model})
+                $('body').append(showView.render().el)
+
+            error: () ->
+                $('#main').empty()
+                $('#main').text("cant find this dashboard")
+        })
+
 
     admin_index: () ->
         $('#main').empty()
