@@ -209,7 +209,8 @@ window.AdminDashboardShowView = Backbone.View.extend({
         'click button.save'    : 'save',
         'click button.add'     : 'add_item',
         'click button.destroy' : 'remove_item',
-        'change select.type'   : 'type_changed'
+        'change select.type'   : 'type_changed',
+        'click #counter_link'  : 'toggle_counters'
     }
 
     initialize: () ->
@@ -229,6 +230,12 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
     remove_item: (event) ->
         $(event.currentTarget).parent().remove()
+
+    toggle_counters: (event) ->
+        $parent = $(event.currentTarget).parent()
+        $parent.find('#counters_select').toggle()
+        return false
+
 
     type_changed: (event) ->
         $element = $(event.currentTarget)
@@ -337,6 +344,15 @@ window.AdminDashboardShowView = Backbone.View.extend({
                 $item.find('.title').show()
             else
                 $item.find('.title').hide()
+
+        $counters_select = $item.find('#counters_select')
+        $counters_select.width(canvas_width * 0.5)
+        $counters_select.height(canvas_height * 0.5)
+        $counters_select.css({
+            'position':'absolute',
+            'z-index':1002
+        })
+        # $counters_select.offset({top:(canvas_height * 0.1), left:(canvas_width * 0.1)})
 
     })
 

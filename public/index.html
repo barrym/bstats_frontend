@@ -54,11 +54,14 @@
                     <option value="per_second">Per Second</option>
                     <option value="per_minute">Per Minute</option>
                 </select>
-                <select class="counters" multiple>
-                    <% _.each(counters, function(counter) { %>
-                        <option value="<%= counter %>"><%= counter %>
-                    <% }); %>
-                </select>
+                <a href='#' id='counter_link'>Counters</a>
+                <div id="counters_select" style="display:none;">
+                    <select class="counters" multiple>
+                        <% _.each(counters, function(counter) { %>
+                            <option value="<%= counter %>"><%= counter %>
+                            <% }); %>
+                    </select>
+                </div>
                 <input type="text" class="title" style="display:none;" placeholder="Enter a title" value="<%= item.title %>">
             </div>
         </script>
