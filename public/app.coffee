@@ -252,10 +252,10 @@ window.AdminDashboardShowView = Backbone.View.extend({
             $item.find('.title').hide()
 
         $canvas.append($item)
-        $item.append("<b>#{id}</b>")
         $item.attr('style','position:absolute')
         $item.height(height).width(width).offset({top:top, left:left})
         $item.draggable({
+            cursor      : "move"
             containment : "parent"
             stack       : ".item"
             grid        : [10, 10]
@@ -266,6 +266,9 @@ window.AdminDashboardShowView = Backbone.View.extend({
             minWidth    : 100
             minHeight   : 100
         })
+        $item.hover(() ->
+            $(this).css('cursor', 'move')
+        )
 
     })
 
