@@ -273,7 +273,10 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
         console.log("items to save:")
         console.log(items_to_save)
-        @model.set({items:items_to_save})
+        @model.set({
+            items :items_to_save,
+            name  : $('#name').val() # TODO: this doesnt refresh the name on the collections page
+        })
         @model.save()
 
     render: () ->
@@ -385,7 +388,6 @@ window.AdminDashboardNewView = Backbone.View.extend({
                 )
         })
 
-
         return this
     })
 
@@ -426,7 +428,6 @@ window.BstatsFrontend = Backbone.Router.extend({
                 $('#main').empty()
                 $('#main').text("cant find this dashboard")
         })
-
 
     admin_index: () ->
         $('#main').empty()
