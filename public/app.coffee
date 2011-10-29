@@ -87,6 +87,13 @@ window.DashboardView = Backbone.View.extend({
         content = @template({})
         $(@el).html(content)
         document.title = @model.get('name')
+
+        window.foo = @model
+        for counter, color of @model.get('colors')
+            $("<style>#items path.#{counter} { stroke: #{color}}</style>").appendTo("head")
+            $("<style>#items g.arc path.#{counter} { fill: #{color}}</style>").appendTo("head")
+            $("<style>circle.#{counter} { fill: #{color}}</style>").appendTo("head")
+
         window_width   = $(document).width()
         window_height  = $(document).height()
         items          = @model.get('items')
@@ -118,6 +125,7 @@ window.DashboardView = Backbone.View.extend({
                 for timestep, timestep_graphs of graphs
                     @init_graphs data.hostname, data.port, timestep, timestep_graphs
             )
+
 
         return this
 
@@ -278,8 +286,13 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
             })
 
+        colors_to_save = {}
+        for counter in @model.get('counters')
+            colors_to_save[counter] =  $("#color_#{counter}").val()
+
         @model.set({
             items :items_to_save,
+            colors:colors_to_save,
             name  : $('#name').val() # TODO: this doesnt refresh the name on the collections page
         })
         @model.save()
