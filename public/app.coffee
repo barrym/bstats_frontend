@@ -141,10 +141,12 @@ window.DashboardView = Backbone.View.extend({
                 timestep     : timestep
             })
 
-            socket.on(timestep, (new_data) ->
+            socket.on 'refresh', () ->
+                location.reload()
+
+            socket.on timestep, (new_data) ->
                 for graph in graphs
                     graph.process_new_data(new_data)
-            )
 
     })
 

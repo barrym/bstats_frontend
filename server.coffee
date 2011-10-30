@@ -46,6 +46,7 @@ dashboard = {
             if err
 
             else
+                refresh_dashboard(req.params.dashboard)
                 res.send(dashboard)
 
     destroy: (req, res) ->
@@ -141,6 +142,14 @@ get_dashboard = (id, callback) ->
 connected_sockets = io.sockets.on('connection', (socket) ->
     console.log("socket client connected")
 )
+
+refresh_dashboard = (dashboard_id) ->
+    for timestep, dashboards of connected_dashboards
+        console.log(dashboards)
+        for key, connected_sockets of dashboards
+            if key == dashboard_id
+                for socket in _.values(connected_sockets)
+                    socket.emit('refresh', {})
 
 connected_dashboards = {
         'per_second' : {},
