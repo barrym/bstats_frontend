@@ -1,14 +1,14 @@
 # ---------- MODELS -------------
 
-window.App = Backbone.Model.extend({
-        urlRoot: '/apps'
+window.Namespace = Backbone.Model.extend({
+        urlRoot: '/namespaces'
     })
 
-window.Apps = Backbone.Collection.extend({
-        model: App,
-        url: '/apps'
-        comparator: (app) ->
-            app.get('name')
+window.Namespaces = Backbone.Collection.extend({
+        model: Namespace,
+        url: '/namespaces'
+        comparator: (namespace) ->
+            namespace.get('name')
     })
 
 window.Dashboard = Backbone.Model.extend({
@@ -300,7 +300,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
         @model.set({
             items :items_to_save,
-            colors:colors_to_save,
+            colors :colors_to_save,
             name  : $('#name').val() # TODO: this doesnt refresh the name on the collections page
         })
         @model.save()
@@ -386,15 +386,15 @@ window.AdminDashboardNewView = Backbone.View.extend({
 
     initialize: () ->
         _.bindAll(this, 'render')
-        @template = _.template($('#admin-dashboard-new-template').html())
-        @model    = new Dashboard()
-        @apps     = new Apps()
+        @template   = _.template($('#admin-dashboard-new-template').html())
+        @model      = new Dashboard()
+        @namespaces = new Namespaces()
 
     save: () ->
         @model.save({
-            name     : this.$('#name').val()
-            app      : this.$('#app').val()
-            counters : this.$('#counters').val()
+            name      : this.$('#name').val()
+            namespace : this.$('#namespace').val()
+            counters  : this.$('#counters').val()
         },
         success: (model, res) ->
             dashboards.add(model)
@@ -414,11 +414,11 @@ window.AdminDashboardNewView = Backbone.View.extend({
     render: () ->
         content = @template(@model.toJSON())
         $(@el).html(content)
-        $app = this.$('#app')
-        @apps.fetch({
+        $namespace = this.$('#namespace')
+        @namespaces.fetch({
             success: (collection, response) ->
-                collection.each((app) ->
-                    $app.append("<option value='#{app.get('name')}'>#{app.get('name')}</option>")
+                collection.each((namespace) ->
+                    $namespace.append("<option value='#{namespace.get('name')}'>#{namespace.get('name')}</option>")
                 )
         })
 

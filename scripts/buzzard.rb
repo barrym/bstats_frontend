@@ -5,7 +5,7 @@ require 'redis'
 puts "Generating dummy data"
 
 redis = Redis.new
-redis.sadd "bstats:apps", "buzzard"
+redis.sadd "bstats:namespaces", "buzzard"
 
 @buzzard_events = [
   :failed_to_send_mt,

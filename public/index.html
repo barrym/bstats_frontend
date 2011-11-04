@@ -36,7 +36,7 @@
 
         <script type="text/template" id="admin-dashboard-index-item-template">
             <a href='#admin/dashboards/<%= id %>'><%= name %></a>
-            (app: <%= app %>)
+            (namespace: <%= namespace %>)
             <button class="destroy">Delete</button>
         </script>
 
@@ -70,7 +70,7 @@
             <input type=text id="name" value="<%= name %>">
             <button class="add">Add Item</button>
             <button class="save">Save</button>
-            namespace : <%= app %>
+            namespace : <%= namespace %>
             <div id="canvas" style="height:562px;width:900px;">
             </div>
             <div id="colors">
@@ -95,8 +95,8 @@
                 </div>
 
                 <div>
-                    <label for="app">App</label>
-                    <select name="app" id="app">
+                    <label for="namespace">Namespace</label>
+                    <select name="namespace" id="namespace">
                         <option value="">Choose</option>
                     </select>
                 </div>

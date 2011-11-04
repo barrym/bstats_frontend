@@ -1,11 +1,11 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    foreman (0.20.0)
+    foreman (0.25.0)
       term-ansicolor (~> 1.0.5)
       thor (>= 0.13.6)
     redis (2.2.2)
-    term-ansicolor (1.0.6)
+    term-ansicolor (1.0.7)
     thor (0.14.6)
 
 PLATFORMS

@@ -26,6 +26,7 @@ dashboard = {
         key = "bstats:dashboards"
         dashboard = req.body
         dashboard.id = uuid()
+        dashboard.colors = {}
         redis.sadd key, dashboard.id, (err, redis_res) ->
             if err
                 res.send({status:"error"}, 400)
@@ -79,17 +80,17 @@ dashboard = {
                 res.send({status:"error"}, 400)
             else
                 dashboard = JSON.parse(dashboard)
-                redis.smembers "bstats:#{dashboard.app}:counters", (err, counters) ->
+                console.log(dashboard)
+                redis.smembers "bstats:#{dashboard.namespace}:counters", (err, counters) ->
                     dashboard.counters = counters.sort()
                     res.send(dashboard)
 
 
     }
 
-# TODO: rename apps to namespaces
-bstats_app = {
+namespace = {
     index: (req, res) ->
-        key = "bstats:apps"
+        key = "bstats:namespaces"
         get_namespaces((namespaces) ->
             res.send(namespaces.map((namespace) -> {
                 id   : namespace,
@@ -99,7 +100,7 @@ bstats_app = {
 }
 
 app.resource('dashboards', dashboard, {format:'json'})
-app.resource('apps', bstats_app, {format:'json'})
+app.resource('namespaces', namespace, {format:'json'})
 
 if config.username && config.password
     app.use(express.basicAuth(config.username, config.password))
@@ -126,7 +127,7 @@ seconds_offset = 3
 minutes_offset = 1
 
 get_namespaces = (callback) ->
-    redis.smembers "bstats:apps", (err, namespaces) ->
+    redis.smembers "bstats:namespaces", (err, namespaces) ->
         namespaces = namespaces ?= []
         callback(namespaces)
 
@@ -222,7 +223,7 @@ send_dashboard_counters_to_sockets = (dashboard_id, sockets, timestep, timestamp
 
             timestamps_and_counters = timestamps.map((t) ->
                 {
-                    app       : dashboard.app,
+                    namespace : dashboard.namespace,
                     timestamp : t,
                     timestep  : timestep
                     counters  : counters
@@ -235,7 +236,7 @@ send_dashboard_counters_to_sockets = (dashboard_id, sockets, timestep, timestamp
         )
 
 get_counter_objects = (params, callback) ->
-    keys = params.counters.map((counter) -> "bstats:#{params.app}:counter:#{params.timestep}:#{counter}:#{params.timestamp}")
+    keys = params.counters.map((counter) -> "bstats:#{params.namespace}:counter:#{params.timestep}:#{counter}:#{params.timestamp}")
 
     redis.mget(keys, (err, res) ->
         objects = params.counters.map((counter, i) ->
