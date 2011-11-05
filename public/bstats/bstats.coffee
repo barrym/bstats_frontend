@@ -175,7 +175,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
 
     constructor: (params) ->
         super params
-        @x_tick_count    = params.x_tick_count || 6
+        @x_tick_count    = params.x_tick_count || Math.round(@w/100)
         @y_tick_count    = params.y_tick_count || Math.round(@h/40)
         @count           = 0
         @x               = null
