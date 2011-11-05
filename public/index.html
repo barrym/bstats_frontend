@@ -51,8 +51,14 @@
                 </select>
                 <select class="timestep">
                     <option>Choose Timestep</option>
-                    <option value="per_second">Per Second</option>
-                    <option value="per_minute">Per Minute</option>
+                    <option value="per_second">Per second (last 5 mins)</option>
+                    <option value="per_minute">Per minute (last hour)</option>
+                </select>
+                <select class="text-type" style="display:none;">
+                    <option>Choose Type</option>
+                    <option value="total">Total</option>
+                    <option value="per_second_average">per second average</option>
+                    <option value="per_minute_average">per minute average</option>
                 </select>
                 <a href='#' id='counter_link'>Counters</a>
                 <div id="counters_select" style="display:none;">

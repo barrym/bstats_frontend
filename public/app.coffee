@@ -118,6 +118,7 @@ window.DashboardView = Backbone.View.extend({
 
                     graphs[item.timestep].push(new BstatsCounterGraph({
                         type         : item.type
+                        sub_type     : item.sub_type
                         counters     : item.counters
                         timestep     : item.timestep
                         div_id       : "##{div_id}"
@@ -260,10 +261,16 @@ window.AdminDashboardShowView = Backbone.View.extend({
         switch type
             when 'line'
                 $parent.find('.title').show()
+                $parent.find('.text-type').hide()
             when 'pie'
                 $parent.find('.title').show()
+                $parent.find('.text-type').hide()
+            when 'text'
+                $parent.find('.title').show()
+                $parent.find('.text-type').show()
             else
                 $parent.find('.title').hide()
+                $parent.find('.text-type').hide()
 
     save: () ->
         $canvas       = this.$('#canvas')
@@ -280,6 +287,12 @@ window.AdminDashboardShowView = Backbone.View.extend({
             title    = $(this).find('.title').val()
             timestep = $(this).find('.timestep').val()
             type     = $(this).find('.type').val()
+            sub_type = switch type
+                when 'text'
+                    $(this).find('.text-type').val()
+                else
+                    undefined
+
             counters = $(this).find('.counters').val()
             items_to_save.push({
                 id       : id,
@@ -290,6 +303,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
                 title    : title,
                 timestep : timestep,
                 type     : type,
+                sub_type : sub_type,
                 counters : counters
 
             })
@@ -361,10 +375,17 @@ window.AdminDashboardShowView = Backbone.View.extend({
         switch params.type
             when 'line'
                 $item.find('.title').show()
+                $item.find('.text-type').hide()
             when 'pie'
                 $item.find('.title').show()
+                $item.find('.text-type').hide()
+            when 'text'
+                $item.find('.title').show()
+                $item.find('.text-type').show()
+                $item.find('.text-type').val(params.sub_type)
             else
                 $item.find('.title').hide()
+                $item.find('.text-type').hide()
 
         $counters_select = $item.find('#counters_select')
         $counters_select.width(canvas_width * 0.5)

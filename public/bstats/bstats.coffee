@@ -1,4 +1,4 @@
-class BstatsBase
+class BstatsCounterBase
 
     constructor: (params) ->
         @counters        = params.counters || "all"
@@ -12,23 +12,13 @@ class BstatsBase
         @update_callback = params.update_callback
         @title           = params.title
         @counter_data    = {}
+        @sub_type        = params.sub_type
         @dateFormatter   = d3.time.format("%H:%M:%S")
-        @data_points = if @timestep == 'per_second' then 300 else 60
+        @data_points     = if @timestep == 'per_second' then 300 else 60
 
-        div = d3.select(@div_id)
-        @w = parseInt(div.style('width'))
-        @h = parseInt(div.style('height'))
-
-        if @title
-            @h = @h * 0.85 # Make room for title
-            div.append("div")
-                .attr("class", "title")
-                .text(@title)
-
-        @vis = div.append("svg:svg")
-            .attr("width", @w)
-            .attr("height", @h)
-            .append("svg:g")
+        @div = d3.select(@div_id)
+        @w   = parseInt(@div.style('width'))
+        @h   = parseInt(@div.style('height'))
 
     format: (num) ->
         d3.format(",")(num)
@@ -36,6 +26,9 @@ class BstatsBase
     format_timestamp: (timestamp) =>
         date = new Date(timestamp * 1000)
         @dateFormatter(date)
+
+    two_dp: (num) ->
+        @format(d3.format(".2f")(num))
 
     process_new_data: (new_data) =>
         # Filter out counters we're not interested in
@@ -49,17 +42,32 @@ class BstatsBase
             )
         new_data = null
 
-class BstatsCounterPie extends BstatsBase
+class BstatsCounterGraph extends BstatsCounterBase
 
     constructor: (params) ->
         super params
-        @h               = Math.min(@w, @h)
-        @w               = Math.min(@w, @h)
-        @r               = params.radius || @w * 0.45
-        @inner_title     = params.inner_title
-        @sums            = []
-        @arc = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
-        @donut = d3.layout.pie().sort(d3.descending).value((d) -> d.sum)
+        if @title
+            @h = @h * 0.85 # Make room for title
+            @div.append("div")
+                .attr("class", "title")
+                .text(@title)
+
+        @vis = @div.append("svg:svg")
+            .attr("width", @w)
+            .attr("height", @h)
+            .append("svg:g")
+
+class BstatsCounterPie extends BstatsCounterGraph
+
+    constructor: (params) ->
+        super params
+        @h           = Math.min(@w, @h)
+        @w           = Math.min(@w, @h)
+        @r           = params.radius || @w * 0.45
+        @inner_title = params.inner_title
+        @sums        = []
+        @arc         = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
+        @donut       = d3.layout.pie().sort(d3.descending).value((d) -> d.sum)
 
     process_new_data: (new_data) =>
         super new_data
@@ -76,7 +84,6 @@ class BstatsCounterPie extends BstatsBase
         keys = d3.keys(@counter_data)
         for key in keys
             if new_data_keys.indexOf(key) == -1
-                console.log("Removing #{key}")
                 delete @counter_data[key]
 
         for entries in d3.entries(@counter_data)
@@ -85,8 +92,8 @@ class BstatsCounterPie extends BstatsBase
                 delete @sums[entries.key]
             else
                 @sums[entries.key] = {
-                        counter: entries.key
-                        sum: sum
+                        counter : entries.key
+                        sum     : sum
                 }
 
         @redraw()
@@ -164,7 +171,7 @@ class BstatsCounterPie extends BstatsBase
         centre_label.select("text.number")
             .text((d) => @format(d))
 
-class BstatsCounterLineGraph extends BstatsBase
+class BstatsCounterLineGraph extends BstatsCounterGraph
 
     constructor: (params) ->
         super params
@@ -190,8 +197,6 @@ class BstatsCounterLineGraph extends BstatsBase
         new_timestamps = {}
         for data in @data_to_process
             if !@counter_data[data.counter]
-                # populate whole dummy data for new variables
-                # is this hacky?
                 @counter_data[data.counter] = d3.range(@data_points).map((x) -> {counter:data.counter, time:x,value:0})
 
             @counter_data[data.counter].shift()
@@ -429,6 +434,75 @@ class BstatsCounterLineGraph extends BstatsBase
             .style("opacity", 0)
             .remove()
 
+class BstatsCounterText extends BstatsCounterBase
+
+    constructor: (params) ->
+        super params
+        @sums               = {}
+        @total              = 0
+        @per_second_average = 0
+        @per_minute_average = 0
+
+        @div.append("div")
+            .attr("class", "bstats-text-figure")
+
+        @div.append("div")
+            .attr("class", "bstats-text-title")
+            .text(@title)
+
+    process_new_data: (new_data) ->
+        super new_data
+        new_data_keys = []
+        for data in @data_to_process
+            if !@counter_data[data.counter]
+                @counter_data[data.counter] = d3.range(@data_points).map((x) -> 0)
+
+            @counter_data[data.counter].shift()
+            @counter_data[data.counter].push(data.value)
+            new_data_keys.push(data.counter)
+
+        keys = d3.keys(@counter_data)
+        for key in keys
+            if new_data_keys.indexOf(key) == -1
+                delete @counter_data[key]
+
+        for entries in d3.entries(@counter_data)
+            sum = d3.sum(entries.value)
+            if sum == 0
+                delete @sums[entries.key]
+            else
+                @sums[entries.key] = sum
+
+        @total = d3.sum(d3.values(@sums))
+        console.log "step:#{@timestep} Total : #{@format(@total)}"
+        switch @timestep
+            when 'per_second'
+                @per_second_average = @two_dp(@total/300)
+                @per_minute_average = @two_dp(@total/5)
+            when 'per_minute'
+                @per_second_average = @two_dp(@total/3600)
+                @per_minute_average = @two_dp(@total/60)
+
+        console.log "step:#{@timestep} per second : #{@per_second_average}"
+        console.log "step:#{@timestep} per minute : #{@per_minute_average}"
+
+        @redraw()
+
+    redraw: () ->
+        text = switch @sub_type
+            when 'total'
+                @format(@total)
+            when 'per_second_average'
+                @per_second_average
+            when 'per_minute_average'
+                @per_minute_average
+            else
+                "unknown sub_type"
+
+
+        @div.select(".bstats-text-figure").text(text)
+
+
 class BstatsCounterGraph
     constructor: (params) ->
         switch params.type
@@ -438,4 +512,16 @@ class BstatsCounterGraph
                 return new BstatsCounterPie(params)
             when 'line'
                 return new BstatsCounterLineGraph(params)
+            when 'text'
+                return new BstatsCounterText(params)
+            else
+                console.log "unknown bstats type #{params.type}"
+
+
+
+
+
+
+
+
 
