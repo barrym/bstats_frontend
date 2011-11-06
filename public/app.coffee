@@ -341,6 +341,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
         width         = canvas_width * params.width
 
         if !params.id
+            # TODO: is this needed still?
             @item_count = @item_count + 1
             id = @item_count
         else
