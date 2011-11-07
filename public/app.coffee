@@ -15,11 +15,11 @@ window.Dashboard = Backbone.Model.extend({
         urlRoot: '/dashboards'
         # validate: (attributes) ->
         #     errors = []
-        #     if !attributes.app
-        #         errors.push "app cannot be blank"
+        #     if !attributes.namespace
+        #         errors.push "Namespace cannot be blank"
 
         #     if !attributes.name
-        #         errors.push "name cannot be blank"
+        #         errors.push "Name cannot be blank"
 
         #     if errors.length != 0
         #         return errors
@@ -49,11 +49,11 @@ window.DashboardIndexView = Backbone.View.extend({
 
     render: () ->
         $(@el).html(@template({}))
-        $dashboards = this.$('#dashboards')
+        $dashboards = this.$('#dashboards tbody')
         @collection.each (dashboard) ->
             view = new DashboardIndexItemView({
-                model:dashboard,
-                collection:@collection
+                model      : dashboard,
+                collection : @collection
             })
             $dashboards.append(view.render().el)
 
@@ -62,7 +62,7 @@ window.DashboardIndexView = Backbone.View.extend({
     })
 
 window.DashboardIndexItemView = Backbone.View.extend({
-    tagName: 'li'
+    tagName: 'tr'
     className:'admin_dashboard'
 
     initialize: () ->
@@ -173,11 +173,11 @@ window.AdminDashboardIndexView = Backbone.View.extend({
 
     render: () ->
         $(@el).html(@template({}))
-        $dashboards = this.$('#dashboards')
+        $dashboards = this.$('#dashboards tbody')
         @collection.each (dashboard) ->
             view = new AdminDashboardIndexItemView({
-                model:dashboard,
-                collection:@collection
+                model      : dashboard,
+                collection : @collection
             })
             $dashboards.append(view.render().el)
 
@@ -186,7 +186,7 @@ window.AdminDashboardIndexView = Backbone.View.extend({
     })
 
 window.AdminDashboardIndexItemView = Backbone.View.extend({
-    tagName: 'li'
+    tagName: 'tr'
     className:'admin_dashboard'
     events: {
         'click button' : 'destroy'
@@ -218,9 +218,9 @@ window.AdminDashboardIndexItemView = Backbone.View.extend({
 window.AdminDashboardShowView = Backbone.View.extend({
 
     events:{
-        'click button.save'    : 'save',
-        'click button.add'     : 'add_item',
-        'click button.destroy' : 'remove_item',
+        'click button#save'    : 'save',
+        'click button#add'     : 'add_item',
+        'click button#remove'  : 'remove_item',
         'change select.type'   : 'type_changed',
         'click #counter_link'  : 'toggle_counters',
         'change input.colors'  : 'update_color_box'
@@ -467,6 +467,8 @@ window.BstatsFrontend = Backbone.Router.extend({
         })
 
     home: () ->
+        $('#home_link').addClass('active')
+        $('#admin_link').removeClass('active')
         $('#main').empty()
         $('#main').append(@dashboardIndexView.render().el)
 
@@ -485,15 +487,21 @@ window.BstatsFrontend = Backbone.Router.extend({
         })
 
     admin_index: () ->
+        $('#home_link').removeClass('active')
+        $('#admin_link').addClass('active')
         $('#main').empty()
         $('#main').append(@adminDashboardIndexView.render().el)
 
     admin_dashboards_new: () ->
+        $('#home_link').removeClass('active')
+        $('#admin_link').addClass('active')
         @adminDashboardNewView = new AdminDashboardNewView({})
         $('#main').empty()
         $('#main').append(@adminDashboardNewView.render().el)
 
     admin_dashboards_show: (id) ->
+        $('#home_link').removeClass('active')
+        $('#admin_link').addClass('active')
         $('#main').empty()
         dashboard = new Dashboard({id:id})
         dashboard.fetch({

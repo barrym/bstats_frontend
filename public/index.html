@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>bsf</title>
+        <title>bstats</title>
+        <link rel="stylesheet/less" href="/stylesheets/vendor/bootstrap.less">
         <link rel="stylesheet/less" type="text/css" href="/stylesheets/app.less"/>
         <link type="text/css" href="/stylesheets/smoothness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
         <script type="text/javascript" src="http://use.typekit.com/fuu0jix.js"></script>
@@ -34,15 +35,10 @@
             </ul>
         </script>
 
-        <script type="text/template" id="admin-dashboard-index-item-template">
-            <a href='#admin/dashboards/<%= id %>'><%= name %></a>
-            (namespace: <%= namespace %>)
-            <button class="destroy">Delete</button>
-        </script>
 
         <script type="text/template" id="admin-dashboard-new-item-template">
             <div class="item" id="<%= item.id %>">
-                <button class="destroy">Remove</button>
+                <button id="remove" class="btn danger small">Remove</button>
                 <select class="type">
                     <option>Choose Type</option>
                     <option value="line">Line Graph</option>
@@ -74,8 +70,8 @@
 
         <script type="text/template" id="admin-dashboard-show-template">
             <input type=text id="name" value="<%= name %>">
-            <button class="add">Add Item</button>
-            <button class="save">Save</button>
+            <button id="save" class="btn success">Save</button>
+            <button id="add" class="btn primary">Add Item</button>
             namespace : <%= namespace %>
             <div id="canvas" style="height:562px;width:900px;">
             </div>
@@ -93,43 +89,75 @@
         <script type="text/template" id="admin-dashboard-new-template">
             <div id="notices">
             </div>
-            <h2>New dashboard</h2>
-            <form>
+            <div class="page-header">
+                <h1>New dashboard</h1>
+            </div>
+            <form class="form-stacked">
                 <div>
                     <label for="name">Name</label>
-                    <input type=text name="name" id="name">
+                    <input type=text name="name" id="name" autofocus>
                 </div>
 
-                <div>
+                <div class="clearfix">
                     <label for="namespace">Namespace</label>
                     <select name="namespace" id="namespace">
                         <option value="">Choose</option>
                     </select>
                 </div>
 
-                <div>
-                    <input type="submit" value="Save" class="save">
-                    <button class="cancel">Cancel</button>
+                <div class="actions">
+                    <input type="submit" value="Create" class="btn success">
+                    <button class="btn">Cancel</button>
                 </div>
 
             </form>
         </script>
 
         <script type="text/template" id="admin-dashboard-index-template">
-            <h2>Dashboards</h2>
-            <a href='#admin/dashboards/new'>new dashboard</a>
-            <ul id='dashboards'></ul>
+            <div class="page-header">
+                <h1>Dashboards <small>create or edit a dashboard</small></h1>
+            </div>
+            <a href='#admin/dashboards/new' class="btn primary">Create dashboard</a>
+            <table id='dashboards' class="bordered-table zebra-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Namespace</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </script>
+
+        <script type="text/template" id="admin-dashboard-index-item-template">
+            <td>
+                <a href='#admin/dashboards/<%= id %>'><%= name %></a>
+            </td>
+            <td>
+                <%= namespace %>
+            </td>
+            <td>
+                <button class="btn danger">Delete</button>
+            </td>
         </script>
 
         <!-- ############# HOME PAGE #################### -->
 
         <script type="text/template" id="dashboard-index-template">
-            <h2>Dashboards</h2>
-            <ul id='dashboards'></ul>
+            <div class="page-header">
+                <h1>Dashboards <small>select a dashboard to view</small></h1>
+            </div>
+            <table id='dashboards' class="bordered-table zebra-striped">
+                <tbody></tbody>
+            </table>
         </script>
 
         <script type="text/template" id="dashboard-index-item-template">
-            <a href='#dashboards/<%= id %>'><%= name %></a>
+            <td>
+                <a href='#dashboards/<%= id %>'><%= name %></a>
+            </td>
         </script>
 
         <script type="text/template" id="dashboard-template">
@@ -149,13 +177,19 @@
 
     </head>
     <body>
-        <div id="container">
-            <div id="header">
-                <h1>bsf</h1>
-                <a href='#'>home</a>
-                <a href="#admin">admin</a>
+        <div class="topbar">
+            <div class="fill">
+                <div class="container">
+                    <a href='#' class="brand">bstats</a>
+                    <ul class="nav">
+                        <li id="home_link"><a href='#'>Home</a></li>
+                        <li id="admin_link"><a href='#admin'>Admin</a></li>
+                    </ul>
+                </div>
             </div>
-            <div id="main">
+        </div>
+        <div class="container" id="container">
+            <div id="main" class="content">
             </div>
         </div>
     </body>

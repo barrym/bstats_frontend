@@ -1,64 +1,27 @@
-@background_color: #C0DEED;
 @error_red: #330000;
 @text_color: #000;
 @font_family: "museo-sans", "comic sans ms";
 
 body {
+    padding-top: 60px;
     font-family: @font_family;
-    background-color: @background_color;
     color: @text_color;
 }
 
+.page-header {
+    background-color: #f5f5f5;
+    padding: 20px 20px 10px;
+    margin: -20px -20px 20px;
+}
+
 a {
-    text-decoration: none;
-    color: steelblue;
+    /* text-decoration: none; */
+    /* color: steelblue; */
 }
 
-div#dashboard {
-    background-color: darken(@background_color, 40%)
-}
-
-div#container {
-    width:960px;
-    margin: 0 auto;
-}
-
-div#header {
-    /* border: 1px solid black; */
-    padding: 1em;
-    background-color: darken(@background_color, 10%);
-}
-
-div#main {
-    /* border: 1px solid blue; */
-    padding: 1em;
-    background-color: darken(@background_color, 5%);
-}
-
-form div {
-    clear: both;
-}
-
-label {
-    width: 30%;
-    float: left;
-    font-size: 1em;
-}
-
-input[type=text], input[type=submit] {
-    font-size: 2em;
-}
-
-select {
-    font-size: 3em;
-}
-
-.save {
-    color: green;
-}
-
-.destroy {
-    color: red;
+table {
+    margin-top: 20px;
+    width: 60%;
 }
 
 .error {
@@ -75,6 +38,8 @@ select {
 }
 
 #canvas {
+    margin-top: 20px;
+    margin-bottom: 20px;
     border: 1px solid black;
     position:relative;
     /* float:left; */
@@ -85,13 +50,13 @@ select {
         position:absolute;
         float:left;
 
-        select {
-            font-size: 0.8em;
-        }
+        /* select { */
+        /*     font-size: 0.8em; */
+        /* } */
 
-        input[type=text] {
-            font-size:0.5em;
-        }
+        /* input[type=text] { */
+        /*     font-size:0.5em; */
+        /* } */
     }
 
     #counters_select {
@@ -139,17 +104,17 @@ select {
     }
 
     .bstats-text-figure {
-		font-size: 4em;
-		font-weight:bold;
-		float:right;
-		clear:both;
-	}
+        font-size: 4em;
+        font-weight:bold;
+        float:right;
+        clear:both;
+    }
 
-	.bstats-text-title {
-		color: #888;
-		float:right;
-		clear:both;
-	}
+    .bstats-text-title {
+        color: #888;
+        float:right;
+        clear:both;
+    }
 }
 
 
