@@ -88,7 +88,6 @@ window.DashboardView = Backbone.View.extend({
         $(@el).html(content)
         document.title = @model.get('name')
 
-        window.foo = @model
         for counter, color of @model.get('colors')
             $("<style>
                 #items path.#{counter} { stroke: #{color};}
