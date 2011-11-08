@@ -19,8 +19,9 @@ class BstatsCounterBase
         @div = d3.select(@div_id)
         @w   = parseInt(@div.style('width'))
         @h   = parseInt(@div.style('height'))
-        @window_width   = $(document).width()
-        @window_height  = $(document).height()
+
+        @window_width   = params.window_width || $(document).width()
+        @window_height  = params.window_height || $(document).height()
         # TODO: maybe have more rules for heights > large?
         @title_font_size = "#{Math.round(@window_height * 0.03)}px"
         @other_font_size = "#{Math.round(@window_height * 0.015)}px"
