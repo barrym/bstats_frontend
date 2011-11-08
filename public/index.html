@@ -20,6 +20,8 @@
         <script type="text/javascript" src="/vendor/json2.js"></script>
         <script type="text/javascript" src="/vendor/underscore-min.js"></script>
         <script type="text/javascript" src="/vendor/backbone-min.js"></script>
+        <script type="text/javascript" src="/vendor/bootstrap-twipsy.js"></script>
+        <script type="text/javascript" src="/vendor/bootstrap-popover.js"></script>
 
         <script type="text/javascript" src="/bstats/bstats.js"></script>
         <script type="text/javascript" src="/app.js"></script>
@@ -38,33 +40,48 @@
 
         <script type="text/template" id="admin-dashboard-new-item-template">
             <div class="item" id="<%= item.id %>">
+                <p id="item-title"><%= item.title %></p>
+                <button class="details btn small">Config</button>
                 <button id="remove" class="btn danger small">Remove</button>
-                <select class="type">
-                    <option>Choose Type</option>
-                    <option value="line">Line Graph</option>
-                    <option value="pie">Pie Chart</option>
-                    <option value="text">Text</option>
-                </select>
-                <select class="timestep">
-                    <option>Choose Timestep</option>
-                    <option value="per_second">Per second (last 5 mins)</option>
-                    <option value="per_minute">Per minute (last hour)</option>
-                </select>
-                <select class="text-type" style="display:none;">
-                    <option>Choose Type</option>
-                    <option value="total">Total</option>
-                    <option value="per_second_average">per second average</option>
-                    <option value="per_minute_average">per minute average</option>
-                </select>
-                <a href='#' id='counter_link'>Counters</a>
-                <div id="counters_select" style="display:none;">
-                    <select class="counters" multiple>
-                        <% _.each(counters, function(counter) { %>
-                            <option value="<%= counter %>"><%= counter %>
-                        <% }); %>
-                    </select>
+                <div id="details_form" style="display:none;">
+                    <form class="form-stacked">
+                        <label for="type">Item type</label>
+                        <select id="type" class="type">
+                            <option>Choose</option>
+                            <option value="line">Line Graph</option>
+                            <option value="pie">Pie Chart</option>
+                            <option value="text">Text</option>
+                        </select>
+                        <label for="timestep">Timestep</label>
+                        <span class="help-block">Updates every second, or every hour</span>
+                        <select id="timestep" class="timestep">
+                            <option>Choose Timestep</option>
+                            <option value="per_second">Per second (last 5 mins)</option>
+                            <option value="per_minute">Per minute (last hour)</option>
+                        </select>
+                        <div class="text-type-input" style="display:none;">
+                            <label for="text-type">Text Type</label>
+                            <span class="help-block">The figure to display</span>
+                            <select id="text-type" class="text-type">
+                                <option>Choose Type</option>
+                                <option value="total">Total</option>
+                                <option value="per_second_average">per second average</option>
+                                <option value="per_minute_average">per minute average</option>
+                            </select>
+                        </div>
+                        <div class="title-input" style="display:none;">
+                            <label for="title">Title</label>
+                            <input type="text" class="title" placeholder="Enter a title" value="<%= item.title %>">
+                            <a href='#' id='counter_link' class="btn">View counters</a>
+                            <select class="counters" multiple style="display:none;">
+                                <% _.each(counters, function(counter) { %>
+                                    <option value="<%= counter %>"><%= counter %>
+                                    <% }); %>
+                            </select>
+                        </div>
+                    </form>
+                    <button id="done" class="btn primary">Done</button>
                 </div>
-                <input type="text" class="title" style="display:none;" placeholder="Enter a title" value="<%= item.title %>">
             </div>
         </script>
 

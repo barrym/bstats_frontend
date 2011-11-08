@@ -221,8 +221,6 @@ window.AdminDashboardShowView = Backbone.View.extend({
         'click button#save'    : 'save',
         'click button#add'     : 'add_item',
         'click button#remove'  : 'remove_item',
-        'change select.type'   : 'type_changed',
-        'click #counter_link'  : 'toggle_counters',
         'change input.colors'  : 'update_color_box'
     }
 
@@ -244,32 +242,9 @@ window.AdminDashboardShowView = Backbone.View.extend({
     remove_item: (event) ->
         $(event.currentTarget).parent().remove()
 
-    toggle_counters: (event) ->
-        $parent = $(event.currentTarget).parent()
-        $parent.find('#counters_select').toggle()
-        return false
-
     update_color_box: (event) ->
         $parent = $(event.currentTarget).parent()
         $parent.find('.color_legend').css('background-color', $(event.currentTarget).val())
-
-    type_changed: (event) ->
-        $element = $(event.currentTarget)
-        $parent  = $element.parent()
-        type     = $element.val()
-        switch type
-            when 'line'
-                $parent.find('.title').show()
-                $parent.find('.text-type').hide()
-            when 'pie'
-                $parent.find('.title').show()
-                $parent.find('.text-type').hide()
-            when 'text'
-                $parent.find('.title').show()
-                $parent.find('.text-type').show()
-            else
-                $parent.find('.title').hide()
-                $parent.find('.text-type').hide()
 
     save: () ->
         $canvas       = this.$('#canvas')
@@ -374,27 +349,84 @@ window.AdminDashboardShowView = Backbone.View.extend({
         $item.find('.counters').val(params.counters)
         switch params.type
             when 'line'
-                $item.find('.title').show()
-                $item.find('.text-type').hide()
+                $item.find('.title-input').show()
+                $item.find('.text-type-input').hide()
             when 'pie'
-                $item.find('.title').show()
-                $item.find('.text-type').hide()
+                $item.find('.title-input').show()
+                $item.find('.text-type-input').hide()
             when 'text'
-                $item.find('.title').show()
-                $item.find('.text-type').show()
+                $item.find('.title-input').show()
+                $item.find('.text-type-input').show()
                 $item.find('.text-type').val(params.sub_type)
             else
-                $item.find('.title').hide()
-                $item.find('.text-type').hide()
+                $item.find('.title-input').hide()
+                $item.find('.text-type-input').hide()
 
-        $counters_select = $item.find('#counters_select')
-        $counters_select.width(canvas_width * 0.5)
-        $counters_select.height(canvas_height * 0.5)
-        $counters_select.css({
-            'position':'absolute',
-            'z-index':1002
+        $item.find('.details').popover({
+            html      : true,
+            placement : 'below',
+            trigger   : 'manual',
+            title     : () -> $item.find('#details_form .title').val() || "Edit details",
+            content   : () ->
+                $item.find('#details_form').html()
+
         })
-        # $counters_select.offset({top:(canvas_height * 0.1), left:(canvas_width * 0.1)})
+        $item.find('.details').click () ->
+            $('.details').each(() -> $(this).popover('hide'))
+
+            $item.find('.details').popover('show')
+
+            # Configure popover
+            $('.popover').css('z-index', 1003)
+            $('.popover p .title').val($item.find('#details_form .title').val())
+            $('.popover p .timestep').val($item.find('#details_form .timestep').val())
+            $('.popover p .type').val($item.find('#details_form .type').val())
+            $('.popover p .text-type').val($item.find('#details_form .text-type').val())
+            $('.popover p .counters').val($item.find('#details_form .counters').val())
+
+            $('.popover p #counter_link').click () ->
+                $('.popover p .counters').toggle()
+                if $('.popover p .counters').is(':visible')
+                    $('.popover p #counter_link').text("Hide counters")
+                else
+                    $('.popover p #counter_link').text("View counters")
+                return false
+
+            $('.popover p .type').change () ->
+                type = $(this).parent().find('.type').val()
+                switch type
+                    when 'line'
+                        $(this).parent().find('.title-input').show()
+                        $(this).parent().find('.text-type-input').hide()
+                    when 'pie'
+                        $(this).parent().find('.title-input').show()
+                        $(this).parent().find('.text-type-input').hide()
+                    when 'text'
+                        $(this).parent().find('.title-input').show()
+                        $(this).parent().find('.text-type-input').show()
+                    else
+                        $(this).parent().find('.title-input').hide()
+                        $(this).parent().find('.text-type-input').hide()
+
+            # On close
+            $('.popover button#done').click () ->
+                title    = $(this).parent().find('.title').val()
+                timestep = $(this).parent().find('.timestep').val()
+                type     = $(this).parent().find('.type').val()
+                counters = $(this).parent().find('.counters').val()
+                sub_type = switch type
+                    when 'text'
+                        $(this).parent().find('.text-type').val()
+                    else
+                        undefined
+                $item.find('#details_form .title').val(title)
+                $item.find('#details_form .timestep').val(timestep)
+                $item.find('#details_form .type').val(type)
+                $item.find('#details_form .text-type').val(sub_type)
+                $item.find('#details_form .counters').val(counters)
+                $item.find('#item-title').text(title)
+
+                $item.find('.details').popover('hide')
 
     })
 
