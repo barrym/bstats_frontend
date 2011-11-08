@@ -63,7 +63,7 @@ window.DashboardIndexView = Backbone.View.extend({
 
 window.DashboardIndexItemView = Backbone.View.extend({
     tagName: 'tr'
-    className:'admin_dashboard'
+    className:'dashboard'
 
     initialize: () ->
         _.bindAll(this, 'render')
@@ -494,15 +494,15 @@ window.BstatsFrontend = Backbone.Router.extend({
         @adminDashboardIndexView = new AdminDashboardIndexView({
             collection: window.dashboards
         })
-        @dashboardIndexView = new DashboardIndexView({
-            collection: window.dashboards
-        })
 
     home: () ->
+        dashboardIndexView = new DashboardIndexView({
+            collection: window.dashboards
+        })
         $('#home_link').addClass('active')
         $('#admin_link').removeClass('active')
         $('#main').empty()
-        $('#main').append(@dashboardIndexView.render().el)
+        $('#main').append(dashboardIndexView.render().el)
 
     dashboard: (id) ->
         dashboard = new Dashboard({id:id})
