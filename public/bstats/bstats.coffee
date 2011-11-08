@@ -19,6 +19,13 @@ class BstatsCounterBase
         @div = d3.select(@div_id)
         @w   = parseInt(@div.style('width'))
         @h   = parseInt(@div.style('height'))
+        @window_width   = $(document).width()
+        @window_height  = $(document).height()
+        # TODO: maybe have more rules for heights > large?
+        @title_font_size = "#{Math.round(@window_height * 0.03)}px"
+        @other_font_size = "#{Math.round(@window_height * 0.015)}px"
+        @p_left          = params.padding_left || @window_width * 0.03
+        @p_right         = params.padding_right || @window_width * 0.03
 
     format: (num) ->
         d3.format(",")(num)
@@ -50,6 +57,7 @@ class BstatsCounterGraph extends BstatsCounterBase
             @h = @h * 0.85 # Make room for title
             @div.append("div")
                 .attr("class", "title")
+                .style("font-size", @title_font_size)
                 .text(@title)
 
         @vis = @div.append("svg:svg")
@@ -68,6 +76,7 @@ class BstatsCounterPie extends BstatsCounterGraph
         @sums        = []
         @arc         = d3.svg.arc().innerRadius(@r * .5).outerRadius(@r)
         @donut       = d3.layout.pie().sort(d3.descending).value((d) -> d.sum)
+        @inner_title_font_size = "#{Math.round(@window_height * 0.02)}px"
 
     process_new_data: (new_data) =>
         super new_data
@@ -115,6 +124,7 @@ class BstatsCounterPie extends BstatsCounterGraph
             .attr('class', (d) -> d.data.counter)
 
         entering_arcs.append("svg:text")
+            .style("font-size", @other_font_size)
             .attr('transform', (d) => "translate(#{@arc.centroid(d)})")
             .attr('text-anchor', 'middle')
             .attr('dy', '.35em')
@@ -152,18 +162,21 @@ class BstatsCounterPie extends BstatsCounterGraph
 
         if @inner_title
             new_label.append("svg:text")
+                .style("font-size", @inner_title_font_size)
                 .attr("class", "number")
                 .attr('dy', -10)
                 .attr("text-anchor", "middle")
                 .text((d) => @format(d))
 
             new_label.append("svg:text")
+                .style("font-size", @inner_title_font_size)
                 .attr('dy', 10)
                 .attr("text-anchor", "middle")
                 .attr("class", "inner_title")
                 .text(@inner_title)
         else
             new_label.append("svg:text")
+                .style("font-size", @inner_title_font_size)
                 .attr("class", "number")
                 .attr("text-anchor", "middle")
                 .text((d) => @format(d))
@@ -184,6 +197,9 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
         @xrule_data      = []
         @high_point      = []
         @xrule_period    = Math.round(@data_points/@x_tick_count)
+
+        if @window_height < 500
+            @stroke_width = "1px"
 
         @path = d3.svg.line()
             .x((d, i) => @x(d.time))
@@ -274,7 +290,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
 
         entering_xrule.append("svg:text")
             .text((d) => @format_timestamp(d.time))
-            .style("font-size", "14")
+            .style("font-size", @other_font_size)
             .attr("text-anchor", "middle")
             .attr("x", @w + @p_left)
             .attr("y", @h - @p_bottom)
@@ -335,6 +351,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
 
         entering_yrule.append("svg:text")
             .text(@y.tickFormat(@y_tick_count))
+            .style("font-size", @other_font_size)
             .attr("text-anchor", "end")
             .attr("dx", -5)
             .attr("x", @p_left)
@@ -389,6 +406,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
             .attr("r", 3)
 
         entering_high.append("svg:text")
+            .style("font-size", @other_font_size)
             .attr("x", (d) => @x(d.time))
             .attr("y", (d) => @y(d.value))
             .attr("text-anchor", "middle")
@@ -418,6 +436,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
 
         paths.enter()
             .append("svg:path")
+            .style('stroke-width', @stroke_width)
             .attr("d", @path)
             .attr("class", (d) -> d3.first(d).counter)
 
@@ -443,11 +462,15 @@ class BstatsCounterText extends BstatsCounterBase
         @per_second_average = 0
         @per_minute_average = 0
 
+        @figure_text_size = "#{Math.round(@window_height * 0.1)}px"
+        @title_text_size  = "#{Math.round(@window_height * 0.02)}px"
+
         @div.append("div")
             .attr("class", "bstats-text-figure")
 
         @div.append("div")
             .attr("class", "bstats-text-title")
+            .style('font-size', @title_text_size)
             .text(@title)
 
     process_new_data: (new_data) ->
@@ -474,7 +497,7 @@ class BstatsCounterText extends BstatsCounterBase
                 @sums[entries.key] = sum
 
         @total = d3.sum(d3.values(@sums))
-        console.log "step:#{@timestep} Total : #{@format(@total)}"
+        # console.log "step:#{@timestep} Total : #{@format(@total)}"
         switch @timestep
             when 'per_second'
                 @per_second_average = @two_dp(@total/300)
@@ -483,8 +506,8 @@ class BstatsCounterText extends BstatsCounterBase
                 @per_second_average = @two_dp(@total/3600)
                 @per_minute_average = @two_dp(@total/60)
 
-        console.log "step:#{@timestep} per second : #{@per_second_average}"
-        console.log "step:#{@timestep} per minute : #{@per_minute_average}"
+        # console.log "step:#{@timestep} per second : #{@per_second_average}"
+        # console.log "step:#{@timestep} per minute : #{@per_minute_average}"
 
         @redraw()
 
@@ -500,7 +523,7 @@ class BstatsCounterText extends BstatsCounterBase
                 "unknown sub_type"
 
 
-        @div.select(".bstats-text-figure").text(text)
+        @div.select(".bstats-text-figure").style('font-size', @figure_text_size).text(text)
 
 
 class BstatsCounterGraph
