@@ -63,7 +63,6 @@ window.DashboardIndexView = Backbone.View.extend({
 
 window.DashboardIndexItemView = Backbone.View.extend({
     tagName: 'tr'
-    className:'dashboard'
 
     initialize: () ->
         _.bindAll(this, 'render')
