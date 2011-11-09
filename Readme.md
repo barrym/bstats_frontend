@@ -1,8 +1,10 @@
 Install node and npm
 
-# Production
+brew install node
 
-npm install -g coffee-script
+Follow instructions at http://npmjs.org/
+
+# Production
 
 npm install
 
@@ -10,13 +12,15 @@ cake build
 
 NODE_ENV=production node server.js
 
+or
+
+cake server:start
+
 # Dev
 
 bundle
 
 npm install -g coffee-script
-
-npm install -g coffeescript-growl
 
 npm install -g node-dev
 

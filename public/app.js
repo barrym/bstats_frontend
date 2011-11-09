@@ -1,7 +1,8 @@
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
 window.Namespace = Backbone.Model.extend({
   urlRoot: '/namespaces'
 });
+
 window.Namespaces = Backbone.Collection.extend({
   model: Namespace,
   url: '/namespaces',
@@ -9,9 +10,11 @@ window.Namespaces = Backbone.Collection.extend({
     return namespace.get('name');
   }
 });
+
 window.Dashboard = Backbone.Model.extend({
   urlRoot: '/dashboards'
 });
+
 window.Dashboards = Backbone.Collection.extend({
   model: Dashboard,
   url: '/dashboards',
@@ -19,7 +22,9 @@ window.Dashboards = Backbone.Collection.extend({
     return dashboard.get('name');
   }
 });
+
 window.dashboards = new Dashboards();
+
 window.DashboardIndexView = Backbone.View.extend({
   tagName: 'section',
   className: 'dashboards',
@@ -44,6 +49,7 @@ window.DashboardIndexView = Backbone.View.extend({
     return this;
   }
 });
+
 window.DashboardIndexItemView = Backbone.View.extend({
   tagName: 'tr',
   initialize: function() {
@@ -58,6 +64,7 @@ window.DashboardIndexItemView = Backbone.View.extend({
     return this;
   }
 });
+
 window.DashboardView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'render');
@@ -66,6 +73,7 @@ window.DashboardView = Backbone.View.extend({
   },
   render: function() {
     var color, content, counter, items, window_height, window_width, _ref;
+    var _this = this;
     content = this.template({});
     $(this.el).html(content);
     document.title = this.model.get('name');
@@ -78,7 +86,7 @@ window.DashboardView = Backbone.View.extend({
     window_height = $(document).height();
     items = this.model.get('items');
     if (items) {
-      $.get('/config', __bind(function(data) {
+      $.get('/config', function(data) {
         var $graph, div_id, graphs, height, item, timestep, timestep_graphs, width, _i, _len, _results;
         graphs = {
           'per_second': [],
@@ -110,10 +118,10 @@ window.DashboardView = Backbone.View.extend({
         _results = [];
         for (timestep in graphs) {
           timestep_graphs = graphs[timestep];
-          _results.push(this.init_graphs(data.hostname, data.port, timestep, timestep_graphs));
+          _results.push(_this.init_graphs(data.hostname, data.port, timestep, timestep_graphs));
         }
         return _results;
-      }, this));
+      });
     }
     return this;
   },
@@ -141,6 +149,7 @@ window.DashboardView = Backbone.View.extend({
     }
   }
 });
+
 window.ErrorView = Backbone.View.extend({
   className: 'error',
   initialize: function() {
@@ -153,6 +162,7 @@ window.ErrorView = Backbone.View.extend({
     return this;
   }
 });
+
 window.AdminDashboardIndexView = Backbone.View.extend({
   tagName: 'section',
   className: 'dashboards',
@@ -177,6 +187,7 @@ window.AdminDashboardIndexView = Backbone.View.extend({
     return this;
   }
 });
+
 window.AdminDashboardIndexItemView = Backbone.View.extend({
   tagName: 'tr',
   className: 'admin_dashboard',
@@ -207,6 +218,7 @@ window.AdminDashboardIndexItemView = Backbone.View.extend({
     return this;
   }
 });
+
 window.AdminDashboardShowView = Backbone.View.extend({
   events: {
     'click button#save': 'save',
@@ -439,6 +451,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
     });
   }
 });
+
 window.AdminDashboardNewView = Backbone.View.extend({
   events: {
     "submit form": "save",
@@ -490,6 +503,7 @@ window.AdminDashboardNewView = Backbone.View.extend({
     return this;
   }
 });
+
 window.BstatsFrontend = Backbone.Router.extend({
   routes: {
     '': 'home',
@@ -569,6 +583,7 @@ window.BstatsFrontend = Backbone.Router.extend({
     });
   }
 });
+
 $(function() {
   window.BstatsFrontendApp = new BstatsFrontend();
   return Backbone.history.start();

@@ -2,14 +2,14 @@
 
 window.Namespace = Backbone.Model.extend({
         urlRoot: '/namespaces'
-    })
+})
 
 window.Namespaces = Backbone.Collection.extend({
         model: Namespace,
         url: '/namespaces'
         comparator: (namespace) ->
             namespace.get('name')
-    })
+})
 
 window.Dashboard = Backbone.Model.extend({
         urlRoot: '/dashboards'
@@ -24,14 +24,14 @@ window.Dashboard = Backbone.Model.extend({
         #     if errors.length != 0
         #         return errors
 
-    })
+})
 
 window.Dashboards = Backbone.Collection.extend({
         model: Dashboard,
         url: '/dashboards'
         comparator: (dashboard) ->
             dashboard.get('name')
-    })
+})
 
 window.dashboards = new Dashboards()
 
@@ -58,8 +58,7 @@ window.DashboardIndexView = Backbone.View.extend({
             $dashboards.append(view.render().el)
 
         return this
-
-    })
+})
 
 window.DashboardIndexItemView = Backbone.View.extend({
     tagName: 'tr'
@@ -74,7 +73,7 @@ window.DashboardIndexItemView = Backbone.View.extend({
         $(@el).html(content)
         return this
 
-    })
+})
 
 window.DashboardView = Backbone.View.extend({
     initialize: () ->
@@ -147,7 +146,7 @@ window.DashboardView = Backbone.View.extend({
                 for graph in graphs
                     graph.process_new_data(new_data)
 
-    })
+})
 
 window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
         className: 'error'
@@ -158,7 +157,7 @@ window.ErrorView = Backbone.View.extend({ # TODO: inherit from notice class
         render: () ->
             $(@el).html(@template({errors:this.options.errors}))
             return this
-    })
+})
 
 window.AdminDashboardIndexView = Backbone.View.extend({
     tagName   : 'section'
@@ -182,7 +181,7 @@ window.AdminDashboardIndexView = Backbone.View.extend({
 
         return this
 
-    })
+})
 
 window.AdminDashboardIndexItemView = Backbone.View.extend({
     tagName: 'tr'
@@ -212,7 +211,7 @@ window.AdminDashboardIndexItemView = Backbone.View.extend({
         $(@el).html(content)
         return this
 
-    })
+})
 
 window.AdminDashboardShowView = Backbone.View.extend({
 
@@ -427,7 +426,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
                 $item.find('.details').popover('hide')
 
-    })
+})
 
 window.AdminDashboardNewView = Backbone.View.extend({
 
@@ -475,7 +474,7 @@ window.AdminDashboardNewView = Backbone.View.extend({
         })
 
         return this
-    })
+})
 
 
 # ----------- ROUTER ------------
@@ -544,7 +543,7 @@ window.BstatsFrontend = Backbone.Router.extend({
                 $('#main').text("cant find")
         })
 
-    })
+})
 
 $(() ->
     window.BstatsFrontendApp = new BstatsFrontend()
