@@ -1,29 +1,38 @@
-Install node and npm
+# Installation
 
-brew install node
+## Install Node JS:
+
+    brew install node
+
+## Install npm
 
 Follow instructions at http://npmjs.org/
 
-# Production
+# All I want to do is run the app
 
-npm install
+    git clone http://github.com/barrym/bstats_frontend
 
-cake build
+    npm install
 
-NODE_ENV=production node server.js
+    node server.js
 
-or
+Then go to http://localhost:8888 in your browser.
 
-cake server:start
 
-# Dev
+# I want to run the app in production
 
-bundle
+    npm install
 
-npm install -g coffee-script
+    NODE_ENV=production cake server:start
 
-npm install -g node-dev
+# I want to work on the code
 
-npm install
+    bundle
 
-foreman start
+    npm install -g coffee-script
+
+    npm install -g node-dev
+
+    npm install
+
+    foreman start
