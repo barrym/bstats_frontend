@@ -52,13 +52,15 @@
                             <option value="pie">Pie Chart</option>
                             <option value="text">Text</option>
                         </select>
-                        <label for="timestep">Timestep</label>
-                        <span class="help-block">Updates every second, or every hour</span>
-                        <select id="timestep" class="timestep">
-                            <option>Choose Timestep</option>
-                            <option value="per_second">Per second (last 5 mins)</option>
-                            <option value="per_minute">Per minute (last hour)</option>
-                        </select>
+                        <div class="timestep-input" style="display:none;">
+                            <label for="timestep">Timestep</label>
+                            <span class="help-block">Updates every second, or every hour</span>
+                            <select id="timestep" class="timestep">
+                                <option>Choose Timestep</option>
+                                <option value="per_second">Per second (last 5 mins)</option>
+                                <option value="per_minute">Per minute (last hour)</option>
+                            </select>
+                        </div>
                         <div class="text-type-input" style="display:none;">
                             <label for="text-type">Text Type</label>
                             <span class="help-block">The figure to display</span>

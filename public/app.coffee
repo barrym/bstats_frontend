@@ -184,9 +184,9 @@ window.AdminDashboardIndexView = Backbone.View.extend({
 })
 
 window.AdminDashboardIndexItemView = Backbone.View.extend({
-    tagName: 'tr'
-    className:'admin_dashboard'
-    events: {
+    tagName        : 'tr'
+    className      : 'admin_dashboard'
+    events         : {
         'click button' : 'destroy'
     }
 
@@ -350,16 +350,20 @@ window.AdminDashboardShowView = Backbone.View.extend({
             when 'line'
                 $item.find('.title-input').show()
                 $item.find('.text-type-input').hide()
+                $item.find('.timestep-input').show()
             when 'pie'
                 $item.find('.title-input').show()
                 $item.find('.text-type-input').hide()
+                $item.find('.timestep-input').show()
             when 'text'
                 $item.find('.title-input').show()
                 $item.find('.text-type-input').show()
                 $item.find('.text-type').val(params.sub_type)
+                $item.find('.timestep-input').show()
             else
                 $item.find('.title-input').hide()
                 $item.find('.text-type-input').hide()
+                $item.find('.timestep-input').hide()
 
         $item.find('.details').popover({
             html      : true,
@@ -397,15 +401,19 @@ window.AdminDashboardShowView = Backbone.View.extend({
                     when 'line'
                         $(this).parent().find('.title-input').show()
                         $(this).parent().find('.text-type-input').hide()
+                        $(this).parent().find('.timestep-input').show()
                     when 'pie'
                         $(this).parent().find('.title-input').show()
                         $(this).parent().find('.text-type-input').hide()
+                        $(this).parent().find('.timestep-input').show()
                     when 'text'
                         $(this).parent().find('.title-input').show()
                         $(this).parent().find('.text-type-input').show()
+                        $(this).parent().find('.timestep-input').show()
                     else
                         $(this).parent().find('.title-input').hide()
                         $(this).parent().find('.text-type-input').hide()
+                        $(this).parent().find('.timestep-input').hide()
 
             # On close
             $('.popover button#done').click () ->

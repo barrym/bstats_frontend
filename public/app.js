@@ -365,19 +365,23 @@ window.AdminDashboardShowView = Backbone.View.extend({
       case 'line':
         $item.find('.title-input').show();
         $item.find('.text-type-input').hide();
+        $item.find('.timestep-input').show();
         break;
       case 'pie':
         $item.find('.title-input').show();
         $item.find('.text-type-input').hide();
+        $item.find('.timestep-input').show();
         break;
       case 'text':
         $item.find('.title-input').show();
         $item.find('.text-type-input').show();
         $item.find('.text-type').val(params.sub_type);
+        $item.find('.timestep-input').show();
         break;
       default:
         $item.find('.title-input').hide();
         $item.find('.text-type-input').hide();
+        $item.find('.timestep-input').hide();
     }
     $item.find('.details').popover({
       html: true,
@@ -416,16 +420,20 @@ window.AdminDashboardShowView = Backbone.View.extend({
         switch (type) {
           case 'line':
             $(this).parent().find('.title-input').show();
-            return $(this).parent().find('.text-type-input').hide();
+            $(this).parent().find('.text-type-input').hide();
+            return $(this).parent().find('.timestep-input').show();
           case 'pie':
             $(this).parent().find('.title-input').show();
-            return $(this).parent().find('.text-type-input').hide();
+            $(this).parent().find('.text-type-input').hide();
+            return $(this).parent().find('.timestep-input').show();
           case 'text':
             $(this).parent().find('.title-input').show();
-            return $(this).parent().find('.text-type-input').show();
+            $(this).parent().find('.text-type-input').show();
+            return $(this).parent().find('.timestep-input').show();
           default:
             $(this).parent().find('.title-input').hide();
-            return $(this).parent().find('.text-type-input').hide();
+            $(this).parent().find('.text-type-input').hide();
+            return $(this).parent().find('.timestep-input').hide();
         }
       });
       return $('.popover button#done').click(function() {
