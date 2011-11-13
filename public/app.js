@@ -200,15 +200,17 @@ window.AdminDashboardIndexItemView = Backbone.View.extend({
     return this.template = _.template($('#admin-dashboard-index-item-template').html());
   },
   destroy: function() {
-    this.model.destroy({
-      success: function(model, res) {
-        return window.dashboards.remove(model);
-      },
-      error: function(model, res) {
-        console.log("error deleting");
-        return console.log(res);
-      }
-    });
+    if (confirm("Are you sure you want to delete " + (this.model.get('name')) + "?")) {
+      this.model.destroy({
+        success: function(model, res) {
+          return window.dashboards.remove(model);
+        },
+        error: function(model, res) {
+          console.log("error deleting");
+          return console.log(res);
+        }
+      });
+    }
     return false;
   },
   render: function() {

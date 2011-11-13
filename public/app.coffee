@@ -196,14 +196,15 @@ window.AdminDashboardIndexItemView = Backbone.View.extend({
         @template = _.template($('#admin-dashboard-index-item-template').html())
 
     destroy: () ->
-        @model.destroy({
-            success:(model, res) ->
-                window.dashboards.remove(model)
+        if confirm("Are you sure you want to delete #{@model.get('name')}?")
+            @model.destroy({
+                success:(model, res) ->
+                    window.dashboards.remove(model)
 
             error:(model, res) ->
                 console.log("error deleting")
                 console.log(res)
-        })
+            })
         return false
 
     render: () ->
