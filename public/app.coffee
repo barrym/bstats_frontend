@@ -103,24 +103,44 @@ window.DashboardView = Backbone.View.extend({
                     'per_minute' : []
                 }
                 for item in items
-                    div_id = "item_#{item.id}"
-                    width  = window_width * item.width
-                    height = window_height * item.height
-                    $graph = $("<div id='#{div_id}' class='item'></div>")
-                    $graph.offset({top:(item.top * window_height), left:(item.left * window_width)})
-                    $graph.height(height)
-                    $graph.width(width)
-                    $graph.css('position', 'absolute')
-                    $('#items').append($graph)
+                    if item.type == 'legend'
+                        #TODO: should this be part of bstats.coffee?
+                        width  = window_width * item.width
+                        height = window_height * item.height
+                        $legend = $("<div id='legend'></div>")
+                        $legend.offset({top:(item.top * window_height), left:(item.left * window_width)})
+                        $legend.height(height)
+                        $legend.width(width)
+                        $legend.css('position', 'absolute')
+                        $('#items').append($legend)
+                        legend_size = "#{Math.round($(document).height() * 0.03)}"
+                        legend_margin = "0 #{legend_size/3}px 0 0"
+                        for legend in @model.get('legends')
+                            $legend.append("
+                                <div class='legend_item'>
+                                    <div class='square' style='background-color:#{legend.color};width:#{legend_size}px;height:#{legend_size}px;margin:#{legend_margin};'></div>
+                                    <div style='font-size:#{legend_size}px'>#{legend.title}</div>
+                                </div>
+                            ")
+                    else
+                        div_id = "item_#{item.id}"
+                        width  = window_width * item.width
+                        height = window_height * item.height
+                        $graph = $("<div id='#{div_id}' class='item'></div>")
+                        $graph.offset({top:(item.top * window_height), left:(item.left * window_width)})
+                        $graph.height(height)
+                        $graph.width(width)
+                        $graph.css('position', 'absolute')
+                        $('#items').append($graph)
 
-                    graphs[item.timestep].push(new BstatsCounterGraph({
-                        type         : item.type
-                        sub_type     : item.sub_type
-                        counters     : item.counters
-                        timestep     : item.timestep
-                        div_id       : "##{div_id}"
-                        title        : item.title
-                    }))
+                        graphs[item.timestep].push(new BstatsCounterGraph({
+                            type         : item.type
+                            sub_type     : item.sub_type
+                            counters     : item.counters
+                            timestep     : item.timestep
+                            div_id       : "##{div_id}"
+                            title        : item.title
+                        }))
 
                 for timestep, timestep_graphs of graphs
                     @init_graphs data.hostname, data.port, timestep, timestep_graphs
@@ -220,7 +240,8 @@ window.AdminDashboardShowView = Backbone.View.extend({
         'click button#save'    : 'save',
         'click button#add'     : 'add_item',
         'click button#remove'  : 'remove_item',
-        'change input.colors'  : 'update_color_box'
+        'change input.colors'  : 'update_color_box',
+        'click button#add-legend' : 'add_legend'
     }
 
     initialize: () ->
@@ -244,6 +265,16 @@ window.AdminDashboardShowView = Backbone.View.extend({
     update_color_box: (event) ->
         $parent = $(event.currentTarget).parent()
         $parent.find('.color_legend').css('background-color', $(event.currentTarget).val())
+
+    add_legend: () ->
+        $('#legends').append('
+                    <div class="legend">
+                        <div class="color_legend"></div>
+                        <input class="colors" type="text" name="color" placeholder="Color">
+                        <input type="text" name="title" placeholder="Title">
+                        Remove button here
+                    </div>
+        ')
 
     save: () ->
         $canvas       = this.$('#canvas')
@@ -285,15 +316,26 @@ window.AdminDashboardShowView = Backbone.View.extend({
         for counter in @model.get('counters')
             colors_to_save[counter] =  $("#color_#{counter}").val()
 
+        legends_to_save = []
+        $('#legends .legend').each () ->
+            legends_to_save.push {
+                title:$(this).find('input[name=title]').val()
+                color:$(this).find('input[name=color]').val()
+            }
+
         @model.set({
-            items :items_to_save,
-            colors :colors_to_save,
-            name  : $('#name').val() # TODO: this doesnt refresh the name on the collections page
+            items   : items_to_save,
+            colors  : colors_to_save,
+            legends : legends_to_save,
+            name    : $('#name').val() # TODO : this doesnt refresh the name on the collections page
         })
         @model.save()
 
     render: () ->
-        content = @template(@model.toJSON())
+        params = @model.toJSON()
+        if !params.legends
+            params.legends = []
+        content = @template(params)
         $(@el).html(content)
         items = this.model.get('items')
         if items
@@ -338,7 +380,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
             containment : "parent"
             grid        : 10
             minWidth    : 100
-            minHeight   : 100
+            minHeight   : 30
         })
         $item.hover(() ->
             $(this).css('cursor', 'move')
@@ -346,24 +388,9 @@ window.AdminDashboardShowView = Backbone.View.extend({
         $item.find('.timestep').val(params.timestep)
         $item.find('.type').val(params.type)
         $item.find('.counters').val(params.counters)
-        switch params.type
-            when 'line'
-                $item.find('.title-input').show()
-                $item.find('.text-type-input').hide()
-                $item.find('.timestep-input').show()
-            when 'pie'
-                $item.find('.title-input').show()
-                $item.find('.text-type-input').hide()
-                $item.find('.timestep-input').show()
-            when 'text'
-                $item.find('.title-input').show()
-                $item.find('.text-type-input').show()
-                $item.find('.text-type').val(params.sub_type)
-                $item.find('.timestep-input').show()
-            else
-                $item.find('.title-input').hide()
-                $item.find('.text-type-input').hide()
-                $item.find('.timestep-input').hide()
+        if params.type == 'text'
+            $item.find('.text-type').val(params.sub_type)
+        this.show_and_hide_config($item, params.type)
 
         $item.find('.details').popover({
             html      : true,
@@ -374,6 +401,7 @@ window.AdminDashboardShowView = Backbone.View.extend({
                 $item.find('#details_form').html()
 
         })
+        self = this # Hacky?
         $item.find('.details').click () ->
             $('.details').each(() -> $(this).popover('hide'))
 
@@ -394,38 +422,25 @@ window.AdminDashboardShowView = Backbone.View.extend({
                 else
                     $('.popover p #counter_link').text("View counters")
                 return false
-
+            self.show_and_hide_config($('.popover p'), $item.find('#details_form .type').val())
             $('.popover p .type').change () ->
                 type = $(this).parent().find('.type').val()
-                switch type
-                    when 'line'
-                        $(this).parent().find('.title-input').show()
-                        $(this).parent().find('.text-type-input').hide()
-                        $(this).parent().find('.timestep-input').show()
-                    when 'pie'
-                        $(this).parent().find('.title-input').show()
-                        $(this).parent().find('.text-type-input').hide()
-                        $(this).parent().find('.timestep-input').show()
-                    when 'text'
-                        $(this).parent().find('.title-input').show()
-                        $(this).parent().find('.text-type-input').show()
-                        $(this).parent().find('.timestep-input').show()
-                    else
-                        $(this).parent().find('.title-input').hide()
-                        $(this).parent().find('.text-type-input').hide()
-                        $(this).parent().find('.timestep-input').hide()
+                self.show_and_hide_config($(this).parent(), type)
 
             # On close
             $('.popover button#done').click () ->
                 title    = $(this).parent().find('.title').val()
                 timestep = $(this).parent().find('.timestep').val()
                 type     = $(this).parent().find('.type').val()
+                if type == 'legend'
+                    title = "Legend"
                 counters = $(this).parent().find('.counters').val()
                 sub_type = switch type
                     when 'text'
                         $(this).parent().find('.text-type').val()
                     else
                         undefined
+
                 $item.find('#details_form .title').val(title)
                 $item.find('#details_form .timestep').val(timestep)
                 $item.find('#details_form .type').val(type)
@@ -435,6 +450,28 @@ window.AdminDashboardShowView = Backbone.View.extend({
 
                 $item.find('.details').popover('hide')
 
+    show_and_hide_config: (container, type) ->
+        switch type
+            when 'line'
+                container.find('.title-input').show()
+                container.find('.text-type-input').hide()
+                container.find('.timestep-input').show()
+            when 'pie'
+                container.find('.title-input').show()
+                container.find('.text-type-input').hide()
+                container.find('.timestep-input').show()
+            when 'text'
+                container.find('.title-input').show()
+                container.find('.text-type-input').show()
+                container.find('.timestep-input').show()
+            when 'legend'
+                container.find('.title-input').hide()
+                container.find('.text-type-input').hide()
+                container.find('.timestep-input').hide()
+            else
+                container.find('.title-input').hide()
+                container.find('.text-type-input').hide()
+                container.find('.timestep-input').hide()
 })
 
 window.AdminDashboardNewView = Backbone.View.extend({

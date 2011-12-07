@@ -27,6 +27,7 @@ dashboard = {
         dashboard = req.body
         dashboard.id = uuid()
         dashboard.colors = {}
+        dashboard.legends = []
         redis.sadd key, dashboard.id, (err, redis_res) ->
             if err
                 res.send({status:"error"}, 400)

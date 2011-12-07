@@ -526,7 +526,6 @@ class BstatsCounterText extends BstatsCounterBase
 
         @div.select(".bstats-text-figure").style('font-size', @figure_text_size).text(text)
 
-
 class BstatsCounterGraph
     constructor: (params) ->
         switch params.type
@@ -540,12 +539,3 @@ class BstatsCounterGraph
                 return new BstatsCounterText(params)
             else
                 console.log "unknown bstats type #{params.type}"
-
-
-
-
-
-
-
-
-

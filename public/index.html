@@ -51,6 +51,7 @@
                             <option value="line">Line Graph</option>
                             <option value="pie">Pie Chart</option>
                             <option value="text">Text</option>
+                            <option value="legend">Legend</option>
                         </select>
                         <div class="timestep-input" style="display:none;">
                             <label for="timestep">Timestep</label>
@@ -94,12 +95,25 @@
             namespace : <%= namespace %>
             <div id="canvas" style="height:562px;width:900px;">
             </div>
+            <div id="legends">
+                <h2>Legend</h2>
+                <button id="add-legend" class="btn primary">Add</button>
+                <% _.each(legends, function(legend) { %>
+                    <div class="legend">
+                        <div class="color_legend" style="background-color:<%= legend.color %>"></div>
+                        <input class="colors" type="text" name="color" value="<%= legend.color %>" placeholder="Color">
+                        <input type="text" name="title" value="<%= legend.title %>" placeholder="Title">
+                        Remove button here
+                    </div>
+                <% }); %>
+            </div>
             <div id="colors">
+                <h2>Colors</h2>
                 <% _.each(counters, function(counter) { %>
                     <div>
                         <div class="color_legend" style="background-color:<%= colors[counter] %>"></div>
                         <label for="color_<%= counter %>"><%= counter %></label>
-                        <input class="colors" type="text" id="color_<%= counter %>" name="color_<%= counter %>" value="<%= colors[counter] %>">
+                        <input class="colors" type="text" id="color_<%= counter %>" name="color_<%= counter %>" value="<%= colors[counter] %>" placeholdr="Enter color">
                     </div>
                 <% }); %>
             </div>
