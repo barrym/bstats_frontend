@@ -526,7 +526,7 @@ class BstatsCounterText extends BstatsCounterBase
 
         @div.select(".bstats-text-figure").style('font-size', @figure_text_size).text(text)
 
-class BstatsCounterGraph
+class BstatsCounterItem
     constructor: (params) ->
         switch params.type
             when 'pie'
