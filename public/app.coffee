@@ -113,7 +113,7 @@ window.DashboardView = Backbone.View.extend({
                         $legend.width(width)
                         $legend.css('position', 'absolute')
                         $('#items').append($legend)
-                        legend_size = "#{Math.round($(document).height() * 0.03)}"
+                        legend_size = "#{Math.round($(document).height() * 0.025)}"
                         legend_margin = "0 #{legend_size/3}px 0 0"
                         for legend in @model.get('legends')
                             $legend.append("
