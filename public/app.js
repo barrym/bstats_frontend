@@ -126,7 +126,7 @@ window.DashboardView = Backbone.View.extend({
             $graph.width(width);
             $graph.css('position', 'absolute');
             $('#items').append($graph);
-            graphs[item.timestep].push(new BstatsCounterGraph({
+            graphs[item.timestep].push(new BstatsCounterItem({
               type: item.type,
               sub_type: item.sub_type,
               counters: item.counters,

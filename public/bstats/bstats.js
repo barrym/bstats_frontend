@@ -1,4 +1,4 @@
-var BstatsCounterBase, BstatsCounterGraph, BstatsCounterLineGraph, BstatsCounterPie, BstatsCounterText;
+var BstatsCounterBase, BstatsCounterGraph, BstatsCounterItem, BstatsCounterLineGraph, BstatsCounterPie, BstatsCounterText;
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
 BstatsCounterBase = (function() {
@@ -26,7 +26,7 @@ BstatsCounterBase = (function() {
     this.window_height = params.window_height || $(document).height();
     this.title_font_size = "" + (Math.round(this.window_height * 0.03)) + "px";
     this.other_font_size = "" + (Math.round(this.window_height * 0.015)) + "px";
-    this.p_left = params.padding_left || this.window_width * 0.03;
+    this.p_left = params.padding_left || this.window_width * 0.035;
     this.p_right = params.padding_right || this.window_width * 0.03;
   }
 
@@ -199,7 +199,7 @@ BstatsCounterLineGraph = (function() {
     this.process_new_data = __bind(this.process_new_data, this);
     var _this = this;
     BstatsCounterLineGraph.__super__.constructor.call(this, params);
-    this.x_tick_count = params.x_tick_count || Math.round(this.w / 100);
+    this.x_tick_count = params.x_tick_count || Math.round((this.w - this.p_left) / 100);
     this.y_tick_count = params.y_tick_count || Math.round(this.h / 40);
     this.count = 0;
     this.x = null;
@@ -260,7 +260,7 @@ BstatsCounterLineGraph = (function() {
         _this.xrule_data.push({
           time: timestamp
         });
-        if (_this.xrule_data.length === (_this.data_points / _this.xrule_period) + 1) {
+        if (_this.xrule_data.length >= (_this.data_points / _this.xrule_period)) {
           _this.xrule_data.shift();
         }
         return _this.count = 0;
@@ -388,8 +388,8 @@ BstatsCounterText = (function() {
     this.total = 0;
     this.per_second_average = 0;
     this.per_minute_average = 0;
-    this.figure_text_size = "" + (Math.round(this.window_height * 0.1)) + "px";
-    this.title_text_size = "" + (Math.round(this.window_height * 0.02)) + "px";
+    this.figure_text_size = "" + (Math.round(this.window_height * 0.07)) + "px";
+    this.title_text_size = "" + (Math.round(this.window_height * 0.023)) + "px";
     this.div.append("div").attr("class", "bstats-text-figure");
     this.div.append("div").attr("class", "bstats-text-title").style('font-size', this.title_text_size).text(this.title);
   }
@@ -459,9 +459,9 @@ BstatsCounterText = (function() {
 
 })();
 
-BstatsCounterGraph = (function() {
+BstatsCounterItem = (function() {
 
-  function BstatsCounterGraph(params) {
+  function BstatsCounterItem(params) {
     switch (params.type) {
       case 'pie':
         params.inner_title = params.title;
@@ -476,6 +476,6 @@ BstatsCounterGraph = (function() {
     }
   }
 
-  return BstatsCounterGraph;
+  return BstatsCounterItem;
 
 })();

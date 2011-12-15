@@ -25,7 +25,7 @@ class BstatsCounterBase
         # TODO: maybe have more rules for heights > large?
         @title_font_size = "#{Math.round(@window_height * 0.03)}px"
         @other_font_size = "#{Math.round(@window_height * 0.015)}px"
-        @p_left          = params.padding_left || @window_width * 0.03
+        @p_left          = params.padding_left || @window_width * 0.035
         @p_right         = params.padding_right || @window_width * 0.03
 
     format: (num) ->
@@ -50,7 +50,7 @@ class BstatsCounterBase
             )
         new_data = null
 
-class BstatsCounterGraph extends BstatsCounterBase
+class BstatsCounterGraph extends BstatsCounterBase # TODO: this is confusing, it's the base class for pie and line, not text
 
     constructor: (params) ->
         super params
@@ -189,7 +189,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
 
     constructor: (params) ->
         super params
-        @x_tick_count    = params.x_tick_count || Math.round(@w/100)
+        @x_tick_count    = params.x_tick_count || Math.round((@w - @p_left)/100)
         @y_tick_count    = params.y_tick_count || Math.round(@h/40)
         @count           = 0
         @x               = null
@@ -242,7 +242,7 @@ class BstatsCounterLineGraph extends BstatsCounterGraph
             @count++
             if @count == @xrule_period
                 @xrule_data.push({time:timestamp})
-                if @xrule_data.length == (@data_points/@xrule_period) + 1
+                if @xrule_data.length >= (@data_points/@xrule_period)
                     @xrule_data.shift()
                 @count = 0
         )
@@ -463,8 +463,8 @@ class BstatsCounterText extends BstatsCounterBase
         @per_second_average = 0
         @per_minute_average = 0
 
-        @figure_text_size = "#{Math.round(@window_height * 0.1)}px"
-        @title_text_size  = "#{Math.round(@window_height * 0.02)}px"
+        @figure_text_size = "#{Math.round(@window_height * 0.07)}px"
+        @title_text_size  = "#{Math.round(@window_height * 0.023)}px"
 
         @div.append("div")
             .attr("class", "bstats-text-figure")
@@ -498,7 +498,7 @@ class BstatsCounterText extends BstatsCounterBase
                 @sums[entries.key] = sum
 
         @total = d3.sum(d3.values(@sums))
-        # console.log "step:#{@timestep} Total : #{@format(@total)}"
+
         switch @timestep
             when 'per_second'
                 @per_second_average = @two_dp(@total/300)
@@ -506,9 +506,6 @@ class BstatsCounterText extends BstatsCounterBase
             when 'per_minute'
                 @per_second_average = @two_dp(@total/3600)
                 @per_minute_average = @two_dp(@total/60)
-
-        # console.log "step:#{@timestep} per second : #{@per_second_average}"
-        # console.log "step:#{@timestep} per minute : #{@per_minute_average}"
 
         @redraw()
 
